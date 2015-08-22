@@ -43,10 +43,10 @@
  *
  * <h2>Surrounding</h2>
  *
- * You may implement {@link guru.mikelue.jdut.jdbc.JdbcFunction.SurroundOperator} to surrounding functions.<br>
+ * You may implement {@link guru.mikelue.jdut.jdbc.JdbcFunction.SurroundOperator SurroundOperator} to surround functions.<br>
  *
- * Either using of {@link guru.mikelue.jdut.jdbc.JdbcFunction#surroundedBy} or {@link guru.mikelue.jdut.jdbc.JdbcTemplateFactory#surround},
- * you can surrounding your code by lambda expression.
+ * Using either {@link guru.mikelue.jdut.jdbc.JdbcFunction#surroundedBy JdbcFunction.surroundedBy()} or {@link guru.mikelue.jdut.jdbc.JdbcTemplateFactory#surround JdbcExecuteFactory.surround()},
+ * you can surround your code by lambda expression.
  *
  * <pre>{@code
  * JdbcFunction<Connection, Integer> funcGetCount = conn -> { 20 };
