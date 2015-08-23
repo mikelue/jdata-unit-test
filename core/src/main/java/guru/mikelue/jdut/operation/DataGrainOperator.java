@@ -10,6 +10,8 @@ import guru.mikelue.jdut.jdbc.SQLExceptionConvert;
 
 /**
  * Operator to execute code by fed {@link DataGrain}.
+ *
+ * @see <a target="_blank" href="https://github.com/mikelue/jdata-unit-test/wiki/Provided-data-operations">Provided operators</a>
  */
 @FunctionalInterface
 public interface DataGrainOperator {
