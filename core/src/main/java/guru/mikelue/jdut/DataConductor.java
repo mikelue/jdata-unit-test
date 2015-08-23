@@ -43,7 +43,7 @@ public class DataConductor {
 		try {
 			return operator.operate(dataSource.getConnection(), dataGrain);
 		} catch (SQLException e) {
-			throw new DataConducteException(e);
+			throw new DataConductException(e);
 		}
 	}
 	/**
@@ -85,7 +85,7 @@ public class DataConductor {
 			return jdbcFunction.surroundedBy(DbRelease::autoClose)
 				.apply(dataSource.getConnection());
 		} catch (SQLException e) {
-			throw new DataConducteException(e);
+			throw new DataConductException(e);
 		}
 	}
 }
