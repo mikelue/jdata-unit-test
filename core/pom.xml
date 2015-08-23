@@ -16,8 +16,11 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<scope>test</scope>
 		</dependency>
+
+		<!--
+		  - Testing
+		  -->
 		<dependency>
 			<groupId>org.jmockit</groupId>
 			<artifactId>jmockit</artifactId>
@@ -28,9 +31,10 @@
 			<artifactId>testng</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- :~) -->
 
 		<!--
-		  - JDBC Drivers
+		  - JDBC Drivers(Testing)
 		  -->
 		<dependency>
 			<groupId>org.hsqldb</groupId>
