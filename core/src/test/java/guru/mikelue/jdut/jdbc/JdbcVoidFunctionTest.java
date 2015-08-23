@@ -50,9 +50,9 @@ public class JdbcVoidFunctionTest {
 		MutableInt surroundingSampleData = new MutableInt(120);
 
 		JdbcVoidFunction<Integer> sampleFunc = v -> surroundedSampleData.add(v);
-		JdbcVoidFunction<Integer> surroundedFunc = sampleFunc.surroundedBy(
+		JdbcVoidFunction<Integer> surroundedFunc = JdbcVoidFunction.fromJdbcFunction(sampleFunc.surroundedBy(
 			buildSurrounding(surroundingSampleData)
-		);
+		));
 
 		surroundedFunc.apply(9);
 

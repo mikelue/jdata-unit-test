@@ -7,6 +7,8 @@ import guru.mikelue.jdut.datagrain.DataRow;
 
 /**
  * This interface should be used with {@link DataGrain#decorate}.
+ *
+ * @see <a target="_blank" href="https://github.com/mikelue/jdata-unit-test/wiki/Provided-data-grain-decoration">Provided decorators</a>
  */
 @FunctionalInterface
 public interface DataGrainDecorator {

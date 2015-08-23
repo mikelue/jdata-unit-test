@@ -1,4 +1,4 @@
-package guru.mikelue.jdut.datagrain;
+package guru.mikelue.jdut.function;
 
 import java.util.Optional;
 import java.util.function.Supplier;

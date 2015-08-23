@@ -19,6 +19,9 @@ import guru.mikelue.jdut.decorate.DataGrainDecorator;
  *
  *     dataGrain = dataGrain.decorate(myDecorator)
  * }</pre>
+ *
+ * @see DataGrainDecorator
+ * @see <a target="_blank" href="https://github.com/mikelue/jdata-unit-test/wiki/API-Guideline">API Guideline</a>
  */
 public class DataGrain {
 	private List<DataRow> rows;

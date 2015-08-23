@@ -3,6 +3,8 @@ package guru.mikelue.jdut.jdbc;
 import java.sql.SQLException;
 import java.util.function.Consumer;
 
+import guru.mikelue.jdut.jdbc.JdbcFunction.SurroundOperator;
+
 /**
  * Likes the {@link Consumer} inteface with throwing of {@link SQLException}.
  *
@@ -13,7 +15,20 @@ import java.util.function.Consumer;
  * @see SQLExceptionConvert
  */
 @FunctionalInterface
-public interface JdbcVoidFunction<T> extends JdbcFunction<T, Void> {
+public interface JdbcVoidFunction<T> {
+	/**
+	 * Creates this instance from {@link JdbcFunction}.
+	 *
+	 * @param <T> The type of fed object
+	 * @param jdbcFunction The function of JDBC
+	 *
+	 * @return The using of <em>jdbcFunction</em> without returend value
+	 */
+	static <T> JdbcVoidFunction<T> fromJdbcFunction(JdbcFunction<T, Void> jdbcFunction)
+	{
+		return jdbcObject -> jdbcFunction.apply(jdbcObject);
+	}
+
 	/**
 	 * Converts this expression to {@link Consumer}.
 	 *
@@ -39,7 +54,7 @@ public interface JdbcVoidFunction<T> extends JdbcFunction<T, Void> {
 	{
 		return t -> {
 			try {
-				simpleApply(t);
+				apply(t);
 			} catch (SQLException e) {
 				throw exceptionConvert.apply(e);
 			}
@@ -47,15 +62,18 @@ public interface JdbcVoidFunction<T> extends JdbcFunction<T, Void> {
 	}
 
 	/**
-	 * Implements the {@link JdbcFunction#apply} with returned value of null.
+	 * Gets {@link JdbcFunction} by this void function.
 	 *
-	 * @param jdbcObject The fed object
+	 * @return The null value of returned function
 	 */
-	default Void apply(T jdbcObject) throws SQLException
+	default JdbcFunction<T, Void> asJdbcFunction()
 	{
-		simpleApply(jdbcObject);
-		return null;
+		return jdbcObject -> {
+			apply(jdbcObject);
+			return null;
+		};
 	}
+
 
 	/**
 	 * Surrounds this function by {@link SurroundOperator}.
@@ -66,11 +84,9 @@ public interface JdbcVoidFunction<T> extends JdbcFunction<T, Void> {
 	 *
 	 * @see SurroundOperator
 	 */
-	@Override
-	default JdbcVoidFunction<T> surroundedBy(SurroundOperator<T, Void> surroundOperator)
+	default JdbcFunction<T, Void> surroundedBy(SurroundOperator<T, Void> surroundOperator)
 	{
-		final JdbcFunction<T, Void> resultFunction = JdbcFunction.super.surroundedBy(surroundOperator);
-		return (jdbcObject) -> resultFunction.apply(jdbcObject);
+		return asJdbcFunction().surroundedBy(surroundOperator);
 	}
 
 	/**
@@ -80,5 +96,5 @@ public interface JdbcVoidFunction<T> extends JdbcFunction<T, Void> {
 	 *
 	 * @throws SQLException eliminate the exception block of JDBC
 	 */
-	public void simpleApply(T jdbcObject) throws SQLException;
+	public void apply(T jdbcObject) throws SQLException;
 }

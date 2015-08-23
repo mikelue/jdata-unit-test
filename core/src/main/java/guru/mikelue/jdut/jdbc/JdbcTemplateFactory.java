@@ -137,7 +137,7 @@ public final class JdbcTemplateFactory {
 		JdbcVoidFunction<T> worker
 	) {
 		return buildRunnable(
-			supplier, (JdbcFunction<T, Void>)worker
+			supplier, worker.asJdbcFunction()
 		);
 	}
 
@@ -158,7 +158,7 @@ public final class JdbcTemplateFactory {
 		SurroundingConfig<T, Void> surroundingConfig
 	) {
 		return buildRunnable(
-			supplier, (JdbcFunction<T, Void>)worker, surroundingConfig
+			supplier, worker.asJdbcFunction(), surroundingConfig
 		);
 	}
 
