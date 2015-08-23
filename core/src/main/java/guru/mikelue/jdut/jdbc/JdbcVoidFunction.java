@@ -32,13 +32,13 @@ public interface JdbcVoidFunction<T> {
 	/**
 	 * Converts this expression to {@link Consumer}.
 	 *
-	 * @return The function with {@link SQLExceptionConvert#AS_RUNTIME_EXCEPTION}
+	 * @return The function with {@link SQLExceptionConvert#runtimeException SQLExceptionConvert::runtimeException}
 	 *
 	 * @see #asConsumer(SQLExceptionConvert)
 	 */
 	default Consumer<T> asConsumer()
 	{
-		return asConsumer(SQLExceptionConvert.AS_RUNTIME_EXCEPTION);
+		return asConsumer(SQLExceptionConvert::runtimeException);
 	}
 	/**
 	 * Converts this expression to {@link Consumer}, with customized {@link SQLExceptionConvert}.

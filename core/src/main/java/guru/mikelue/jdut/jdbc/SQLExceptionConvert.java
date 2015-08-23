@@ -12,6 +12,13 @@ import java.util.function.Function;
 public interface SQLExceptionConvert<E extends RuntimeException> extends Function<SQLException, E> {
 	/**
 	 * The pre-defined instance for converting {@link SQLException} to {@link RuntimeException}.
+	 *
+	 * @param e The sql exception to be converted
+	 *
+	 * @return runtime exception
 	 */
-	public static final SQLExceptionConvert<RuntimeException> AS_RUNTIME_EXCEPTION = (sqlException -> new RuntimeException(sqlException));
+	public static RuntimeException runtimeException(SQLException e)
+	{
+		return new RuntimeException(e);
+	}
 }

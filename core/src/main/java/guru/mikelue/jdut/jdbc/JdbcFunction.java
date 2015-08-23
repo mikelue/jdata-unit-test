@@ -51,13 +51,13 @@ public interface JdbcFunction<T, R> {
 	/**
 	 * Converts this expression to {@link Function}.
 	 *
-	 * @return The function with {@link SQLExceptionConvert#AS_RUNTIME_EXCEPTION}
+	 * @return The function with {@link SQLExceptionConvert#runtimeException SQLExceptionConvert::runtimeException}
 	 *
 	 * @see #asFunction(SQLExceptionConvert)
 	 */
 	default Function<T, R> asFunction()
 	{
-		return asFunction(SQLExceptionConvert.AS_RUNTIME_EXCEPTION);
+		return asFunction(SQLExceptionConvert::runtimeException);
 	}
 	/**
 	 * Converts this expression to {@link Function}, with customized {@link SQLExceptionConvert}.

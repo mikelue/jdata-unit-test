@@ -17,13 +17,13 @@ public interface JdbcSupplier<R> {
 	/**
 	 * Converts this expression to {@link Supplier}.
 	 *
-	 * @return The supplier with {@link SQLExceptionConvert#AS_RUNTIME_EXCEPTION}
+	 * @return The supplier with {@link SQLExceptionConvert#runtimeException SQLExceptionConvert::runtimeException}
 	 *
 	 * @see #asSupplier(SQLExceptionConvert)
 	 */
 	default Supplier<R> asSupplier()
 	{
-		return asSupplier(SQLExceptionConvert.AS_RUNTIME_EXCEPTION);
+		return asSupplier(SQLExceptionConvert::runtimeException);
 	}
 	/**
 	 * Converts this expression to {@link Supplier}, with customized {@link SQLExceptionConvert}.

@@ -14,13 +14,13 @@ public interface JdbcRunnable {
 	/**
 	 * Converts this expression to {@link Runnable}.
 	 *
-	 * @return The runnable with {@link SQLExceptionConvert#AS_RUNTIME_EXCEPTION}
+	 * @return The runnable with {@link SQLExceptionConvert#runtimeException SQLExceptionConvert::runtimeException}
 	 *
 	 * @see #asRunnable(SQLExceptionConvert)
 	 */
 	default Runnable asRunnable()
 	{
-		return asRunnable(SQLExceptionConvert.AS_RUNTIME_EXCEPTION);
+		return asRunnable(SQLExceptionConvert::runtimeException);
 	}
 	/**
 	 * Converts this expression to {@link Runnable}, with customized {@link SQLExceptionConvert}.

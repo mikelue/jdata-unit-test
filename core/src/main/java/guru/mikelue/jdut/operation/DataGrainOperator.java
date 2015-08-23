@@ -53,7 +53,7 @@ public interface DataGrainOperator {
 	 */
 	default BiConsumer<Connection, DataGrain> asBiConsumer()
 	{
-		return asBiConsumer(SQLExceptionConvert.AS_RUNTIME_EXCEPTION);
+		return asBiConsumer(SQLExceptionConvert::runtimeException);
 	}
 
 	/**
