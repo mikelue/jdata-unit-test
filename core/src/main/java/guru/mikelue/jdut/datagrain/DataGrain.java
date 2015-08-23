@@ -46,9 +46,15 @@ public class DataGrain {
 		return new DataGrain(rowsBuilder.toDataRows());
 	}
 
-    private DataGrain(List<DataRow> rows)
+	/**
+	 * Constructs this object by list of rows.
+	 *
+	 * @param rows The data of rows
+	 */
+    public DataGrain(List<DataRow> rows)
 	{
 		this.rows = Collections.unmodifiableList(rows);
+		Validate.notNull(rows, "Need viable rows");
 	}
 
 	/**
@@ -57,11 +63,25 @@ public class DataGrain {
 	 * @param index The index of row, starts with "0"
 	 *
 	 * @return The match data row
+	 *
+	 * @see #getNumberOfRows
 	 */
 	public DataRow getRow(int index)
 	{
 		Validate.inclusiveBetween(0, rows.size() - 1, index, "The index is invalid: [%d]", index);
 		return rows.get(index);
+	}
+
+	/**
+	 * Gets number of rows.
+	 *
+	 * @return The number of rows
+	 *
+	 * @see #getRows
+	 */
+	public int getNumberOfRows()
+	{
+		return rows.size();
 	}
 
 	/**

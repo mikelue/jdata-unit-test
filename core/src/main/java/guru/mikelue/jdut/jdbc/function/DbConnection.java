@@ -12,9 +12,7 @@ import guru.mikelue.jdut.jdbc.JdbcRunnable;
  *
  * @see JdbcFunction.SurroundOperator
  */
-public final class DbConnection {
-	private DbConnection() {}
-
+public interface DbConnection {
 	/**
 	 * Builds a {@link JdbcFunction.SurroundOperator} for {@link #transactional(JdbcFunction, int)}.
 	 *
