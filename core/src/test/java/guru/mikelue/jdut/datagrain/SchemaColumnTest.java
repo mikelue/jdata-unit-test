@@ -18,7 +18,6 @@ public class SchemaColumnTest {
 
 		SchemaColumn testedColumn = SchemaColumn.build(
 			builder -> builder
-				.tableSchema(SchemaTable.build(tableBuilder -> tableBuilder.name("go_1")))
 				.name(sampleName)
 				.sqlType(sampleSqlType)
 		);

@@ -20,7 +20,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * In following code snippet, the builder is <em style="color:red">a failure of infinite recursion</em>:
  * <pre>{@code
  *     builder -> builder
- *        .field("ct_1", () -> 30 + builder.getDataSupplier("ct_1").get().get())
+ *        .fieldOfValueSupplier("ct_1", () -> 30 + builder.getDataSupplier("ct_1").get().get())
  * }</pre>
  *
  * Since the lazy evaluation of lambda expression, the new lambda expression of "ct_1" would be
@@ -29,18 +29,21 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * <pre>{@code
  *    builder -> {
  *        final Supplier<Integer> oldSupplier = builder.getDataSupplier("ct_1").get();
- *        builder.field("ct_1", () -> 30 + oldSupplier.get());
+ *        builder.fieldOfValueSupplier("ct_1", () -> 30 + oldSupplier.get());
  *    }
  * }</pre>
  */
 public class DataRow {
 	private SchemaTable tableSchema;
 	private Map<String, DataField<?>> data;
+	private boolean validated = false;
 
 	/**
 	 * Used with {@link DataRow#build}.
 	 */
 	public class Builder {
+		private DataField.Factory fieldFactory = null;
+
 		private Builder() {}
 
 		/**
@@ -54,6 +57,8 @@ public class DataRow {
 		{
 			Validate.notNull(newTableSchema, "Need viable table schema");
 
+			fieldFactory = new DataField.Factory(newTableSchema);
+
 			/**
 			 * Change the table schema of column
 			 */
@@ -62,13 +67,7 @@ public class DataRow {
 			data.entrySet().forEach(
 				fieldEntry -> dataWithNewTableSchema.put(
 					fieldEntry.getKey(),
-					new DataField<>(
-						SchemaColumn.build(
-							builder -> builder.tableSchema(newTableSchema),
-							fieldEntry.getValue().getColumn()
-						),
-						fieldEntry.getValue()
-					)
+					fieldFactory.clone(fieldEntry.getValue())
 				)
 			);
 
@@ -100,10 +99,10 @@ public class DataRow {
 		 *
 		 * @return cascading self
 		 */
-		public <T> Builder field(String columnName, T value)
+		public <T> Builder fieldOfValue(String columnName, T value)
 		{
 			return field(
-				new DataField<>(tableSchema, columnName, value)
+				fieldFactory.composeData(columnName, value)
 			);
 		}
 		/**
@@ -115,10 +114,10 @@ public class DataRow {
 		 *
 		 * @return cascading self
 		 */
-		public <T> Builder field(String columnName, Supplier<T> valueSupplier)
+		public <T> Builder fieldOfValueSupplier(String columnName, Supplier<T> valueSupplier)
 		{
 			return field(
-				new DataField<>(tableSchema, columnName, valueSupplier)
+				fieldFactory.composeDataSupplier(columnName, valueSupplier)
 			);
 		}
 
@@ -172,7 +171,7 @@ public class DataRow {
 		 *   // Supplier<Integer> wrappedSupplier = () -> 20 + builder.<Integer>getDataSupplier("ct_1").get().get();
 		 *   Supplier<Integer> wrappedSupplier = () -> 20 + sourceSupplier.get();
 		 *
-		 *   builder.field("col_1", wrappedSupplier);
+		 *   builder.fieldOfValueSupplier("col_1", wrappedSupplier);
 		 * }</pre>
 		 *
 		 * @param <T> The type of data for the supplier
@@ -254,6 +253,7 @@ public class DataRow {
 	{
 		DataRow newRow = existingRow.modifiableClone();
 		Builder newBuilder = newRow.new Builder();
+		newBuilder.tableSchema(existingRow.getTable());
 
 		builderConsumer.accept(newBuilder);
 
@@ -265,7 +265,7 @@ public class DataRow {
 	 *
 	 * @return table schema
 	 */
-	public SchemaTable getTableSchema()
+	public SchemaTable getTable()
 	{
 		return tableSchema;
 	}
@@ -308,6 +308,44 @@ public class DataRow {
 	public <T> T getData(String columnName)
 	{
 		return this.<T>getDataField(columnName).getData();
+	}
+
+	/**
+	 * Validates the data of row with schema information from {@link #getTable}.
+	 *
+	 * @throws DataRowException The exception if the validation is failed
+	 *
+	 * @see #isValidated
+	 */
+	public void validate() throws DataRowException
+	{
+		if (validated) {
+			return;
+		}
+
+		/**
+		 * Checks defined data has corresponding definition in database
+		 */
+		for (DataField<?> dataField: data.values()) {
+			if (!tableSchema.hasColumn(dataField.getColumnName())) {
+				throw new MissedColumnException(tableSchema, dataField.getColumn());
+			}
+		}
+		// :~)
+
+		validated = true;
+	}
+
+	/**
+	 * Whether or not this row is validated with schema of table.
+	 *
+	 * @return true if validated
+	 *
+	 * @see #validate
+	 */
+	public boolean isValidated()
+	{
+		return validated;
 	}
 
 	@Override

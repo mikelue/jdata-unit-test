@@ -22,10 +22,17 @@ public class SchemaTableTest {
 			builder -> builder
 				.name(sampleTableName)
 				.keys(sampleKeys)
+				.column(SchemaColumn.build(columnBuilder -> columnBuilder.name("dc_1")))
+				.column(SchemaColumn.build(columnBuilder -> columnBuilder.name("dc_2")))
+				.column(SchemaColumn.build(columnBuilder -> columnBuilder.name("dc_3")))
+				.column(SchemaColumn.build(columnBuilder -> columnBuilder.name("dc_2"))) // Put again
 		);
 
 		Assert.assertEquals(testedTableSchema.getName(), expectedTableName);
 		Assert.assertEquals(testedTableSchema.getKeys(), expectedKeys);
+		Assert.assertEquals(testedTableSchema.getColumn(0).getName(), "dc_1");
+		Assert.assertEquals(testedTableSchema.getColumn(1).getName(), "dc_2");
+		Assert.assertEquals(testedTableSchema.getColumn(2).getName(), "dc_3");
 	}
 	@DataProvider(name="Build")
 	private Object[][] get()

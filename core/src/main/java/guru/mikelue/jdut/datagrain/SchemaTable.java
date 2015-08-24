@@ -15,13 +15,22 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * The schema of table.
+ * The schema of table.<br>
+ *
+ * <h3>Building of data</h3>
+ * While you are building data for testing, this object defines necessary to declare the data of a table.<br>
+ * The name of table and keys(for deletion) is used by operators of data grain.
+ *
+ * <h3>Validation of data</h3>
+ * After the schema information is fetched from real database, this object contains the real schema defined in database.
+ * And, the auto-inspected keys if there is no one while building data.
  */
 public class SchemaTable {
     private String name;
     private List<String> keys = Collections.emptyList();
     private Map<String, SchemaColumn> columns;
-    private Map<Integer, SchemaColumn> columnsOfIndexed;
+    private Map<String, Integer> nameToIndex;
+    private Map<Integer, String> indexToName;
 
     /**
      * This object is used with {@link Consumer} by {@link SchemaTable#build}.
@@ -60,6 +69,27 @@ public class SchemaTable {
 
             return this;
         }
+
+		/**
+		 * Adds builder for a column.
+		 *
+		 * @param column The added column
+		 *
+		 * @return cascading self
+		 */
+		public Builder column(SchemaColumn column)
+		{
+			String columnName = column.getName();
+
+			if (!nameToIndex.containsKey(columnName)) {
+				nameToIndex.put(columnName, nameToIndex.size());
+				indexToName.put(nameToIndex.get(columnName), columnName);
+			}
+
+			columns.put(columnName, column);
+
+			return this;
+		}
     }
 
     /**
@@ -74,10 +104,12 @@ public class SchemaTable {
     public static SchemaTable build(Consumer<Builder> builderConsumer)
     {
         SchemaTable tableSchema = new SchemaTable();
-        tableSchema.columns = new HashMap<>(CollectionUsage.HASH_SPACE_OF_COLUMNS);
-        tableSchema.columnsOfIndexed = new HashMap<>(CollectionUsage.HASH_SPACE_OF_COLUMNS);
+		SchemaTable.Builder tableBuilder = tableSchema.new Builder();
+		tableSchema.columns = new HashMap<>(CollectionUsage.HASH_SPACE_OF_COLUMNS);
+		tableSchema.indexToName = new HashMap<>(CollectionUsage.HASH_SPACE_OF_COLUMNS);
+		tableSchema.nameToIndex = new HashMap<>(CollectionUsage.HASH_SPACE_OF_COLUMNS);
 
-        builderConsumer.accept(tableSchema.new Builder());
+        builderConsumer.accept(tableBuilder);
 
         return tableSchema.clone();
     }
@@ -126,6 +158,18 @@ public class SchemaTable {
 		return keys;
 	}
 
+	/**
+	 * Whether or not has a column by name.
+	 *
+	 * @param columnName The name of column
+	 *
+	 * @return true if the column is existing
+	 */
+	public boolean hasColumn(String columnName)
+	{
+		return columns.containsKey(columnName);
+	}
+
     /**
      * Gets the column definition by name.
      *
@@ -156,12 +200,12 @@ public class SchemaTable {
      */
     public SchemaColumn getColumn(int columnIndex)
     {
-        SchemaColumn column = columnsOfIndexed.get(columnIndex);
-        if (column == null) {
+        String columnName = indexToName.get(columnIndex);
+        if (columnName == null) {
             throw new IllegalArgumentException(String.format("Cannot find column by index: \"%d\"", columnIndex));
         }
 
-        return column;
+        return getColumn(columnName);
     }
 
     /**
@@ -177,7 +221,8 @@ public class SchemaTable {
         clonedObject.name = this.name;
         clonedObject.keys = Collections.unmodifiableList(this.keys);
         clonedObject.columns = Collections.unmodifiableMap(this.columns);
-        clonedObject.columnsOfIndexed = Collections.unmodifiableMap(this.columnsOfIndexed);
+        clonedObject.nameToIndex = Collections.unmodifiableMap(this.nameToIndex);
+        clonedObject.indexToName = Collections.unmodifiableMap(this.indexToName);
 
         return clonedObject;
     }
@@ -189,7 +234,8 @@ public class SchemaTable {
         clonedObject.name = this.name;
         clonedObject.keys = new ArrayList<>(this.keys);
         clonedObject.columns = new HashMap<>(this.columns);
-        clonedObject.columnsOfIndexed = new HashMap<>(this.columnsOfIndexed);
+        clonedObject.nameToIndex = new HashMap<>(this.nameToIndex);
+        clonedObject.indexToName = new HashMap<>(this.indexToName);
 
         return clonedObject;
     }
@@ -211,7 +257,6 @@ public class SchemaTable {
 			.append(this.name, rhs.name)
 			.append(this.columns, rhs.columns)
 			.append(this.keys, rhs.keys)
-			.append(this.columnsOfIndexed, rhs.columnsOfIndexed)
 			.isEquals();
 	}
 
@@ -225,7 +270,6 @@ public class SchemaTable {
 			.append(name)
 			.append(keys)
 			.append(columns)
-			.append(columnsOfIndexed)
 		.toHashCode();
 	}
 }

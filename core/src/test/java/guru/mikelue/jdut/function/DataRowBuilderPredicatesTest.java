@@ -31,8 +31,8 @@ public class DataRowBuilderPredicatesTest {
 				.tableSchema(
 					SchemaTable.build(tableBuilder -> tableBuilder.name(tableName))
 				)
-				.field(sampleColumnName, 20)
-				.field("ktc_0", "String-V1");
+				.fieldOfValue(sampleColumnName, 20)
+				.fieldOfValue("ktc_0", "String-V1");
 
 			Assert.assertEquals(testedPredicate.test(rowBuilder), expectedResult);
 		});

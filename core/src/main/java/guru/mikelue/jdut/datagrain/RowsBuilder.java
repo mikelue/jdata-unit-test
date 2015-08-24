@@ -75,6 +75,7 @@ public interface RowsBuilder {
  */
 class RowsBuilderImpl implements RowsBuilder {
 	private final SchemaTable tableSchema;
+	private final DataField.Factory fieldFactory;
 	private List<Map<String, DataField<?>>> rows = new ArrayList<>(CollectionUsage.LIST_SIZE_OF_ROWS);
     private Map<String, SchemaColumn> columns = new HashMap<>(CollectionUsage.HASH_SPACE_OF_COLUMNS);
     private Map<Integer, SchemaColumn> columnsOfIndexed;
@@ -82,6 +83,7 @@ class RowsBuilderImpl implements RowsBuilder {
 	RowsBuilderImpl(SchemaTable newTableSchema)
 	{
 		tableSchema = newTableSchema;
+		fieldFactory = new DataField.Factory(tableSchema);
 	}
 
 	@Override
@@ -99,7 +101,7 @@ class RowsBuilderImpl implements RowsBuilder {
 					if (!columns.containsKey(columnName)) {
 						columns.put(
 							columnName,
-							SchemaColumn.build(builder -> builder.tableSchema(tableSchema).name(columnName))
+							SchemaColumn.build(builder -> builder.name(columnName))
 						);
 					}
 
@@ -122,10 +124,9 @@ class RowsBuilderImpl implements RowsBuilder {
 						@Override
 						public DataField<Object> apply(Object value)
 						{
-                            return new DataField<>(
-                                columnsOfIndexed.get(index++),
-                                value
-                            );
+							return fieldFactory.composeData(
+								columnsOfIndexed.get(index++), value
+							);
 						}
 					}
 				)
@@ -140,10 +141,10 @@ class RowsBuilderImpl implements RowsBuilder {
     public <T> DataField<T> newField(String columnName, T fieldValue)
 	{
 		if (!columns.containsKey(columnName)) {
-			columns.put(columnName, SchemaColumn.build(builder -> builder.tableSchema(tableSchema).name(columnName)));
+			columns.put(columnName, SchemaColumn.build(builder -> builder.name(columnName)));
 		}
 
-		return new DataField<T>(
+		return fieldFactory.composeData(
 			columns.get(columnName), fieldValue
 		);
 	}
@@ -151,10 +152,10 @@ class RowsBuilderImpl implements RowsBuilder {
     public <T> DataField<T> newField(String columnName, Supplier<T> fieldSupplier)
 	{
 		if (!columns.containsKey(columnName)) {
-			columns.put(columnName, SchemaColumn.build(builder -> builder.tableSchema(tableSchema).name(columnName)));
+			columns.put(columnName, SchemaColumn.build(builder -> builder.name(columnName)));
 		}
 
-		return new DataField<T>(
+		return fieldFactory.composeDataSupplier(
 			columns.get(columnName), fieldSupplier
 		);
 	}

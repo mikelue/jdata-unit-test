@@ -90,7 +90,7 @@ public class ReplaceFieldDataDecorator implements DataFieldDecorator {
 			.filter(index -> predicates.get(index).test(dataField))
 			.findFirst()
 			.ifPresent(
-				matchedIndex -> rowBuilder.field(dataField.getColumnName(), replacements.get(matchedIndex))
+				matchedIndex -> rowBuilder.fieldOfValue(dataField.getColumnName(), replacements.get(matchedIndex))
 			);
 	}
 

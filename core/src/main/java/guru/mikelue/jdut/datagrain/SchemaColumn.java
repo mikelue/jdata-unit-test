@@ -12,9 +12,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * The definition of column of a table.
  */
 public class SchemaColumn {
-	private SchemaTable tableSchema;
     private String name;
     private Optional<Integer> sqlType = Optional.empty();
+	private Optional<Boolean> nullable = Optional.empty();
+	private Optional<Boolean> hasDefaultValue = Optional.empty();
 
     /**
      * This object is used with {@link Consumer} by {@link SchemaColumn#build}.
@@ -27,7 +28,7 @@ public class SchemaColumn {
          *
          * @param newName The name of table
          *
-         * @return cascading of self
+         * @return cascading self
          */
         public Builder name(String newName)
         {
@@ -41,7 +42,7 @@ public class SchemaColumn {
          *
          * @param newSqlType The value(nullable) of sql type, see {@link java.sql.Types}.
          *
-         * @return cascading of self
+         * @return cascading self
          *
          * @see java.sql.Types
          */
@@ -52,22 +53,34 @@ public class SchemaColumn {
         }
 
 		/**
-		 * Sets the table schema of this column.
+		 * Sets whether or not this column is nullable
 		 *
-		 * @param newTableSchema The table schema
+		 * @param newNullable The value of nullable
 		 *
-		 * @return cascading of self
+		 * @return cascading self
 		 */
-		public Builder tableSchema(SchemaTable newTableSchema)
+		public Builder nullable(boolean newNullable)
 		{
-			tableSchema = newTableSchema;
+			nullable = Optional.of(newNullable);
+			return this;
+		}
+
+		/**
+		 * Sets whether or not this column has default value
+		 *
+		 * @param newHasDefaultValue the flag of having default value
+		 *
+		 * @return cascading self
+		 */
+		public Builder hasDefaultValue(boolean newHasDefaultValue)
+		{
+			hasDefaultValue = Optional.of(newHasDefaultValue);
 			return this;
 		}
 
 		private void validate()
 		{
 			Validate.notNull(name, "Need viable name of column");
-			Validate.notNull(tableSchema, "Need viable table schema");
 		}
     }
 
@@ -112,30 +125,6 @@ public class SchemaColumn {
         return newColumn.clone();
     }
 
-	/**
-	 * Gets name of table.
-	 *
-	 * @return the name of table
-	 *
-	 * @see #getTable
-	 */
-	public String getTableName()
-	{
-		return tableSchema.getName();
-	}
-
-	/**
-	 * Gets definition of table.
-	 *
-	 * @return definition of table
-	 *
-	 * @see #getTableName
-	 */
-	public SchemaTable getTable()
-	{
-		return tableSchema;
-	}
-
     /**
      * Gets name of column
      *
@@ -158,13 +147,34 @@ public class SchemaColumn {
         return sqlType;
     }
 
+	/**
+	 * Whether or not this column is nullable.
+	 *
+	 * @return may not be initialized
+	 */
+	public Optional<Boolean> getNullable()
+	{
+		return nullable;
+	}
+
+	/**
+	 * Whether or not this column has default value.
+	 *
+	 * @return may not be initialized
+	 */
+	public Optional<Boolean> getHasDefaultValue()
+	{
+		return nullable;
+	}
+
     @Override
     protected SchemaColumn clone()
     {
         SchemaColumn clonedObject = new SchemaColumn();
         clonedObject.name = this.name;
         clonedObject.sqlType = this.sqlType;
-        clonedObject.tableSchema = this.tableSchema;
+		clonedObject.nullable = this.nullable;
+		clonedObject.hasDefaultValue = this.hasDefaultValue;
 
         return clonedObject;
     }

@@ -26,15 +26,10 @@ public class DataFieldPredicatesTest {
 			"tab_p1", "col_1"
 		);
 
-		DataField<Integer> sampleDataField = new DataField<>(
-			SchemaColumn.build(builder -> builder
-				.tableSchema(
-					SchemaTable.build(tableBuilder -> tableBuilder
-						.name("tab_p1")
-					)
-				)
-				.name("col_1")
-			),
+		DataField<Integer> sampleDataField = new DataField.Factory(
+			SchemaTable.build(tableBuilder -> tableBuilder.name("tab_p1"))
+		).composeData(
+			SchemaColumn.build(builder -> builder.name("col_1")),
 			sampleValue
 		);
 
@@ -56,20 +51,14 @@ public class DataFieldPredicatesTest {
 	public void nonSupplier(
 		Object sampleData, boolean expectedResult
 	) {
-		DataField<Object> sampleDataField = new DataField<>(
-			SchemaColumn.build(builder -> builder
-				.tableSchema(
-					SchemaTable.build(tableBuilder -> tableBuilder
-						.name("tab_p1")
-					)
-				)
-				.name("col_1")
-			),
-			sampleData
-		);
-
 		Predicate<DataField<Object>> testedPredicate = DataFieldPredicates::nonSupplier;
 
+		DataField<Object> sampleDataField = new DataField.Factory(
+			SchemaTable.build(tableBuilder -> tableBuilder.name("tab_p1"))
+		).composeData(
+			SchemaColumn.build(builder -> builder.name("col_1")),
+			sampleData
+		);
 		Assert.assertEquals(testedPredicate.test(sampleDataField), expectedResult);
 	}
 	@DataProvider(name="NonSupplier")

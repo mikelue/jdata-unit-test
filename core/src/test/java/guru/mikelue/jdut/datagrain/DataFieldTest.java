@@ -16,10 +16,12 @@ public class DataFieldTest {
 	public void dataFieldBySupplier(
 		Supplier<Integer> sampleSupplier
 	) {
-		SchemaTable tableSchema = SchemaTable.build(builder -> builder.name("tc_1"));
-		SchemaColumn sampleColumn = SchemaColumn.build(builder -> builder.tableSchema(tableSchema).name("col_33"));
+		DataField.Factory fieldFactory = new DataField.Factory(
+			SchemaTable.build(builder -> builder.name("tc_1"))
+		);
+		SchemaColumn sampleColumn = SchemaColumn.build(builder -> builder.name("col_33"));
 
-		DataField<Integer> testedField = new DataField<>(
+		DataField<Integer> testedField = fieldFactory.composeDataSupplier(
 			sampleColumn, sampleSupplier
 		);
 
@@ -42,10 +44,12 @@ public class DataFieldTest {
 	public void dataFieldByValue(
 		Object sampleData, Integer expectedValue
 	) {
-		SchemaTable tableSchema = SchemaTable.build(builder -> builder.name("tc_1"));
-		SchemaColumn sampleColumn = SchemaColumn.build(builder -> builder.tableSchema(tableSchema).name("col_24"));
+		DataField.Factory fieldFactory = new DataField.Factory(
+			SchemaTable.build(builder -> builder.name("tc_1"))
+		);
+		SchemaColumn sampleColumn = SchemaColumn.build(builder -> builder.name("col_24"));
 
-		DataField<Object> testedField = new DataField<Object>(
+		DataField<Object> testedField = fieldFactory.composeData(
 			sampleColumn, sampleData
 		);
 
@@ -85,9 +89,11 @@ public class DataFieldTest {
 			}
 		};
 
-		SchemaTable tableSchema = SchemaTable.build(builder -> builder.name("gm_1"));
-		DataField<Integer> testedField = new DataField<>(
-			SchemaColumn.build(builder -> builder.tableSchema(tableSchema).name("col_once")),
+		DataField.Factory fieldFactory = new DataField.Factory(
+			SchemaTable.build(builder -> builder.name("gm_1"))
+		);
+		DataField<Integer> testedField = fieldFactory.composeDataSupplier(
+			SchemaColumn.build(builder -> builder.name("col_once")),
 			onceSupplier
 		);
 

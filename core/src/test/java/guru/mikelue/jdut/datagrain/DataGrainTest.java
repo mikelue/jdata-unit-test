@@ -47,7 +47,7 @@ public class DataGrainTest {
 
 		List<DataRow> testedRows = testedDataGrain.getRows();
 		testedRows.forEach(
-			row -> Assert.assertEquals(row.getTableSchema().getName(), "tb_thing")
+			row -> Assert.assertEquals(row.getTable().getName(), "tb_thing")
 		);
 		Assert.assertEquals(testedRows.get(0).getData("ct_1"), new Integer(1));
 		Assert.assertEquals(testedRows.get(0).getData("ct_2"), "BANANA-01");
@@ -85,10 +85,10 @@ public class DataGrainTest {
 		);
 
 		List<DataRow> testedRows = testedDataGrain.getRows();
-		Assert.assertEquals(testedRows.get(0).getTableSchema().getName(), "tb_thing_1");
+		Assert.assertEquals(testedRows.get(0).getTable().getName(), "tb_thing_1");
 		Assert.assertEquals(testedRows.get(0).getData("t1_c1"), new Integer(1));
 		Assert.assertEquals(testedRows.get(0).getData("t1_c2"), "OK-1");
-		Assert.assertEquals(testedRows.get(1).getTableSchema().getName(), "tb_thing_2");
+		Assert.assertEquals(testedRows.get(1).getTable().getName(), "tb_thing_2");
 		Assert.assertEquals(testedRows.get(1).getData("t2_c1"), new Integer(2));
 		Assert.assertEquals(testedRows.get(1).getData("t2_c2"), "OK-2");
 	}
@@ -109,8 +109,8 @@ public class DataGrainTest {
 
 		testedDataGrain = testedDataGrain.decorate(
 			rowBuilder -> rowBuilder
-				.field("col_1", "v1-1") // Modifies existing field
-				.field("col_3", "v3") // Adds new field
+				.fieldOfValue("col_1", "v1-1") // Modifies existing field
+				.fieldOfValue("col_3", "v3") // Adds new field
 		);
 
 		Assert.assertEquals(testedDataGrain.getRow(0).<String>getData("col_1"), "v1-1"); // Modified field

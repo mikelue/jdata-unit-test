@@ -17,74 +17,127 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
  * @param <T> The type of data
  */
 public class DataField<T> {
+    private final SchemaTable tableSchema;
     private final SchemaColumn column;
 	private Supplier<? extends T> dataSupplier;
 	private Optional<T> data;
 
 	/**
-	 * Clone constructor for different column.
-	 *
-	 * @param newColumn The new table schema
-	 * @param existingDataField existing data field
+	 * Utility factory to compose fields for a table.
 	 */
-	public DataField(SchemaColumn newColumn, DataField<T> existingDataField)
-	{
-		column = newColumn;
-		dataSupplier = existingDataField.dataSupplier;
-		data = existingDataField.data;
+	public static class Factory {
+		private final SchemaTable tableSchema;
+
+		/**
+		 * Constructs with a table schema.
+		 *
+		 * @param newTableSchema The table schema
+		 */
+		public Factory(SchemaTable newTableSchema)
+		{
+			tableSchema = newTableSchema;
+			Validate.notNull(tableSchema, "Need viable table schema");
+		}
+
+		/**
+		 * Clones the data field within this table schema.
+		 *
+		 * @param <T> The data type of field
+		 * @param sourceDataField The data field to be cloned
+		 *
+		 * @return data field for this table
+		 */
+		public <T> DataField<T> clone(DataField<T> sourceDataField)
+		{
+			return new DataField<T>(
+				tableSchema,
+				sourceDataField.column,
+				sourceDataField.dataSupplier, sourceDataField.data
+			);
+		}
+
+		/**
+		 * Composes data field with column's name and data.
+		 *
+		 * @param <T> The data type of field
+		 * @param columnName The name of column
+		 * @param data The data of the column
+		 *
+		 * @return data field for this table
+		 *
+		 * @see #composeDataSupplier(String, Supplier)
+		 * @see #composeDataSupplier(SchemaColumn, Supplier)
+		 */
+		public <T> DataField<T> composeData(String columnName, T data)
+		{
+			return composeData(
+				SchemaColumn.build(builder -> builder.name(columnName)),
+				data
+			);
+		}
+		/**
+		 * Composes data field with column's name and data supplier.
+		 *
+		 * @param <T> The data type of field
+		 * @param columnName The name of column
+		 * @param dataSupplier The data supplier of the column
+		 *
+		 * @return data field for this table
+		 *
+		 * @see #composeData(String, Object)
+		 * @see #composeData(SchemaColumn, Object)
+		 */
+		public <T> DataField<T> composeDataSupplier(String columnName, Supplier<? extends T> dataSupplier)
+		{
+			return composeDataSupplier(
+				SchemaColumn.build(builder -> builder.name(columnName)),
+				dataSupplier
+			);
+		}
+		/**
+		 * Composes data field with column's name and data supplier.
+		 *
+		 * @param <T> The data type of field
+		 * @param column The column definition
+		 * @param data The data of the column
+		 *
+		 * @return data field for this table
+		 *
+		 * @see #composeDataSupplier(String, Supplier)
+		 * @see #composeDataSupplier(SchemaColumn, Supplier)
+		 */
+		public <T> DataField<T> composeData(SchemaColumn column, T data)
+		{
+			return new DataField<T>(
+				tableSchema, column, null, Optional.ofNullable(data)
+			);
+		}
+		/**
+		 * Composes data field with column's name and data supplier.
+		 *
+		 * @param <T> The data type of field
+		 * @param column The column definition
+		 * @param dataSupplier The data supplier of the column
+		 *
+		 * @return data field for this table
+		 *
+		 * @see #composeData(String, Object)
+		 * @see #composeData(SchemaColumn, Object)
+		 */
+		public <T> DataField<T> composeDataSupplier(SchemaColumn column, Supplier<? extends T> dataSupplier)
+		{
+			return new DataField<T>(
+				tableSchema, column, dataSupplier, null
+			);
+		}
 	}
 
-    /**
-     * Constructs a field with column name and data supplier.
-     *
-     * @param tableSchema The schema of table
-     * @param columnName The column definition
-     * @param newDataSupplier The data supplier
-     */
-	public DataField(SchemaTable tableSchema, String columnName, Supplier<? extends T> newDataSupplier)
-    {
-		this(SchemaColumn.build(builder -> builder.tableSchema(tableSchema).name(columnName)), newDataSupplier, null);
-		Validate.notNull(dataSupplier, "Need supplier of data");
-    }
-
-    /**
-     * Constructs a field with column name and value.
-     *
-     * @param tableSchema The schema of table
-     * @param columnName The column definition
-     * @param newData The value of data
-     */
-	public DataField(SchemaTable tableSchema, String columnName, T newData)
-    {
-		this(SchemaColumn.build(builder -> builder.tableSchema(tableSchema).name(columnName)), null, Optional.ofNullable(newData));
-    }
-
-    /**
-     * Constructs a field with column definition and data supplier.
-     *
-     * @param newColumn The column definition
-     * @param newDataSupplier The data supplier
-     */
-	public DataField(SchemaColumn newColumn, Supplier<? extends T> newDataSupplier)
-    {
-		this(newColumn, newDataSupplier, null);
-		Validate.notNull(dataSupplier, "Need supplier of data");
-    }
-
-    /**
-     * Constructs a field with column definition and value.
-     *
-     * @param newColumn The column definition
-     * @param newData The value of data
-     */
-	public DataField(SchemaColumn newColumn, T newData)
-    {
-		this(newColumn, null, Optional.ofNullable(newData));
-    }
-
 	@SuppressWarnings("unchecked")
-	private DataField(SchemaColumn newColumn, Supplier<? extends T> newDataSupplier, Optional<T> newData)
-    {
+	private DataField(
+		SchemaTable newTableSchema,
+		SchemaColumn newColumn, Supplier<? extends T> newDataSupplier, Optional<T> newData
+	) {
+		tableSchema = newTableSchema;
     	column = newColumn;
 		dataSupplier = newDataSupplier;
 
@@ -99,6 +152,7 @@ public class DataField<T> {
 		}
 		// :~)
 
+		Validate.notNull(tableSchema, "Need table schema");
 		Validate.notNull(column, "Need column definition");
     }
 
@@ -111,7 +165,7 @@ public class DataField<T> {
 	 */
 	public SchemaTable getTable()
 	{
-		return column.getTable();
+		return tableSchema;
 	}
 
 	/**
@@ -123,7 +177,7 @@ public class DataField<T> {
 	 */
 	public String getTableName()
 	{
-		return column.getTableName();
+		return tableSchema.getName();
 	}
 
     /**
@@ -190,7 +244,8 @@ public class DataField<T> {
     protected DataField<T> clone()
     {
         return new DataField<>(
-            this.column, this.dataSupplier
+			this.tableSchema, this.column,
+			this.dataSupplier, this.data
         );
     }
 

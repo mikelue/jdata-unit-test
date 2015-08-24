@@ -18,9 +18,14 @@ public class DataRowTest {
 	public void build()
 	{
 		final SchemaTable sampleTableSchema = SchemaTable.build(builder -> builder.name("gt_apple"));
+		final DataField.Factory fieldFactory = new DataField.Factory(sampleTableSchema);
 		final Map<String, DataField<?>> sampleData = Stream.of(
-			new DataField<>(SchemaColumn.build(builder -> builder.tableSchema(sampleTableSchema).name("col_1")), 30).asMapEntry(),
-			new DataField<>(SchemaColumn.build(builder -> builder.tableSchema(sampleTableSchema).name("col_2")), "EXP-01").asMapEntry()
+			fieldFactory.composeData(
+				SchemaColumn.build(builder -> builder.name("col_1")), 30
+			).asMapEntry(),
+			fieldFactory.composeData(
+				SchemaColumn.build(builder -> builder.name("col_2")), "EXP-01"
+			).asMapEntry()
 		).collect(
 			Collectors.toMap(
 				entry -> entry.getKey(),
@@ -34,7 +39,7 @@ public class DataRowTest {
 				.data(sampleData)
 		);
 
-		Assert.assertEquals(testedRow.getTableSchema(), sampleTableSchema);
+		Assert.assertEquals(testedRow.getTable(), sampleTableSchema);
 		Assert.assertEquals(testedRow.<Integer>getDataField("col_1").getData(), new Integer(30));
 		Assert.assertEquals(testedRow.<String>getDataField("col_2").getData(), "EXP-01");
 
@@ -46,7 +51,7 @@ public class DataRowTest {
 				.tableSchema(SchemaTable.build(tableBuilder -> tableBuilder.name("gt_table2"))),
 			testedRow
 		);
-		Assert.assertEquals(testedRow.getTableSchema().getName(), "gt_table2");
+		Assert.assertEquals(testedRow.getTable().getName(), "gt_table2");
 		Assert.assertEquals(testedRow.<Integer>getDataField("col_1").getTableName(), "gt_table2");
 		// :~)
 	}
@@ -60,10 +65,10 @@ public class DataRowTest {
 		DataRow testedRow = DataRow.build(
 			builder -> builder
 				.tableSchema(SchemaTable.build(tableBuilder -> tableBuilder.name("gc_apple2")))
-				.field("ct_1", 20)
-				.field("ct_2", "Exp")
-				.field("ct_3", () -> 77)
-				.field("ct_4", 54) // No changed
+				.fieldOfValue("ct_1", 20)
+				.fieldOfValue("ct_2", "Exp")
+				.fieldOfValueSupplier("ct_3", () -> 77)
+				.fieldOfValue("ct_4", 54) // No changed
 		);
 
 		testedRow = DataRow.build(
@@ -72,21 +77,62 @@ public class DataRowTest {
 				Supplier<Integer> wrappedSupplier = () -> 20 + sourceSupplier.get();
 
 				builder
-					.field("ct_1", 40)
-					.field("ct_2", builder.<String>getData("ct_2").get() + "-77")
+					.fieldOfValue("ct_1", 40)
+					.fieldOfValue("ct_2", builder.<String>getData("ct_2").get() + "-77")
 					/**
 					 * Wrap the value supplier
 					 */
-					.field("ct_3", wrappedSupplier);
+					.fieldOfValueSupplier("ct_3", wrappedSupplier);
 			},
 				// :~)
 			testedRow
 		);
 
-		Assert.assertEquals(testedRow.getTableSchema().getName(), "gc_apple2");
+		Assert.assertEquals(testedRow.getTable().getName(), "gc_apple2");
 		Assert.assertEquals(testedRow.getData("ct_1"), new Integer(40));
 		Assert.assertEquals(testedRow.getData("ct_2"), "Exp-77");
 		Assert.assertEquals(testedRow.getData("ct_3"), new Integer(97));
 		Assert.assertEquals(testedRow.getData("ct_4"), new Integer(54));
+	}
+
+	/**
+	 * Tests the validation of data row(succeeded).
+	 */
+	@Test
+	public void validateWithSucceeding() throws DataRowException
+	{
+		DataRow testedRow = DataRow.build(
+			builder -> builder
+				.tableSchema(SchemaTable.build(tableBuilder -> tableBuilder
+					.name("va_02")
+					.column(SchemaColumn.build(columnBuilder -> columnBuilder.name("ec_1")))
+					.column(SchemaColumn.build(columnBuilder -> columnBuilder.name("ec_2")))
+					.column(SchemaColumn.build(columnBuilder -> columnBuilder.name("ec_3")))
+				))
+				.fieldOfValue("ec_1", 30)
+				.fieldOfValue("ec_2", 20)
+		);
+
+		testedRow.validate();
+		Assert.assertTrue(testedRow.isValidated());
+	}
+
+	/**
+	 * Tests the validatation of data row(failed).
+	 */
+	@Test(expectedExceptions=MissedColumnException.class)
+	public void validateWithError() throws DataRowException
+	{
+		DataRow testedRow = DataRow.build(
+			builder -> builder
+				.tableSchema(
+					SchemaTable.build(
+						tableBuilder -> tableBuilder.name("va_01")
+				))
+				.fieldOfValue("ec_1", 20)
+		);
+
+		Assert.assertFalse(testedRow.isValidated());
+		testedRow.validate();
 	}
 }
