@@ -18,7 +18,7 @@ public interface DbConnection {
 	 *
 	 * @param <T> The fed object must be type of {@link Connection}
  	 * @param <R> The type of returned object
-	 * @param transactionIsolation The isolation of transation
+	 * @param transactionIsolation The isolation of transaction
 	 *
 	 * @return The function making {@link Connection} to be transactional.
 	 *
@@ -33,7 +33,7 @@ public interface DbConnection {
 	 *
 	 * @param <T> The fed object must be type of {@link Connection}
  	 * @param <R> The type of returned object
-	 * @param transactionIsolation The isolation of transation
+	 * @param transactionIsolation The isolation of transaction
 	 *
 	 * @return The function making {@link Connection} to be transactional.
 	 *

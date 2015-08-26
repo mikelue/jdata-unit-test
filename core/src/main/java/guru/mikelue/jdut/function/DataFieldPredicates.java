@@ -18,7 +18,7 @@ public interface DataFieldPredicates {
 	 * @param tableName The name of table
 	 * @param columnName the name of column
 	 *
-	 * @return The predicat of data field
+	 * @return The predicate of data field
 	 */
 	static <T> Predicate<DataField<T>> nullValue(String tableName, String columnName)
 	{

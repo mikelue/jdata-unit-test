@@ -1,5 +1,7 @@
 package guru.mikelue.jdut.datagrain;
 
+import java.sql.JDBCType;
+
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -12,24 +14,24 @@ public class SchemaColumnTest {
 	 */
 	@Test(dataProvider="Build")
 	public void build(
-		final Integer sampleSqlType
+		final JDBCType sampleJdbcType
 	) {
 		final String sampleName = "vc_1";
 
 		SchemaColumn testedColumn = SchemaColumn.build(
 			builder -> builder
 				.name(sampleName)
-				.sqlType(sampleSqlType)
+				.jdbcType(sampleJdbcType)
 		);
 
 		Assert.assertEquals(testedColumn.getName(), sampleName);
-		Assert.assertEquals(testedColumn.getSqlType().orElse(null), sampleSqlType);
+		Assert.assertEquals(testedColumn.getJdbcType().orElse(null), sampleJdbcType);
 	}
 	@DataProvider(name="Build")
 	private Object[][] getBuild()
 	{
 		return new Object[][] {
-			{ 5 },
+			{ JDBCType.BIGINT },
 			{ null }
 		};
 	}

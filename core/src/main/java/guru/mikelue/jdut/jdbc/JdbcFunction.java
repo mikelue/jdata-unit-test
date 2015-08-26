@@ -5,9 +5,9 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**
- * Likes the {@link Function} inteface with throwing of {@link SQLException}.<p>
+ * Likes the {@link Function} interface with throwing of {@link SQLException}.<p>
  *
- * See {@link guru.mikelue.jdut.jdbc JDBC Function} for usage of this lambda expresssion.
+ * See {@link guru.mikelue.jdut.jdbc JDBC Function} for usage of this lambda expression.
  *
  * @param <T> The type of fed object
  * @param <R> The type of returned object

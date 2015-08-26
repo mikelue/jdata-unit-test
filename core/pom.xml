@@ -12,6 +12,36 @@
 	<artifactId>core</artifactId>
 	<version>1</version>
 
+	<properties>
+		<!--
+		  - Default using hsqldb as tested database
+		  -->
+		<db.driverClassName>org.hsqldb.jdbcDriver</db.driverClassName>
+		<db.url>jdbc:hsqldb:file:target/hsqldb/DataSourceTestBase;hsqldb.sqllog=2</db.url>
+		<db.username>sa</db.username>
+		<db.password>sa</db.password>
+		<!-- :~) -->
+	</properties>
+
+	<build>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>test-context.properties</include>
+				</includes>
+			</testResource>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>test-context.properties</exclude>
+				</excludes>
+			</testResource>
+		</testResources>
+	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -34,6 +64,16 @@
 		<!-- :~) -->
 
 		<!--
+		  - Database connection pooling(Testing)
+		  -->
+		<dependency>
+			<groupId>net.snaq</groupId>
+			<artifactId>dbpool</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- :~) -->
+
+		<!--
 		  - JDBC Drivers(Testing)
 		  -->
 		<dependency>
@@ -41,9 +81,29 @@
 			<artifactId>hsqldb</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- :~) -->
+
+		<!--
+		  - Misc(Testing)
+		  -->
 		<dependency>
-			<groupId>net.snaq</groupId>
-			<artifactId>dbpool</artifactId>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mattbertolini</groupId>
+			<artifactId>liquibase-slf4j</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<!-- :~) -->

@@ -1,5 +1,6 @@
 package guru.mikelue.jdut.datagrain;
 
+import java.sql.JDBCType;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -13,7 +14,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  */
 public class SchemaColumn {
     private String name;
-    private Optional<Integer> sqlType = Optional.empty();
+    private Optional<JDBCType> jdbcType = Optional.empty();
 	private Optional<Boolean> nullable = Optional.empty();
 	private Optional<Boolean> hasDefaultValue = Optional.empty();
 
@@ -46,9 +47,9 @@ public class SchemaColumn {
          *
          * @see java.sql.Types
          */
-        public Builder sqlType(Integer newSqlType)
+        public Builder jdbcType(JDBCType newJdbcType)
         {
-            sqlType = Optional.ofNullable(newSqlType);
+            jdbcType = Optional.ofNullable(newJdbcType);
             return this;
         }
 
@@ -139,12 +140,10 @@ public class SchemaColumn {
      * Gets the value(optional) of sql type.
      *
      * @return The value of sql type
-     *
-     * @see java.sql.Types
      */
-    public Optional<Integer> getSqlType()
+    public Optional<JDBCType> getJdbcType()
     {
-        return sqlType;
+        return jdbcType;
     }
 
 	/**
@@ -164,7 +163,7 @@ public class SchemaColumn {
 	 */
 	public Optional<Boolean> getHasDefaultValue()
 	{
-		return nullable;
+		return hasDefaultValue;
 	}
 
     @Override
@@ -172,7 +171,7 @@ public class SchemaColumn {
     {
         SchemaColumn clonedObject = new SchemaColumn();
         clonedObject.name = this.name;
-        clonedObject.sqlType = this.sqlType;
+        clonedObject.jdbcType = this.jdbcType;
 		clonedObject.nullable = this.nullable;
 		clonedObject.hasDefaultValue = this.hasDefaultValue;
 

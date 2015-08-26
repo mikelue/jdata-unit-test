@@ -11,7 +11,7 @@ import guru.mikelue.jdut.jdbc.function.DbRelease;
 /**
  * Template factory for building a bunch a JDBC working, with surrounding of {@link DbRelease#autoClose}.<br>
  *
- * See {@link guru.mikelue.jdut.jdbc JDBC Function} for usage of this Fatory.
+ * See {@link guru.mikelue.jdut.jdbc JDBC Function} for usage of this factory.
  */
 public final class JdbcTemplateFactory {
 	private JdbcTemplateFactory() {}
@@ -47,7 +47,7 @@ public final class JdbcTemplateFactory {
  	 * @param <T> The type of fed object
  	 * @param <R> The type of returned object
 	 * @param surroundedJdbcFunction The function to be surrounded
-	 * @param surroundingConfig The lambda expresion for configing surrounding list(starts with <b>outer block of syntax</b>)
+	 * @param surroundingConfig The lambda expression for configuring surrounding list(starts with <b>outer block of syntax</b>)
 	 *
 	 * @return The surrounded function
 	 *
@@ -108,7 +108,7 @@ public final class JdbcTemplateFactory {
 	 * @param <R> The type of returned object
 	 * @param supplier The supplier of fed object
 	 * @param worker The working code by fed object
-	 * @param surroundingConfig The lambda expresion of {@link Consumer} for adding {@link JdbcFunction.SurroundOperator}
+	 * @param surroundingConfig The lambda expression of {@link Consumer} for adding {@link JdbcFunction.SurroundOperator}
 	 *
 	 * @return The instance of runnable function
 	 */
@@ -147,7 +147,7 @@ public final class JdbcTemplateFactory {
 	 * @param <T> The type of fed object
 	 * @param supplier The supplier of fed object
 	 * @param worker The working code by fed object
-	 * @param surroundingConfig The lambda expresion for configing surrounding list(starts with <b>outer block of syntax</b>)
+	 * @param surroundingConfig The lambda expression for configuring surrounding list(starts with <b>outer block of syntax</b>)
 	 *
 	 *
 	 * @return The instance of runnable function
@@ -186,7 +186,7 @@ public final class JdbcTemplateFactory {
 	 * @param <R> The type of returned object
 	 * @param supplier The supplier of fed object
 	 * @param worker The working code input as fed object
-	 * @param surroundingConfig The lambda expresion for configing surrounding list(starts with <b>outer block of syntax</b>)
+	 * @param surroundingConfig The lambda expression for configuring surrounding list(starts with <b>outer block of syntax</b>)
 	 *
 	 * @return The instance of result supplier function
 	 */

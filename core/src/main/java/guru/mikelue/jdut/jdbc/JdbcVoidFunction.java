@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 import guru.mikelue.jdut.jdbc.JdbcFunction.SurroundOperator;
 
 /**
- * Likes the {@link Consumer} inteface with throwing of {@link SQLException}.
+ * Likes the {@link Consumer} interface with throwing of {@link SQLException}.
  *
  * @param <T> The type of fed object
  *
@@ -22,7 +22,7 @@ public interface JdbcVoidFunction<T> {
 	 * @param <T> The type of fed object
 	 * @param jdbcFunction The function of JDBC
 	 *
-	 * @return The using of <em>jdbcFunction</em> without returend value
+	 * @return The using of <em>jdbcFunction</em> without returned value
 	 */
 	static <T> JdbcVoidFunction<T> fromJdbcFunction(JdbcFunction<T, Void> jdbcFunction)
 	{

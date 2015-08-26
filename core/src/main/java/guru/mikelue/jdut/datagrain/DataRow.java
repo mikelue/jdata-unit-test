@@ -122,6 +122,26 @@ public class DataRow {
 		}
 
 		/**
+		 * Whether the data row is validated or not.
+		 *
+		 * @return true if validated
+		 */
+		public boolean getValidated()
+		{
+			return validated;
+		}
+
+		/**
+		 * Validates this row.
+		 *
+		 * @throws DataRowException if there is error in data or schema
+		 */
+		public void validate() throws DataRowException
+		{
+			DataRow.this.validate();
+		}
+
+		/**
 		 * Gets name of table.
 		 *
 		 * @return the name of table
@@ -296,7 +316,7 @@ public class DataRow {
 	/**
 	 * Gets the data by column name.
 	 *
-	 * @param <T> The tyep of data
+	 * @param <T> The type of data
 	 * @param columnName The name of column
 	 *
 	 * @return The field with the column name
@@ -354,6 +374,7 @@ public class DataRow {
 		DataRow newRow = new DataRow();
 		newRow.tableSchema = this.tableSchema;
 		newRow.data = Collections.unmodifiableMap(this.data);
+		newRow.validated = this.validated;
 
 		return newRow;
 	}
@@ -363,6 +384,7 @@ public class DataRow {
 		DataRow newRow = new DataRow();
 		newRow.tableSchema = this.tableSchema;
 		newRow.data = new HashMap<>(this.data);
+		newRow.validated = this.validated;
 
 		return newRow;
 	}

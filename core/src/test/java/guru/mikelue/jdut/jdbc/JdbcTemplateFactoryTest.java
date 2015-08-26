@@ -1,10 +1,13 @@
 package guru.mikelue.jdut.jdbc;
 
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
@@ -54,7 +57,7 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 	 * Tests the building of {@link JdbcRunnable} from {@link JdbcFunction}.
 	 */
 	@Test
-	public void buildRunnableAndSuplier()
+	public void buildRunnableAndSupplier()
 		throws SQLException
 	{
 		MutableBoolean surroundingExecutedForRunnable = new MutableBoolean(false);
@@ -71,8 +74,7 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 				JdbcTemplateFactory.buildRunnable(
 					() -> conn.createStatement(),
 					stat -> {
-						stat.executeUpdate("CREATE TABLE tab_car (tc_id INT, tc_name VARCHAR(64))");
-						stat.executeUpdate("INSERT INTO tab_car VALUES(1, 'GTO-98')");
+						stat.executeUpdate("INSERT INTO tab_jtft VALUES(1, 'GTO-98')");
 					},
 					surroundingList -> surroundingList.add(
 						f -> stat -> {
@@ -94,8 +96,11 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 		String testedValue = JdbcTemplateFactory.buildSupplier(
 			() -> getDataSource().getConnection(),
 			conn -> {
-				return JdbcTemplateFactory.buildSupplier(
-					() -> conn.prepareStatement("SELECT * FROM tab_car WHERE tc_id = ?"),
+				/**
+				 * Select data
+				 */
+				String result = JdbcTemplateFactory.buildSupplier(
+					() -> conn.prepareStatement("SELECT * FROM tab_jtft WHERE tc_id = ?"),
 					stat -> {
 						stat.setInt(1, 1);
 
@@ -114,11 +119,46 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 						).get();
 					}
 				).get();
+				// :~)
+
+				/**
+				 * Remove data
+				 */
+				Assert.assertEquals(
+					JdbcTemplateFactory.buildSupplier(
+						() -> conn.createStatement(),
+						stat -> { return stat.executeUpdate("DELETE FROM tab_jtft"); }
+					).get(),
+					new Integer(1)
+				);
+				// :~)
+
+				return result;
 			}
 		).get();
 		// :~)
 
 		Assert.assertEquals(testedValue, "GTO-98");
 		Assert.assertTrue(surroundingExecutedForSupplier.booleanValue());
+	}
+
+	@BeforeMethod
+	private void buildSchema(Method method)
+	{
+		switch (method.getName()) {
+			case "buildRunnableAndSupplier":
+				updateLiquibase(method);
+				break;
+		}
+	}
+
+	@AfterMethod
+	private void cleanSchema(Method method)
+	{
+		switch (method.getName()) {
+			case "buildRunnableAndSupplier":
+				rollbackLiquibase(method);
+				break;
+		}
 	}
 }

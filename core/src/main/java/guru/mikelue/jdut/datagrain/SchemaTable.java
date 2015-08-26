@@ -1,10 +1,13 @@
 package guru.mikelue.jdut.datagrain;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,7 +29,17 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * And, the auto-inspected keys if there is no one while building data.
  */
 public class SchemaTable {
+	private final static String NULL_NAMING = "<null>";
+
+	private Optional<String> catalog = Optional.empty();
+	private Optional<String> schema = Optional.empty();
     private String name;
+
+	private Optional<Boolean> storesUpperCaseIdentifiers = Optional.empty();
+	private Optional<Boolean> storesLowerCaseIdentifiers = Optional.empty();
+	private Optional<Boolean> storesMixedCaseIdentifiers = Optional.empty();
+	private Optional<Boolean> supportsMixedCaseIdentifiers = Optional.empty();
+
     private List<String> keys = Collections.emptyList();
     private Map<String, SchemaColumn> columns;
     private Map<String, Integer> nameToIndex;
@@ -37,6 +50,55 @@ public class SchemaTable {
      */
     public class Builder {
         private Builder() {}
+
+		/**
+		 * Loads meta data from database.
+		 *
+		 * @param metaData The meta data of database
+		 */
+		public Builder metaData(DatabaseMetaData metaData)
+		{
+			try {
+				storesUpperCaseIdentifiers = Optional.of(metaData.storesUpperCaseIdentifiers());
+				storesLowerCaseIdentifiers = Optional.of(metaData.storesLowerCaseIdentifiers());
+				storesMixedCaseIdentifiers = Optional.of(metaData.storesMixedCaseIdentifiers());
+				supportsMixedCaseIdentifiers = Optional.of(metaData.supportsMixedCaseIdentifiers());
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+
+			return this;
+		}
+
+		/**
+		 * Sets the catalog.
+		 *
+		 * @param newCatalog The value of catalog
+		 *
+		 * @return cascading self
+		 *
+		 * @see DatabaseMetaData#getColumns
+		 */
+		public Builder catalog(String newCatalog)
+		{
+			catalog = Optional.ofNullable(StringUtils.trimToNull(newCatalog));
+			return this;
+		}
+
+		/**
+		 * Sets the schema.
+		 *
+		 * @param newSchema The value of schema
+		 *
+		 * @return cascading self
+		 *
+		 * @see DatabaseMetaData#getColumns
+		 */
+		public Builder schema(String newSchema)
+		{
+			schema = Optional.ofNullable(StringUtils.trimToNull(newSchema));
+			return this;
+		}
 
         /**
          * Sets the name of table.
@@ -79,7 +141,7 @@ public class SchemaTable {
 		 */
 		public Builder column(SchemaColumn column)
 		{
-			String columnName = column.getName();
+			String columnName = SchemaTable.this.treatIdentifier(column.getName());
 
 			if (!nameToIndex.containsKey(columnName)) {
 				nameToIndex.put(columnName, nameToIndex.size());
@@ -149,6 +211,26 @@ public class SchemaTable {
     }
 
 	/**
+	 * Gets optional value of schema.
+	 *
+	 * @return the schema
+	 */
+	public Optional<String> getSchema()
+	{
+		return schema;
+	}
+
+	/**
+	 * Gets optional value of schema.
+	 *
+	 * @return the schema
+	 */
+	public Optional<String> getCatalog()
+	{
+		return catalog;
+	}
+
+	/**
 	 * Gets keys of table.
 	 *
 	 * @return The keys of table
@@ -167,7 +249,7 @@ public class SchemaTable {
 	 */
 	public boolean hasColumn(String columnName)
 	{
-		return columns.containsKey(columnName);
+		return columns.containsKey(treatIdentifier(columnName));
 	}
 
     /**
@@ -181,7 +263,7 @@ public class SchemaTable {
      */
     public SchemaColumn getColumn(String columnName)
     {
-        SchemaColumn column = columns.get(columnName);
+        SchemaColumn column = columns.get(treatIdentifier(columnName));
         if (column == null) {
             throw new IllegalArgumentException(String.format("Cannot find column: \"%s\"", columnName));
         }
@@ -208,6 +290,18 @@ public class SchemaTable {
         return getColumn(columnName);
     }
 
+	/**
+	 * Gets name of table with catalog and schema.<br>
+	 *
+	 * Use <em>{@code "<null>"}</em> if the value is not set
+	 *
+	 * @return The string can be used in collection
+	 */
+	public String getIdentifier()
+	{
+		return String.format("%s.%s.%s", catalog.orElse(NULL_NAMING), schema.orElse(NULL_NAMING), name);
+	}
+
     /**
      * Safe clone for the fields of this object.
      *
@@ -216,9 +310,8 @@ public class SchemaTable {
     @Override
     protected SchemaTable clone()
     {
-        SchemaTable clonedObject = new SchemaTable();
+        SchemaTable clonedObject = safeClone();
 
-        clonedObject.name = this.name;
         clonedObject.keys = Collections.unmodifiableList(this.keys);
         clonedObject.columns = Collections.unmodifiableMap(this.columns);
         clonedObject.nameToIndex = Collections.unmodifiableMap(this.nameToIndex);
@@ -229,9 +322,8 @@ public class SchemaTable {
 
     private SchemaTable modifiableClone()
     {
-        SchemaTable clonedObject = new SchemaTable();
+        SchemaTable clonedObject = safeClone();
 
-        clonedObject.name = this.name;
         clonedObject.keys = new ArrayList<>(this.keys);
         clonedObject.columns = new HashMap<>(this.columns);
         clonedObject.nameToIndex = new HashMap<>(this.nameToIndex);
@@ -239,6 +331,49 @@ public class SchemaTable {
 
         return clonedObject;
     }
+
+	private SchemaTable safeClone()
+	{
+        SchemaTable clonedObject = new SchemaTable();
+        clonedObject.name = this.name;
+		clonedObject.schema = this.schema;
+		clonedObject.catalog = this.catalog;
+		clonedObject.storesLowerCaseIdentifiers = this.storesLowerCaseIdentifiers;
+		clonedObject.storesUpperCaseIdentifiers = this.storesUpperCaseIdentifiers;
+		clonedObject.storesMixedCaseIdentifiers = this.storesMixedCaseIdentifiers;
+		clonedObject.supportsMixedCaseIdentifiers = this.supportsMixedCaseIdentifiers;
+		return clonedObject;
+	}
+
+	private String treatIdentifier(String identifier)
+	{
+		identifier = StringUtils.trimToEmpty(identifier);
+
+		/**
+		 * Converts the identifier to lower case by default(case insensitive)
+		 */
+		if (!supportsMixedCaseIdentifiers.isPresent()) {
+			return identifier.toLowerCase();
+		}
+		// :~)
+
+		/**
+		 * Changes the identifier to upper or lower case if the database is case insensitive
+		 */
+		if (storesLowerCaseIdentifiers.get() || storesMixedCaseIdentifiers.get()) {
+			return identifier.toLowerCase();
+		} else if (storesUpperCaseIdentifiers.get()) {
+			return identifier.toUpperCase();
+		}
+		// :~)
+
+		if (!supportsMixedCaseIdentifiers.get()) {
+			identifier.toLowerCase();
+		}
+
+		// Case sensitive
+		return identifier;
+	}
 
 	/**
 	 * Compares the name of table, columns, keys, and indexed columns.
@@ -271,6 +406,20 @@ public class SchemaTable {
 			.append(keys)
 			.append(columns)
 		.toHashCode();
+	}
+
+	@Override
+	public String toString()
+	{
+		return String.format(
+			"Table: %s.%s.\"%s\". Columns [%s]",
+			catalog.orElse(NULL_NAMING),
+			schema.orElse(NULL_NAMING),
+			name,
+			columns.values().stream()
+				.map(column -> column.getName())
+				.collect(Collectors.joining(",", "\"", "\""))
+		);
 	}
 }
 

@@ -2,11 +2,11 @@ package guru.mikelue.jdut;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-
+import java.util.Optional;
 import javax.sql.DataSource;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
-import guru.mikelue.jdut.function.DatabaseSurroundOperators;
+import guru.mikelue.jdut.decorate.DataGrainDecorator;
 import guru.mikelue.jdut.jdbc.JdbcFunction;
 import guru.mikelue.jdut.jdbc.function.DbRelease;
 import guru.mikelue.jdut.operation.DataGrainOperator;
@@ -39,12 +39,21 @@ public class DataConductor {
 	 */
 	public DataGrain conduct(DataGrain dataGrain, DataGrainOperator operator)
 	{
-		operator = operator.surroundedBy(DatabaseSurroundOperators::autoClose);
-		try {
-			return operator.operate(dataSource.getConnection(), dataGrain);
-		} catch (SQLException e) {
-			throw new DataConductException(e);
-		}
+		return conduct(dataGrain, operator, Optional.empty());
+	}
+
+	/**
+	 * Gets connection of database and feeds it to <em>operator</em>.
+	 *
+	 * @param dataGrain The data grain to be processed
+	 * @param operator The operator to be executed
+	 * @param decorator The decorator used after schema matching
+	 *
+	 * @return The processed data grain
+	 */
+	public DataGrain conduct(DataGrain dataGrain, DataGrainOperator operator, DataGrainDecorator decorator)
+	{
+		return conduct(dataGrain, operator, Optional.of(decorator));
 	}
 	/**
 	 * Gets connection of database and feeds it to <em>operator</em>.
@@ -63,12 +72,49 @@ public class DataConductor {
 	 *
 	 * @param dataGrain The data grain to be processed
 	 * @param operator The operator to be executed
+	 * @param decorator The decorator used after schema matching
+	 *
+	 * @return The processed data grain
+	 */
+	public DataGrain conduct(DataGrain dataGrain, DataRowsOperator operator, DataGrainDecorator decorator)
+	{
+		return conduct(dataGrain, operator.toDataGrainOperator(), decorator);
+	}
+	/**
+	 * Gets connection of database and feeds it to <em>operator</em>.
+	 *
+	 * @param dataGrain The data grain to be processed
+	 * @param operator The operator to be executed
 	 *
 	 * @return The processed data grain
 	 */
 	public DataGrain conduct(DataGrain dataGrain, DataRowOperator operator)
 	{
 		return conduct(dataGrain, operator.toDataGrainOperator());
+	}
+	/**
+	 * Gets connection of database and feeds it to <em>operator</em>.
+	 *
+	 * @param dataGrain The data grain to be processed
+	 * @param operator The operator to be executed
+	 * @param decorator The decorator used after schema matching
+	 *
+	 * @return The processed data grain
+	 */
+	public DataGrain conduct(DataGrain dataGrain, DataRowOperator operator, DataGrainDecorator decorator)
+	{
+		return conduct(dataGrain, operator.toDataGrainOperator(), decorator);
+	}
+
+	private DataGrain conduct(DataGrain dataGrain, DataGrainOperator operator, Optional<DataGrainDecorator> decorator)
+	{
+		if (decorator.isPresent()) {
+			dataGrain = dataGrain.decorate(decorator.get());
+		}
+
+		return conduct(
+			operator.toJdbcFunction(dataGrain)
+		);
 	}
 
 	/**

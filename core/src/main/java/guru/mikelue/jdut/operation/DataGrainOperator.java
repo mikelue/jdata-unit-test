@@ -6,6 +6,7 @@ import java.util.function.BiConsumer;
 import java.util.function.UnaryOperator;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
+import guru.mikelue.jdut.jdbc.JdbcFunction;
 import guru.mikelue.jdut.jdbc.SQLExceptionConvert;
 
 /**
@@ -31,10 +32,22 @@ public interface DataGrainOperator {
 	static DataGrain none(Connection conn, DataGrain dataGrain) { return dataGrain; }
 
 	/**
+	 * Converts this lambda to {@link JdbcFunction}.
+	 *
+	 * @param dataGrain The data grain to be fed
+	 *
+	 * @return The JDBC function
+	 */
+	default JdbcFunction<Connection, DataGrain> toJdbcFunction(DataGrain dataGrain)
+	{
+		return conn -> operate(conn, dataGrain);
+	}
+
+	/**
 	 * Converts this operator to {@link BiConsumer} with {@link SQLExceptionConvert} for thrown {@link SQLException}.
 	 *
 	 * @param <E> The type of runtime exception
-	 * @param sqlExceptionConvert The convertion of SQLException
+	 * @param sqlExceptionConvert The conversion of SQLException
 	 *
 	 * @return A {@link BiConsumer} instance
 	 */

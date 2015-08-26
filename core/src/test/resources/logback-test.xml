@@ -5,6 +5,9 @@
 		</encoder>
 	</appender>
 
+	<logger name="guru.mikelue.jdut.test" level="info" />
+	<logger name="liquibase" level="info" />
+
 	<root level="warn">
 		<appender-ref ref="STDOUT" />
 	</root>

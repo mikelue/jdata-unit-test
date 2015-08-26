@@ -47,7 +47,7 @@ public interface JdbcSupplier<R> {
 	}
 
 	/**
-	 * Gets the supplied value by this inteface.
+	 * Gets the supplied value by this interface.
 	 *
 	 * @return The value to be returned
 	 *

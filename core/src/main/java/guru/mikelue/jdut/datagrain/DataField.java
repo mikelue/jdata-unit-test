@@ -205,7 +205,7 @@ public class DataField<T> {
 	}
 
     /**
-     * Gets data or gets by dats {@link Supplier}.
+     * Gets data or gets by {@link Supplier} of data.
 	 *
  	 * This method would call the supplier only once, and keep the value.
      *
