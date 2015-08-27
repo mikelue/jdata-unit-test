@@ -74,7 +74,7 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 				JdbcTemplateFactory.buildRunnable(
 					() -> conn.createStatement(),
 					stat -> {
-						stat.executeUpdate("INSERT INTO tab_jtft VALUES(1, 'GTO-98')");
+						stat.executeUpdate("INSERT INTO tab_data VALUES(1, 'GTO-98')");
 					},
 					surroundingList -> surroundingList.add(
 						f -> stat -> {
@@ -100,7 +100,7 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 				 * Select data
 				 */
 				String result = JdbcTemplateFactory.buildSupplier(
-					() -> conn.prepareStatement("SELECT * FROM tab_jtft WHERE tc_id = ?"),
+					() -> conn.prepareStatement("SELECT * FROM tab_data WHERE tc_id = ?"),
 					stat -> {
 						stat.setInt(1, 1);
 
@@ -127,7 +127,7 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 				Assert.assertEquals(
 					JdbcTemplateFactory.buildSupplier(
 						() -> conn.createStatement(),
-						stat -> { return stat.executeUpdate("DELETE FROM tab_jtft"); }
+						stat -> stat.executeUpdate("DELETE FROM tab_data")
 					).get(),
 					new Integer(1)
 				);

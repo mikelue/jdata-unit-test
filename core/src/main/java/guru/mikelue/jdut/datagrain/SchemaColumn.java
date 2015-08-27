@@ -1,5 +1,6 @@
 package guru.mikelue.jdut.datagrain;
 
+import java.sql.DatabaseMetaData;
 import java.sql.JDBCType;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -16,7 +17,7 @@ public class SchemaColumn {
     private String name;
     private Optional<JDBCType> jdbcType = Optional.empty();
 	private Optional<Boolean> nullable = Optional.empty();
-	private Optional<Boolean> hasDefaultValue = Optional.empty();
+	private Optional<String> defaultValue = Optional.empty();
 
     /**
      * This object is used with {@link Consumer} by {@link SchemaColumn#build}.
@@ -67,15 +68,15 @@ public class SchemaColumn {
 		}
 
 		/**
-		 * Sets whether or not this column has default value
+		 * Sets the default value of column.
 		 *
 		 * @param newHasDefaultValue the flag of having default value
 		 *
 		 * @return cascading self
 		 */
-		public Builder hasDefaultValue(boolean newHasDefaultValue)
+		public Builder defaultValue(String newDefaultValue)
 		{
-			hasDefaultValue = Optional.of(newHasDefaultValue);
+			defaultValue = Optional.ofNullable(newDefaultValue);
 			return this;
 		}
 
@@ -140,6 +141,8 @@ public class SchemaColumn {
      * Gets the value(optional) of sql type.
      *
      * @return The value of sql type
+	 *
+	 * @see DatabaseMetaData#getColums getColumns.getInt("DATA_TYPE")
      */
     public Optional<JDBCType> getJdbcType()
     {
@@ -150,6 +153,8 @@ public class SchemaColumn {
 	 * Whether or not this column is nullable.
 	 *
 	 * @return may not be initialized
+	 *
+	 * @see DatabaseMetaData#getColums getColumns.getInt("NULLABLE")
 	 */
 	public Optional<Boolean> getNullable()
 	{
@@ -157,13 +162,27 @@ public class SchemaColumn {
 	}
 
 	/**
+	 * Gets value of default data.
+	 *
+	 * @return The optional default value
+	 *
+	 * @see DatabaseMetaData#getColums getColumns.getString("COLUMN_DEF")
+	 */
+	public Optional<String> getDefaultValue()
+	{
+		return defaultValue;
+	}
+
+	/**
 	 * Whether or not this column has default value.
 	 *
 	 * @return may not be initialized
+	 *
+	 * @see DatabaseMetaData#getColums getColumns.getString("COLUMN_DEF")
 	 */
-	public Optional<Boolean> getHasDefaultValue()
+	public boolean getHasDefaultValue()
 	{
-		return hasDefaultValue;
+		return defaultValue.isPresent();
 	}
 
     @Override
@@ -173,7 +192,7 @@ public class SchemaColumn {
         clonedObject.name = this.name;
         clonedObject.jdbcType = this.jdbcType;
 		clonedObject.nullable = this.nullable;
-		clonedObject.hasDefaultValue = this.hasDefaultValue;
+		clonedObject.defaultValue = this.defaultValue;
 
         return clonedObject;
     }

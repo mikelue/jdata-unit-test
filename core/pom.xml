@@ -14,12 +14,20 @@
 
 	<properties>
 		<!--
-		  - Default using hsqldb as tested database
+		  - Default setting for other database
 		  -->
-		<db.driverClassName>org.hsqldb.jdbcDriver</db.driverClassName>
-		<db.url>jdbc:hsqldb:file:target/hsqldb/DataSourceTestBase;hsqldb.sqllog=2</db.url>
-		<db.username>sa</db.username>
-		<db.password>sa</db.password>
+		<db.server.name>vm-win-server</db.server.name>
+		<db.schema.name>jdut</db.schema.name>
+
+		<db.username>jdut</db.username>
+		<db.password>jdut@0627</db.password>
+		<!-- :~) -->
+
+		<!--
+		  - Default using H2 as tested database
+		  -->
+		<db.driverClassName>org.h2.Driver</db.driverClassName>
+		<db.url>jdbc:h2:./target/h2/${db.schema.name}</db.url>
 		<!-- :~) -->
 	</properties>
 
@@ -77,8 +85,8 @@
 		  - JDBC Drivers(Testing)
 		  -->
 		<dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<!-- :~) -->
@@ -108,4 +116,126 @@
 		</dependency>
 		<!-- :~) -->
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>postgresql</id>
+			<properties>
+				<db.driverClassName>org.postgresql.Driver</db.driverClassName>
+				<db.url>jdbc:postgresql://${db.server.name}/${db.schema.name}</db.url>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>mssql</id>
+			<properties>
+				<db.driverClassName>com.microsoft.sqlserver.jdbc.SQLServerDriver</db.driverClassName>
+				<db.url>jdbc:sqlserver://${db.server.name}:1433;databaseName=${db.schema.name}</db.url>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>com.microsoft.sqlserver</groupId>
+					<artifactId>sqljdbc4</artifactId>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>mysql</id>
+			<properties>
+				<db.driverClassName>com.mysql.jdbc.Driver</db.driverClassName>
+				<db.url>jdbc:mysql://${db.server.name}:3306/${db.schema.name}</db.url>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>oracle</id>
+			<properties>
+				<db.driverClassName>oracle.jdbc.OracleDriver</db.driverClassName>
+				<db.url>jdbc:oracle:thin:@${db.server.name}:1521/xe</db.url>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>com.oracle</groupId>
+					<artifactId>ojdbc6</artifactId>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>hsqldb</id>
+			<properties>
+				<db.driverClassName>org.hsqldb.jdbcDriver</db.driverClassName>
+				<db.url>jdbc:hsqldb:file:target/hsqldb/${db.schema.name};hsqldb.sqllog=2</db.url>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.hsqldb</groupId>
+					<artifactId>hsqldb</artifactId>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>derby</id>
+			<properties>
+				<db.driverClassName>org.apache.derby.jdbc.EmbeddedDriver</db.driverClassName>
+				<db.url>jdbc:derby:target/derby/${db.schema.name};create=true;logDevice=target/derby</db.url>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.apache.derby</groupId>
+					<artifactId>derby</artifactId>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<systemProperties>
+								<property>
+									<name>derby.stream.error.file</name>
+									<value>target/derby.log</value>
+								</property>
+							</systemProperties>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<!--
+		  - This profile cannot be used for testing because of error from liquibase
+		  - "SQLite only supports closing cursors at commit"
+		  -->
+		<profile>
+			<id>sqlite</id>
+			<properties>
+				<db.driverClassName>org.sqlite.JDBC</db.driverClassName>
+				<db.url>jdbc:sqlite::target/sqlite-${db.schema.name}.db</db.url>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.xerial</groupId>
+					<artifactId>sqlite-jdbc</artifactId>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<!-- :~) -->
+	</profiles>
 </project>

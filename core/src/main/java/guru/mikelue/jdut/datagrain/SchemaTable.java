@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -112,6 +113,8 @@ public class SchemaTable {
 			name = StringUtils.trimToNull(newName);
 			Validate.notNull(name, "Need table name");
 
+			name = SchemaTable.this.treatIdentifier(name);
+
             return this;
         }
 
@@ -151,6 +154,16 @@ public class SchemaTable {
 			columns.put(columnName, column);
 
 			return this;
+		}
+
+		/**
+		 * Gets name of table.
+		 *
+		 * @return The name of table
+		 */
+		public String getName()
+		{
+			return name;
 		}
     }
 
@@ -238,6 +251,32 @@ public class SchemaTable {
 	public List<String> getKeys()
 	{
 		return keys;
+	}
+
+	/**
+	 * Gets number of columns.
+	 *
+	 * @param The number of columns
+	 */
+	public int getNumberOfColumns()
+	{
+		return columns.size();
+	}
+
+	/**
+	 * Gets the columns(sorted by added sequence).
+	 *
+	 * @return The columns
+	 */
+	public List<SchemaColumn> getColumns()
+	{
+		List<SchemaColumn> result = new ArrayList<>(getNumberOfColumns());
+		IntStream.range(0, getNumberOfColumns())
+			.forEach(
+				i -> result.add(getColumn(i))
+			);
+
+		return result;
 	}
 
 	/**

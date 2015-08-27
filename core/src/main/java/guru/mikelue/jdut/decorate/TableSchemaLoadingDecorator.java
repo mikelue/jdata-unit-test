@@ -86,12 +86,13 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 
 		return SchemaTable.build(tableBuilder -> {
 			tableBuilder.metaData(metaData);
+			tableBuilder.name(sourceTable.getName());
 
 			JdbcRunnable loadColumns = JdbcTemplateFactory.buildRunnable(
 				() -> metaData.getColumns(
 					sourceTable.getCatalog().orElse(null),
 					sourceTable.getSchema().orElse(null),
-					sourceTable.getName(),
+					tableBuilder.getName(),
 					null
 				),
 				rsColumns -> {
@@ -103,7 +104,7 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 							columnBuilder
 								.name(rsColumns.getString("COLUMN_NAME"))
 								.jdbcType(JDBCType.valueOf(rsColumns.getInt("DATA_TYPE")))
-								.hasDefaultValue(rsColumns.getString("COLUMN_DEF") != null);
+								.defaultValue(rsColumns.getString("COLUMN_DEF"));
 
 							switch (rsColumns.getInt("NULLABLE")) {
 								case DatabaseMetaData.columnNullable:

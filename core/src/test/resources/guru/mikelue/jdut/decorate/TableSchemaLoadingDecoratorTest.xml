@@ -8,14 +8,15 @@
 		http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 	">
-
-	<changeSet id="buildRunnableAndSupplier" labels="buildRunnableAndSupplier" author="${testClassName}">
-		<createTable tableName="tab_data">
-			<column name="tc_id" type="int"/>
-			<column name="tc_name" type="varchar(64)"/>
+	<changeSet id="decorate" labels="decorate" author="${testClassName}">
+		<createTable tableName="tab_se">
+			<column name="col_varchar_1" type="VARCHAR(32)" />
+			<column name="col_varchar_2" type="VARCHAR(32)" defaultValue="C1">
+				<constraints nullable="false" />
+			</column>
 		</createTable>
 		<rollback>
-			<dropTable tableName="tab_data" />
+			<dropTable tableName="tab_se" />
 		</rollback>
 	</changeSet>
 </databaseChangeLog>
