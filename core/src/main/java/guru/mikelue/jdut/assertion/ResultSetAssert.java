@@ -416,8 +416,10 @@ public class ResultSetAssert {
 	public ResultSetAssert assertFetchSize(int size, Supplier<String> messageSupplier)
 		throws SQLException
 	{
-		return assertEqualValue(size, testedResultSet.getFetchSize(),
-			() -> String.format("Need getFetchSize()[%d]. %s", size, messageSupplier.get())
+		int checkedSize = testedResultSet.getFetchSize();
+
+		return assertEqualValue(size, checkedSize,
+			() -> String.format("Need getFetchSize() Value:[%d]. Got:[%d], %s", size, checkedSize, messageSupplier.get())
 		);
 	}
 

@@ -1,11 +1,12 @@
 package guru.mikelue.jdut.jdbc.function;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import guru.mikelue.jdut.jdbc.JdbcFunction;
-import guru.mikelue.jdut.jdbc.JdbcRunnable;
 
 /**
  * As surrounding of JDBC function for transactional wrapping.<br>
@@ -14,6 +15,7 @@ import guru.mikelue.jdut.jdbc.JdbcRunnable;
  * @param <R> The type of returned value
  */
 public final class Transactional<T extends Connection, R> implements JdbcFunction.SurroundOperator<T, R> {
+	private Logger logger = LoggerFactory.getLogger(Transactional.class);
 	private final Optional<Integer> transactionIsolation;
 
 	/**
@@ -63,24 +65,57 @@ public final class Transactional<T extends Connection, R> implements JdbcFunctio
 	public JdbcFunction<T, R> surround(JdbcFunction<T, R> jdbcFunction)
 	{
 		return conn -> {
-			conn.setAutoCommit(false);
+			boolean oldAutoCommit = conn.getAutoCommit();
+			if (oldAutoCommit) {
+				logger.debug("Set auto commit to false");
+				conn.setAutoCommit(false);
+			}
 
-			transactionIsolation.ifPresent(
-				txIsolation ->
-					((JdbcRunnable)
-					 () -> conn.setTransactionIsolation(txIsolation)
-					).asRunnable().run()
-			);
+			int oldIsolation = conn.getTransactionIsolation();
+			boolean needResetIsolation =
+				transactionIsolation.isPresent() &&
+				transactionIsolation.get() != oldIsolation;
+			if (needResetIsolation) {
+				logger.debug("Set transaction isolation to: [{}]", transactionIsolation.get());
+				conn.setTransactionIsolation(transactionIsolation.get());
+			}
 
 			R result = null;
 			try {
 				result = jdbcFunction.applyJdbc(conn);
-			} catch (SQLException e) {
-				conn.rollback();
+			} catch (Exception e) {
+				try {
+					logger.info("Before rollback transaction: [ {} ]", e.getMessage());
+					conn.rollback();
+					logger.debug("After rollback transaction");
+				} finally {
+					if (oldAutoCommit) {
+						logger.debug("Set auto commit to back to true");
+						conn.setAutoCommit(oldAutoCommit);
+					}
+					if (needResetIsolation) {
+						logger.debug("Set back transaction isolation to: [{}]", oldIsolation);
+						conn.setTransactionIsolation(oldIsolation);
+					}
+				}
+
 				throw e;
 			}
 
-			conn.commit();
+			try {
+				logger.debug("Before commit transaction");
+				conn.commit();
+				logger.debug("After commit transaction");
+			} finally {
+				if (oldAutoCommit) {
+					logger.debug("Set auto commit to back to true");
+					conn.setAutoCommit(oldAutoCommit);
+				}
+				if (needResetIsolation) {
+					logger.debug("Set back transaction isolation to: [{}]", oldIsolation);
+					conn.setTransactionIsolation(oldIsolation);
+				}
+			}
 
 			return result;
 		};

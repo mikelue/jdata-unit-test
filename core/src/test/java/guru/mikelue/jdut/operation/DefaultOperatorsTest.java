@@ -2,11 +2,13 @@ package guru.mikelue.jdut.operation;
 
 import java.sql.SQLException;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import guru.mikelue.jdut.assertion.ResultSetAssert;
 import guru.mikelue.jdut.datagrain.DataGrain;
+import guru.mikelue.jdut.function.DatabaseTransactional;
 import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
 import guru.mikelue.jdut.jdbc.function.DbResultSet;
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
@@ -269,6 +271,94 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 			).runJdbc()
 		).runJdbc();
 		// :~)
+	}
+
+	@Test @DoLiquibase
+	public void transactional() throws SQLException
+	{
+		final DataGrain dataGrain = DataGrain.build(
+			builder -> builder.name("do_itx"),
+			builder -> builder
+				.implicitColumns("itx_id", "itx_value")
+				.addValues(1, "EXP-1")
+				.addValues(2, "EXP-2")
+		).decorate(getSchemaLoadingDecorator());
+
+		/**
+		 * Executes the tested lambda
+		 */
+		JdbcTemplateFactory.buildRunnable(
+			() -> getDataSource().getConnection(),
+			conn -> operatorFactory.get(DefaultOperators.INSERT)
+				.surroundedBy(DatabaseTransactional::simple)
+				.operate(conn, dataGrain)
+		).runJdbc();
+		// :~)
+
+		/**
+		 * Asserts the added data
+		 */
+		JdbcTemplateFactory.buildRunnable(
+			() -> getDataSource().getConnection(),
+			conn -> DbResultSet.buildRunnable(
+				conn, "SELECT * FROM do_itx ORDER BY itx_id ASC",
+				rs -> new ResultSetAssert(rs)
+					.assertNextTrue()
+					.assertInt("itx_id", 1)
+					.assertString("itx_value", "EXP-1")
+
+					.assertNextTrue()
+					.assertInt("itx_id", 2)
+					.assertString("itx_value", "EXP-2")
+			).runJdbc()
+		).runJdbc();
+		// :~)
+	}
+
+	@Test @DoLiquibase
+	public void transactionalRollback() throws SQLException
+	{
+		final DataGrain dataGrain = DataGrain.build(
+			builder -> builder.name("do_irtx"),
+			builder -> builder
+				.implicitColumns("irtx_id", "irtx_value")
+				.addValues(1, "EXP-1")
+				.addValues(2, "EXP-2")
+				.addValues(1, "EXP-1-1") // Repeated id, rollbacked
+		).decorate(getSchemaLoadingDecorator());
+
+		/**
+		 * Executes the tested lambda
+		 */
+		try {
+			JdbcTemplateFactory.buildRunnable(
+				() -> getDataSource().getConnection(),
+				conn -> operatorFactory.get(DefaultOperators.INSERT)
+					.surroundedBy(DatabaseTransactional::simple)
+					.operate(conn, dataGrain)
+			).runJdbc();
+		} catch (Exception e) {
+			getLogger().info("Has exception for testing rollback: " + e.getMessage());
+
+			/**
+			 * Asserts nothing changed
+			 */
+			JdbcTemplateFactory.buildRunnable(
+				() -> getDataSource().getConnection(),
+				conn -> DbResultSet.buildRunnable(
+					conn, "SELECT COUNT(*) FROM do_irtx",
+					rs -> new ResultSetAssert(rs)
+						.assertNextTrue()
+						.assertInt(1, 0)
+				).runJdbc()
+			).runJdbc();
+			// :~)
+
+			return;
+		}
+		// :~)
+
+		Assert.fail("No exception thrown for rollback");
 	}
 
 	@BeforeClass

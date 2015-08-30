@@ -152,4 +152,34 @@
 			<dropTable tableName="do_truncate" />
 		</rollback>
 	</changeSet>
+
+	<changeSet id="transactional" labels="transactional" author="${testClassName}">
+		<createTable tableName="do_itx">
+			<column name="itx_id" type="INTEGER">
+				<constraints primaryKey="true" primaryKeyName="PK_do_itx" />
+			</column>
+			<column name="itx_value" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<rollback>
+			<dropTable tableName="do_itx" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="transactionalRollback" labels="transactionalRollback" author="${testClassName}">
+		<createTable tableName="do_irtx">
+			<column name="irtx_id" type="INTEGER">
+				<constraints primaryKey="true" primaryKeyName="PK_do_itx" />
+			</column>
+			<column name="irtx_value" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<rollback>
+			<dropTable tableName="do_irtx" />
+		</rollback>
+	</changeSet>
 </databaseChangeLog>
