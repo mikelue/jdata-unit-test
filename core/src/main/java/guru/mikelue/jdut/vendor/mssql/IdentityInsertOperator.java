@@ -21,11 +21,11 @@ public class IdentityInsertOperator implements DataRowOperator {
 	/**
 	 * Used as flag to indicate enable/disable of identity for current row.
 	 */
-	private final static String ENABLE_IDENTITY_DATA = "_mssql_enable_identity_";
+	private final static String IDENTITY_CHECKED = "_mssql_identity_checked_";
 	/**
 	 * Used as flag to indicate the current data row has data of identity column.
 	 */
-	private final static String HAS_IDENTITY_DATA = "_mssql_has_identity_data_";
+	private final static String HAS_IDENTITY_COLUMN = "_mssql_has_identity_column_";
 
 	/**
 	 * Checks whether or not a data row has identity data.
@@ -34,9 +34,9 @@ public class IdentityInsertOperator implements DataRowOperator {
 	 *
 	 * @return true if it does
 	 */
-	public static boolean hasIdentityData(DataRow dataRow)
+	public static boolean hasIdentityColumn(DataRow dataRow)
 	{
-		return dataRow.getAttribute(HAS_IDENTITY_DATA);
+		return dataRow.getAttribute(HAS_IDENTITY_COLUMN);
 	}
 	/**
 	 * Checks whether or not the table of data row has enabled identity.<br>
@@ -47,13 +47,9 @@ public class IdentityInsertOperator implements DataRowOperator {
 	 *
 	 * @return true if it does
 	 */
-	public static boolean identityEnabled(DataRow dataRow)
+	public static boolean identityChecked(DataRow dataRow)
 	{
-		if (!dataRow.hasAttribute(ENABLE_IDENTITY_DATA)) {
-			return true;
-		}
-
-		return dataRow.getAttribute(ENABLE_IDENTITY_DATA);
+		return dataRow.hasAttribute(IDENTITY_CHECKED);
 	}
 
 	private final DataRowOperator op;
@@ -79,31 +75,25 @@ public class IdentityInsertOperator implements DataRowOperator {
 		SchemaTable table = dataRow.getTable();
 
 		/**
-		 * Initialize falgs for identity data
+		 * Initialize flags for identity data
 		 */
-		if (!dataRow.hasAttribute(HAS_IDENTITY_DATA)) {
-			if (
-				/**
-				 * Checks whether or not this row has identity data
-				 */
+		if (!identityChecked(dataRow)) {
+			dataRow.putAttribute(
+				HAS_IDENTITY_COLUMN,
 				dataRow.getColumns().stream()
 					.anyMatch(columnName -> {
 						Optional<Boolean> autoIncremental = table.getColumn(columnName).getAutoIncremental();
 						return autoIncremental.isPresent() && autoIncremental.get();
 					})
-				// :~)
-			) {
-				dataRow.putAttribute(HAS_IDENTITY_DATA, true);
-				dataRow.putAttribute(ENABLE_IDENTITY_DATA, true);
-			}
+			);
+			dataRow.putAttribute(IDENTITY_CHECKED, true);
 		}
 		// :~)
 
 		/**
-		 * Executes the disable command to the table
+		 * Executes the enabled identity insert command to the table
 		 */
-		if (hasIdentityData(dataRow) && identityEnabled(dataRow)) {
-			logger.debug("[MS SQL Server] Disable identity: \"{}\"", table.getName());
+		if (hasIdentityColumn(dataRow)) {
 			JdbcTemplateFactory.buildRunnable(
 				() -> connection.createStatement(),
 				stat -> stat.executeUpdate(String.format(
@@ -117,9 +107,9 @@ public class IdentityInsertOperator implements DataRowOperator {
 		DataRow result = op.operate(connection, dataRow);
 
 		/**
-		 * Re-enable the table
+		 * Disable identity insert
 		 */
-		if (!identityEnabled(dataRow)) {
+		if (hasIdentityColumn(dataRow)) {
 			logger.debug("[MS SQL Server] Enable identity: \"{}\"", table.getName());
 			JdbcTemplateFactory.buildRunnable(
 				() -> connection.createStatement(),

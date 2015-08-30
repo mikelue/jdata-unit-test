@@ -9,17 +9,26 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 	">
 	<changeSet id="operate" labels="operate" author="${testClassName}">
-		<createTable tableName="tab_did">
-			<column name="ti_id" type="INTEGER" autoIncrement="true">
-				<constraints primaryKey="true" primaryKeyName="pk_tab_did" />
+		<createTable tableName="tab_has_ai">
+			<column name="ha_id" type="INTEGER" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="pk_tab_has_ai" />
 			</column>
-			<column name="ti_value" type="VARCHAR(32)">
+			<column name="ha_value" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<createTable tableName="tab_has_no_ai">
+			<column name="hna_id" type="INTEGER">
+				<constraints primaryKey="true" primaryKeyName="pk_tab_has_no_ai" />
+			</column>
+			<column name="hna_value" type="VARCHAR(32)">
 				<constraints nullable="false" />
 			</column>
 		</createTable>
 
 		<rollback>
-			<dropTable tableName="tab_did" />
+			<dropTable tableName="tab_has_ai" />
+			<dropTable tableName="tab_has_no_ai" />
 		</rollback>
 	</changeSet>
 </databaseChangeLog>

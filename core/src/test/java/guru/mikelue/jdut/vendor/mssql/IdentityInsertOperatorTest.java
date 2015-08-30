@@ -24,12 +24,26 @@ public class IdentityInsertOperatorTest extends AbstractDataSourceTestBase {
 	public void operate() throws SQLException
 	{
 		final DataGrain dataGrain = DataGrain.build(
-			table -> table.name("tab_did"),
+			table -> table.name("tab_has_ai"),
 			data -> data
-				.implicitColumns("ti_id", "ti_value")
+				.implicitColumns("ha_id", "ha_value")
 				.addValues(1, "GP-1")
 				.addValues(2, "GP-2")
-		).decorate(getSchemaLoadingDecorator());
+		)
+		.aggregate(
+			/**
+			 * Without auto-incremental
+			 */
+			DataGrain.build(
+				table -> table.name("tab_has_no_ai"),
+				data -> data
+					.implicitColumns("hna_id", "hna_value")
+					.addValues(1, "GPC-1")
+					.addValues(2, "GPC-2")
+			)
+			// :~)
+		)
+		.decorate(getSchemaLoadingDecorator());
 
 		/**
 		 * Uses insert operation for testing
@@ -47,19 +61,35 @@ public class IdentityInsertOperatorTest extends AbstractDataSourceTestBase {
 		 */
 		JdbcTemplateFactory.buildRunnable(
 			() -> getDataSource().getConnection(),
-			conn -> DbResultSet.buildRunnable(
-				conn, "SELECT * FROM tab_did ORDER BY ti_id ASC",
-				rs -> new ResultSetAssert(rs)
-					.assertNextTrue()
-					.assertInt("ti_id", 1)
-					.assertString("ti_value", "GP-1")
+			conn -> {
+				DbResultSet.buildRunnable(
+					conn, "SELECT * FROM tab_has_ai ORDER BY ha_id ASC",
+					rs -> new ResultSetAssert(rs)
+						.assertNextTrue()
+						.assertInt("ha_id", 1)
+						.assertString("ha_value", "GP-1")
 
-					.assertNextTrue()
-					.assertInt("ti_id", 2)
-					.assertString("ti_value", "GP-2")
+						.assertNextTrue()
+						.assertInt("ha_id", 2)
+						.assertString("ha_value", "GP-2")
 
-					.assertNextFalse()
-			).runJdbc()
+						.assertNextFalse()
+				).runJdbc();
+
+				DbResultSet.buildRunnable(
+					conn, "SELECT * FROM tab_has_no_ai ORDER BY hna_id ASC",
+					rs -> new ResultSetAssert(rs)
+						.assertNextTrue()
+						.assertInt("hna_id", 1)
+						.assertString("hna_value", "GPC-1")
+
+						.assertNextTrue()
+						.assertInt("hna_id", 2)
+						.assertString("hna_value", "GPC-2")
+
+						.assertNextFalse()
+				).runJdbc();
+			}
 		).runJdbc();
 		// :~)
 	}
