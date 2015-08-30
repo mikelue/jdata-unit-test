@@ -8,7 +8,7 @@ import guru.mikelue.jdut.jdbc.JdbcFunction;
 import guru.mikelue.jdut.jdbc.JdbcRunnable;
 
 /**
- * As surrounding of jdbc function for transactional wrapping.<br>
+ * As surrounding of JDBC function for transactional wrapping.<br>
  *
  * @param <T> The type of connection object
  * @param <R> The type of returned value
@@ -19,6 +19,8 @@ public final class Transactional<T extends Connection, R> implements JdbcFunctio
 	/**
 	 * Builds {@link JdbcFunction.SurroundOperator} with simple configuration of transaction.
 	 *
+ 	 * @param <T> The type of connection object
+ 	 * @param <R> The type of returned value
 	 * @param jdbcFunction The function to be surrounded
 	 *
 	 * @return The transactional function

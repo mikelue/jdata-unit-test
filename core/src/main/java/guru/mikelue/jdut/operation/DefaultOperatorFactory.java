@@ -20,7 +20,9 @@ import guru.mikelue.jdut.vendor.mssql.MsSql;
 
 /**
  * This implementation would cache the found operator in order to improve performance for looking for
- * corresponding operators.
+ * corresponding operators.<br>
+ *
+ * As with provided {@link DataSource}, this factory would use vendor-specific implementation of operations.
  */
 public class DefaultOperatorFactory implements OperatorFactory {
 	private DataSource dataSource;
@@ -131,7 +133,7 @@ public class DefaultOperatorFactory implements OperatorFactory {
 					return IntStream.range(0, predicates.size())
 						.filter(
 							i -> ((JdbcSupplier<Boolean>) () ->
-								predicates.get(i).test(metaData)
+								predicates.get(i).testMetaData(metaData)
 							)
 								.asSupplier().get()
 						)
