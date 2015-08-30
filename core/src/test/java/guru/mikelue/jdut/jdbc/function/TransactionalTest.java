@@ -16,12 +16,11 @@ import guru.mikelue.jdut.jdbc.JdbcRunnable;
 import guru.mikelue.jdut.test.OptionalParameterListener;
 
 @Listeners(OptionalParameterListener.class)
-public class DbConnectionTest {
-
+public class TransactionalTest {
 	@Injectable
 	private Connection mockedConn;
 
-	public DbConnectionTest() {}
+	public TransactionalTest() {}
 
 	/**
 	 * Tests the operator for transaction surrounding.<p>
@@ -68,13 +67,17 @@ public class DbConnectionTest {
 	@DataProvider(name="OperateTransactional")
 	private Object[][] getOperateTransactional()
 	{
-		JdbcFunction.SurroundOperator<Connection, Object> simpleTx =
-			DbConnection::transactional;
-
 		return new Object[][] {
-			{ simpleTx, Optional.empty() },
-			{ DbConnection.operateTransactional(Connection.TRANSACTION_READ_COMMITTED), Connection.TRANSACTION_READ_COMMITTED },
-			{ DbConnection.operateTransactional(Optional.of(Connection.TRANSACTION_REPEATABLE_READ)), Connection.TRANSACTION_REPEATABLE_READ},
+			{ (JdbcFunction.SurroundOperator<Connection, Integer>)Transactional::simple,
+				Optional.empty()
+			},
+			{ new Transactional<Connection, Integer>(Connection.TRANSACTION_READ_COMMITTED),
+				Connection.TRANSACTION_READ_COMMITTED
+			},
+			{ new Transactional<Connection, Integer>(
+				Optional.of(Connection.TRANSACTION_REPEATABLE_READ)),
+				Connection.TRANSACTION_REPEATABLE_READ
+			},
 		};
 	}
 
@@ -88,7 +91,7 @@ public class DbConnectionTest {
 		JdbcFunction<Connection, Integer> sampleFunc = conn -> {
 			throw new SQLException("Rollback");
 		};
-		sampleFunc = sampleFunc.surroundedBy(DbConnection::transactional);
+		sampleFunc = sampleFunc.surroundedBy(Transactional::simple);
 
 		try {
 			sampleFunc.applyJdbc(mockedConn);

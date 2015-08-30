@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.jdbc.JdbcFunction;
-import guru.mikelue.jdut.jdbc.function.DbConnection;
+import guru.mikelue.jdut.jdbc.function.Transactional;
 import guru.mikelue.jdut.jdbc.function.DbRelease;
 import guru.mikelue.jdut.operation.DataGrainOperator;
 import guru.mikelue.jdut.operation.DataGrainOperator.SurroundOperator;
@@ -82,11 +82,13 @@ public interface DatabaseSurroundOperators {
 	public static DataGrainOperator transactional(DataGrainOperator surroundedOperator, Optional<Integer> transactionIsolation)
 	{
 		return (connection, dataGrain) -> {
-			JdbcFunction<Connection, DataGrain> autoCloseJdbcFunction = (autoCloseConn) ->
+			JdbcFunction<Connection, DataGrain> txJdbcFunction = (autoCloseConn) ->
 				surroundedOperator.operate(autoCloseConn, dataGrain);
-			autoCloseJdbcFunction = autoCloseJdbcFunction.surroundedBy(DbConnection.operateTransactional(transactionIsolation));
+			txJdbcFunction = txJdbcFunction.surroundedBy(
+				new Transactional<>(transactionIsolation)
+			);
 
-			return autoCloseJdbcFunction.applyJdbc(connection);
+			return txJdbcFunction.applyJdbc(connection);
 		};
 	}
 

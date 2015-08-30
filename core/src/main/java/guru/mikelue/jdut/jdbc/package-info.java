@@ -62,7 +62,9 @@
  * <h2>Transaction</h2>
  *
  * With benefit of {@link guru.mikelue.jdut.jdbc.JdbcFunction.SurroundOperator}, there are some build-in functions to provide
- * surrounding of {@link java.sql.Connection} which is inside transaction-ready code.
+ * surrounding of {@link java.sql.Connection} which is inside transaction-ready code.<br>
+ *
+ * Reference {@link guru.mikelue.jdut.jdbc.function.Transactional}.
  *
  * <pre>{@code
  * JdbcVoidFunction<Connection> jdbcFunc = JdbcTemplateFactory.buildRunnable(
@@ -71,7 +73,7 @@
  *         // Using connection....
  *     },
  *     surroundingList -> {
- *         surroundingList.add(DbConnection::transactional);
+ *         surroundingList.add(Transactional::new);
  *     };
  * )
  * }</pre>
