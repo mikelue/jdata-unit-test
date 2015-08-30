@@ -1,17 +1,18 @@
 package guru.mikelue.jdut.decorate;
 
-import java.lang.reflect.Method;
 import java.sql.JDBCType;
+import java.util.List;
+import java.util.stream.IntStream;
 
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import guru.mikelue.jdut.datagrain.DataRow;
 import guru.mikelue.jdut.datagrain.SchemaColumn;
 import guru.mikelue.jdut.datagrain.SchemaTable;
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
+import guru.mikelue.jdut.test.DoLiquibase;
 
 public class TableSchemaLoadingDecoratorTest extends AbstractDataSourceTestBase {
 	public TableSchemaLoadingDecoratorTest() {}
@@ -19,7 +20,7 @@ public class TableSchemaLoadingDecoratorTest extends AbstractDataSourceTestBase 
 	/**
 	 * Tests the decoration of schema loading.
 	 */
-	@Test
+	@Test @DoLiquibase
 	public void decorate()
 	{
 		final DataGrainDecorator testedDecorator = new TableSchemaLoadingDecorator(
@@ -58,22 +59,50 @@ public class TableSchemaLoadingDecoratorTest extends AbstractDataSourceTestBase 
 		Assert.assertEquals(column.getHasDefaultValue(), hasDefaultValue);
 	}
 
-	@BeforeMethod
-	private void buildSchema(Method method)
-	{
-		switch (method.getName()) {
-			case "decorate":
-				updateLiquibase(method);
-				break;
-		}
+	/**
+	 * Tests the loading of keys.
+	 */
+	@Test(dataProvider="DecorateForKeys") @DoLiquibase
+	public void decorateForKeys(
+		String sampleNameOfTable,
+		String[] expectedKeys
+	) {
+		final DataGrainDecorator testedDecorator = new TableSchemaLoadingDecorator(
+			getDataSource()
+		);
+
+		DataRow testedRow = DataRow.build(
+			builder -> {
+				builder.tableSchema(
+					SchemaTable.build(tableBuilder -> tableBuilder.name(sampleNameOfTable))
+				);
+
+				testedDecorator.decorate(builder);
+			}
+		);
+
+		List<String> testedKeys = testedRow.getTable().getKeys();
+
+		/**
+		 * Asserts every key
+		 */
+		IntStream.range(0, expectedKeys.length)
+			.forEach(
+				i -> Assert.assertEquals(
+					testedKeys.get(i).toLowerCase(),
+					expectedKeys[i].toLowerCase()
+				)
+			);
+		// :~)
 	}
-	@AfterMethod
-	private void cleanSchema(Method method)
+	@DataProvider(name="DecorateForKeys")
+	private Object[][] getDecorateForKeys()
 	{
-		switch (method.getName()) {
-			case "decorate":
-				rollbackLiquibase(method);
-				break;
-		}
+		return new Object[][] {
+			{ "tab_has_pk", new String[] { "pk_id_1", "pk_id_2" } }, // PK priority to unique
+			{ "tab_has_not_null_unique", new String[] { "nnu_col_1", "nnu_col_2" } }, // least unique index
+			{ "tab_has_not_null_unique_2", new String[] { "nnu2_col_1", "nnu2_col_2" } }, // not nullable index priority to nullable one
+			{ "tab_has_nothing", new String[0] }, // cannot find anything
+		};
 	}
 }

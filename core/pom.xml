@@ -226,7 +226,7 @@
 			<id>sqlite</id>
 			<properties>
 				<db.driverClassName>org.sqlite.JDBC</db.driverClassName>
-				<db.url>jdbc:sqlite::target/sqlite-${db.schema.name}.db</db.url>
+				<db.url>jdbc:sqlite:target/sqlite-${db.schema.name}.db</db.url>
 			</properties>
 			<dependencies>
 				<dependency>

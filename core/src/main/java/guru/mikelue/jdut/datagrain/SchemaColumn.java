@@ -18,6 +18,7 @@ public class SchemaColumn {
     private Optional<JDBCType> jdbcType = Optional.empty();
 	private Optional<Boolean> nullable = Optional.empty();
 	private Optional<String> defaultValue = Optional.empty();
+	private Optional<Boolean> autoIncremental = Optional.empty();
 
     /**
      * This object is used with {@link Consumer} by {@link SchemaColumn#build}.
@@ -42,7 +43,7 @@ public class SchemaColumn {
         /**
          * Sets the sql type of column.
          *
-         * @param newSqlType The value(nullable) of sql type, see {@link java.sql.Types}.
+         * @param newJdbcType The value(nullable) of sql type, see {@link java.sql.Types}.
          *
          * @return cascading self
          *
@@ -68,9 +69,22 @@ public class SchemaColumn {
 		}
 
 		/**
+		 * Sets whether or not this columns is auto-incremental.
+		 *
+		 * @param newAutoIncremental The value of auto-incremental
+		 *
+		 * @return cascading self
+		 */
+		public Builder autoIncremental(Boolean newAutoIncremental)
+		{
+			autoIncremental = Optional.ofNullable(newAutoIncremental);
+			return this;
+		}
+
+		/**
 		 * Sets the default value of column.
 		 *
-		 * @param newHasDefaultValue the flag of having default value
+		 * @param newDefaultValue the flag of having default value
 		 *
 		 * @return cascading self
 		 */
@@ -142,7 +156,7 @@ public class SchemaColumn {
      *
      * @return The value of sql type
 	 *
-	 * @see DatabaseMetaData#getColums getColumns.getInt("DATA_TYPE")
+	 * @see DatabaseMetaData#getColumns getColumns.getInt("DATA_TYPE")
      */
     public Optional<JDBCType> getJdbcType()
     {
@@ -154,7 +168,7 @@ public class SchemaColumn {
 	 *
 	 * @return may not be initialized
 	 *
-	 * @see DatabaseMetaData#getColums getColumns.getInt("NULLABLE")
+	 * @see DatabaseMetaData#getColumns getColumns.getInt("NULLABLE")
 	 */
 	public Optional<Boolean> getNullable()
 	{
@@ -166,7 +180,7 @@ public class SchemaColumn {
 	 *
 	 * @return The optional default value
 	 *
-	 * @see DatabaseMetaData#getColums getColumns.getString("COLUMN_DEF")
+	 * @see DatabaseMetaData#getColumns getColumns.getString("COLUMN_DEF")
 	 */
 	public Optional<String> getDefaultValue()
 	{
@@ -174,11 +188,21 @@ public class SchemaColumn {
 	}
 
 	/**
+	 * Checks whether or not this column is auto-incremental.
+	 *
+	 * @return The flag may be unknown
+	 */
+	public Optional<Boolean> getAutoIncremental()
+	{
+		return autoIncremental;
+	}
+
+	/**
 	 * Whether or not this column has default value.
 	 *
 	 * @return may not be initialized
 	 *
-	 * @see DatabaseMetaData#getColums getColumns.getString("COLUMN_DEF")
+	 * @see DatabaseMetaData#getColumns getColumns.getString("COLUMN_DEF")
 	 */
 	public boolean getHasDefaultValue()
 	{
@@ -193,6 +217,7 @@ public class SchemaColumn {
         clonedObject.jdbcType = this.jdbcType;
 		clonedObject.nullable = this.nullable;
 		clonedObject.defaultValue = this.defaultValue;
+		clonedObject.autoIncremental = this.autoIncremental;
 
         return clonedObject;
     }

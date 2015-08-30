@@ -40,6 +40,7 @@ public class SchemaTable {
 	private Optional<Boolean> storesLowerCaseIdentifiers = Optional.empty();
 	private Optional<Boolean> storesMixedCaseIdentifiers = Optional.empty();
 	private Optional<Boolean> supportsMixedCaseIdentifiers = Optional.empty();
+	private Optional<String> identifierQuoteString = Optional.empty();
 
     private List<String> keys = Collections.emptyList();
     private Map<String, SchemaColumn> columns;
@@ -56,6 +57,8 @@ public class SchemaTable {
 		 * Loads meta data from database.
 		 *
 		 * @param metaData The meta data of database
+		 *
+		 * @return cascading self
 		 */
 		public Builder metaData(DatabaseMetaData metaData)
 		{
@@ -64,6 +67,10 @@ public class SchemaTable {
 				storesLowerCaseIdentifiers = Optional.of(metaData.storesLowerCaseIdentifiers());
 				storesMixedCaseIdentifiers = Optional.of(metaData.storesMixedCaseIdentifiers());
 				supportsMixedCaseIdentifiers = Optional.of(metaData.supportsMixedCaseIdentifiers());
+				identifierQuoteString = Optional.ofNullable(
+					" ".equals(metaData.getIdentifierQuoteString()) ? null :
+						metaData.getIdentifierQuoteString()
+				);
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}
@@ -128,7 +135,14 @@ public class SchemaTable {
         public Builder keys(String... newKeys)
         {
 			keys = Stream.of(newKeys)
-				.map(key -> StringUtils.trimToNull(key))
+				.map(key -> {
+					String processedKey = StringUtils.trimToNull(key);
+					if (processedKey == null) {
+						return null;
+					}
+
+					return SchemaTable.this.treatIdentifier(processedKey);
+				})
 				.filter(key -> key != null)
 				.collect(Collectors.toList());
 
@@ -154,6 +168,18 @@ public class SchemaTable {
 			columns.put(columnName, column);
 
 			return this;
+		}
+
+		/**
+		 * Gets information of column.
+		 *
+		 * @param name The name of column
+		 *
+		 * @return The column matched
+		 */
+		public SchemaColumn getColumn(String name)
+		{
+			return SchemaTable.this.getColumn(name);
 		}
 
 		/**
@@ -256,7 +282,7 @@ public class SchemaTable {
 	/**
 	 * Gets number of columns.
 	 *
-	 * @param The number of columns
+	 * @return The number of columns
 	 */
 	public int getNumberOfColumns()
 	{
@@ -330,13 +356,27 @@ public class SchemaTable {
     }
 
 	/**
+	 * Use {@link DatabaseMetaData#getIdentifierQuoteString} to quote <em>identifier</em>.
+	 *
+	 * @param identifier The identifier to be quoted
+	 *
+	 * @return The quoted identifier
+	 */
+	public String quoteIdentifier(String identifier)
+	{
+		String quote = identifierQuoteString.orElse("");
+
+		return String.format("%s%s%s", quote, identifier, quote);
+	}
+
+	/**
 	 * Gets name of table with catalog and schema.<br>
 	 *
 	 * Use <em>{@code "<null>"}</em> if the value is not set
 	 *
 	 * @return The string can be used in collection
 	 */
-	public String getIdentifier()
+	public String getFullTableName()
 	{
 		return String.format("%s.%s.%s", catalog.orElse(NULL_NAMING), schema.orElse(NULL_NAMING), name);
 	}
@@ -381,10 +421,11 @@ public class SchemaTable {
 		clonedObject.storesUpperCaseIdentifiers = this.storesUpperCaseIdentifiers;
 		clonedObject.storesMixedCaseIdentifiers = this.storesMixedCaseIdentifiers;
 		clonedObject.supportsMixedCaseIdentifiers = this.supportsMixedCaseIdentifiers;
+		clonedObject.identifierQuoteString = this.identifierQuoteString;
 		return clonedObject;
 	}
 
-	private String treatIdentifier(String identifier)
+	public String treatIdentifier(String identifier)
 	{
 		identifier = StringUtils.trimToEmpty(identifier);
 

@@ -4,16 +4,21 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.datagrain.DataRow;
-import guru.mikelue.jdut.operation.DataGrainOperator.SurroundOperator;
 
 /**
  * Operator to execute code by fed {@link DataRow}.
  */
 @FunctionalInterface
 public interface DataRowOperator {
+	/**
+	 * The operator for surrounding of {@link DataRowOperator}.
+	 */
+	public interface SurroundOperator extends UnaryOperator<DataRowOperator> {}
+
 	/**
 	 * Does nothing.
 	 *
@@ -54,15 +59,39 @@ public interface DataRowOperator {
 	}
 
 	/**
-	 * Surrounds this instance by {@link SurroundOperator}.
+	 * Surrounds this instance by {@link DataGrainOperator.SurroundOperator}.
 	 *
-	 * @param surroundOperator The operator to surrounding staff
+	 * @param surroundOperator The operator to surrounding self
 	 *
 	 * @return new operator of data grain
 	 */
-	default DataGrainOperator surroundedBy(SurroundOperator surroundOperator)
+	default DataGrainOperator surroundedBy(DataGrainOperator.SurroundOperator surroundOperator)
 	{
 		return this.toDataGrainOperator().surroundedBy(surroundOperator);
+	}
+
+	/**
+	 * Surrounds this instance by {@link DataRowsOperator.SurroundOperator}.
+	 *
+	 * @param surroundOperator The operator to surrounding self
+	 *
+	 * @return new operator of data rows
+	 */
+	default DataRowsOperator surroundedBy(DataRowsOperator.SurroundOperator surroundOperator)
+	{
+		return this.toDataRowsOperator().surroundedBy(surroundOperator);
+	}
+
+	/**
+	 * Surrounds this instance by {@link SurroundOperator}.
+	 *
+	 * @param surroundOperator The operator to surrounding self
+	 *
+	 * @return new operator of data row
+	 */
+	default DataRowOperator surroundedBy(SurroundOperator surroundOperator)
+	{
+		return surroundOperator.apply(this);
 	}
 
 	/**

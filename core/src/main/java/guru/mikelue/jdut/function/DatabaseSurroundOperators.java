@@ -20,6 +20,8 @@ public interface DatabaseSurroundOperators {
 	 * @param transactionIsolation The value of transaction isolation
 	 *
 	 * @return The operate starts the transaction of connection before executing and commits after executing.
+	 *
+	 * @see DataGrainOperator.SurroundOperator
 	 */
 	public static SurroundOperator operateTransactional(int transactionIsolation)
 	{
@@ -31,6 +33,8 @@ public interface DatabaseSurroundOperators {
 	 * @param transactionIsolation The value of transaction isolation
 	 *
 	 * @return The operate starts the transaction of connection before executing and commits after executing.
+	 *
+	 * @see DataGrainOperator.SurroundOperator
 	 */
 	public static SurroundOperator operateTransactional(Optional<Integer> transactionIsolation)
 	{
@@ -43,6 +47,8 @@ public interface DatabaseSurroundOperators {
  	 * @param surroundedOperator The operator to be surrounded
 	 *
 	 * @return The operate starts the transaction of connection before executing and commits after executing.
+	 *
+	 * @see DataGrainOperator.SurroundOperator
 	 */
 	public static DataGrainOperator transactional(DataGrainOperator surroundedOperator)
 	{
@@ -55,6 +61,8 @@ public interface DatabaseSurroundOperators {
 	 * @param transactionIsolation The value of transaction isolation
 	 *
 	 * @return The operate starts the transaction of connection before executing and commits after executing.
+	 *
+	 * @see DataGrainOperator.SurroundOperator
 	 */
 	public static DataGrainOperator transactional(DataGrainOperator surroundedOperator, int transactionIsolation)
 	{
@@ -68,6 +76,8 @@ public interface DatabaseSurroundOperators {
 	 * @param transactionIsolation The value of transaction isolation
 	 *
 	 * @return The operate starts the transaction of connection before executing and commits after executing.
+	 *
+	 * @see DataGrainOperator.SurroundOperator
 	 */
 	public static DataGrainOperator transactional(DataGrainOperator surroundedOperator, Optional<Integer> transactionIsolation)
 	{
@@ -86,6 +96,8 @@ public interface DatabaseSurroundOperators {
  	 * @param surroundedOperator The operator to be surrounded
 	 *
 	 * @return The operate close the connection after the surrounded operator is returned
+	 *
+	 * @see DataGrainOperator.SurroundOperator
 	 */
 	public static DataGrainOperator autoClose(DataGrainOperator surroundedOperator)
 	{

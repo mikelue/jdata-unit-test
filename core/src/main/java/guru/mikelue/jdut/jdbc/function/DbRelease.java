@@ -28,10 +28,14 @@ public interface DbRelease {
 		JdbcFunction<T, R> surroundedFunction
 	) {
 		return jdbcObject -> {
-			try (T closableObject = jdbcObject) {
-				return surroundedFunction.apply(closableObject);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+			try {
+				return surroundedFunction.apply(jdbcObject);
+			} finally {
+				try {
+					jdbcObject.close();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
 			}
 		};
 	}

@@ -5,7 +5,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
 	xsi:schemaLocation="
-		http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 	">
 	<changeSet id="decorate" labels="decorate" author="${testClassName}">
@@ -17,6 +17,73 @@
 		</createTable>
 		<rollback>
 			<dropTable tableName="tab_se" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="decorateForKeys" labels="decorateForKeys" author="${testClassName}">
+		<!--
+		  - Gets PK(priority to unique index)
+		  -->
+		<createTable tableName="tab_has_pk">
+			<column name="pk_id_1" type="INT">
+				<constraints nullable="false" />
+			</column>
+			<column name="pk_id_2" type="INT">
+				<constraints nullable="false" />
+			</column>
+			<column name="unq_col_1" type="INT">
+				<constraints nullable="false" unique="true" uniqueConstraintName="uni_tab_has_pk" />
+			</column>
+		</createTable>
+		<addPrimaryKey tableName="tab_has_pk" columnNames="pk_id_1, pk_id_2"
+			constraintName="pk_has_pk"/>
+		<!-- :~) -->
+
+		<!--
+		  - Gets least columns of index
+		  -->
+		<createTable tableName="tab_has_not_null_unique">
+			<column name="nnu_col_1" type="INT">
+				<constraints nullable="false" />
+			</column>
+			<column name="nnu_col_2" type="INT">
+				<constraints nullable="false" />
+			</column>
+			<column name="nnu_col_3" type="INT">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<addUniqueConstraint tableName="tab_has_not_null_unique" columnNames="nnu_col_1, nnu_col_2" constraintName="uni_tab_hnnu_nnu_col_1_2" />
+		<addUniqueConstraint tableName="tab_has_not_null_unique" columnNames="nnu_col_1, nnu_col_2, nnu_col_3" constraintName="uni_tab_hnnu_nnu_col_1_2_3" />
+		<!-- :~) -->
+
+		<!--
+		  - Gets not null unique index(priority to nullable index)
+		  -->
+		<createTable tableName="tab_has_not_null_unique_2">
+			<column name="nnu2_col_1" type="INT">
+				<constraints nullable="false" />
+			</column>
+			<column name="nnu2_col_2" type="INT">
+				<constraints nullable="false" />
+			</column>
+			<column name="nnu2_col_3" type="INT">
+				<constraints unique="true" uniqueConstraintName="unq_tab_hnnu2__col_3" />
+			</column>
+		</createTable>
+		<addUniqueConstraint tableName="tab_has_not_null_unique_2" columnNames="nnu2_col_1, nnu2_col_2" constraintName="unq_tab_hnnu2__col_1_2" />
+		<!-- :~) -->
+
+		<createTable tableName="tab_has_nothing">
+			<column name="hn_v1" type="INT" />
+			<column name="hn_v2" type="INT" />
+		</createTable>
+
+		<rollback>
+			<dropTable tableName="tab_has_pk" />
+			<dropTable tableName="tab_has_not_null_unique" />
+			<dropTable tableName="tab_has_not_null_unique_2" />
+			<dropTable tableName="tab_has_nothing" />
 		</rollback>
 	</changeSet>
 </databaseChangeLog>

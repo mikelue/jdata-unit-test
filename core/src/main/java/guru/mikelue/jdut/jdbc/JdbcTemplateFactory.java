@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 import guru.mikelue.jdut.jdbc.function.DbRelease;
 
@@ -84,49 +83,6 @@ public final class JdbcTemplateFactory {
 	 * Builds the runnable and work for JDBC operation.<p>
 	 *
 	 * @param <T> The type of fed object
-	 * @param <R> The type of returned object
-	 * @param supplier The supplier of fed object
-	 * @param worker The working code by fed object
-	 *
-	 * @return The instance of runnable function
-	 */
-	public static <T extends AutoCloseable, R> JdbcRunnable buildRunnable(
-		JdbcSupplier<? extends T> supplier,
-		JdbcFunction<T, R> worker
-	) {
-		JdbcSupplier<R> finalSupplier = buildSupplier(
-			supplier, worker
-		);
-
-		return () -> finalSupplier.get();
-	}
-
-	/**
-	 * Builds the runnable and work for JDBC operation.<p>
-	 *
-	 * @param <T> The type of fed object
-	 * @param <R> The type of returned object
-	 * @param supplier The supplier of fed object
-	 * @param worker The working code by fed object
-	 * @param surroundingConfig The lambda expression of {@link Consumer} for adding {@link JdbcFunction.SurroundOperator}
-	 *
-	 * @return The instance of runnable function
-	 */
-	public static <T extends AutoCloseable, R> JdbcRunnable buildRunnable(
-		JdbcSupplier<? extends T> supplier,
-		JdbcFunction<T, R> worker,
-		SurroundingConfig<T, R> surroundingConfig
-	) {
-		return buildRunnable(
-			supplier,
-			surround(worker, surroundingConfig)
-		);
-	}
-
-	/**
-	 * Builds the runnable and work for JDBC operation.<p>
-	 *
-	 * @param <T> The type of fed object
 	 * @param supplier The supplier of fed object
 	 * @param worker The working code by fed object
 	 *
@@ -136,9 +92,9 @@ public final class JdbcTemplateFactory {
 		JdbcSupplier<? extends T> supplier,
 		JdbcVoidFunction<T> worker
 	) {
-		return buildRunnable(
+		return () -> buildSupplier(
 			supplier, worker.asJdbcFunction()
-		);
+		).get();
 	}
 
 	/**
@@ -157,9 +113,9 @@ public final class JdbcTemplateFactory {
 		JdbcVoidFunction<T> worker,
 		SurroundingConfig<T, Void> surroundingConfig
 	) {
-		return buildRunnable(
-			supplier, worker.asJdbcFunction(), surroundingConfig
-		);
+		return () -> buildSupplier(
+			supplier, surround(worker.asJdbcFunction(), surroundingConfig)
+		).get();
 	}
 
 	/**

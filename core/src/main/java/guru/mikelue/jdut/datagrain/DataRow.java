@@ -1,7 +1,9 @@
 package guru.mikelue.jdut.datagrain;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -36,6 +38,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 public class DataRow {
 	private SchemaTable tableSchema;
 	private Map<String, DataField<?>> data;
+	private Map<String, Object> attributes = new HashMap<>(8);
 	private boolean validated = false;
 
 	/**
@@ -66,7 +69,9 @@ public class DataRow {
 
 			data.entrySet().forEach(
 				fieldEntry -> dataWithNewTableSchema.put(
-					fieldEntry.getKey(),
+					newTableSchema.treatIdentifier(
+						fieldEntry.getKey()
+					),
 					fieldFactory.clone(fieldEntry.getValue())
 				)
 			);
@@ -236,7 +241,12 @@ public class DataRow {
 
 		private <T> Builder field(DataField<T> field)
 		{
-			data.put(field.getColumnName(), field);
+			data.put(
+				tableSchema.treatIdentifier(
+					field.getColumnName()
+				),
+				field
+			);
 			return this;
 		}
 	}
@@ -291,6 +301,16 @@ public class DataRow {
 	}
 
 	/**
+	 * Gets name of columns.
+	 *
+	 * @return The name of columns
+	 */
+	public List<String> getColumns()
+	{
+		return new ArrayList<>(data.keySet());
+	}
+
+	/**
 	 * Gets the field by column name.
 	 *
 	 * @param <T> The type of field
@@ -305,7 +325,9 @@ public class DataRow {
 	@SuppressWarnings("unchecked")
 	public <T> DataField<T> getDataField(String columnName)
 	{
-		DataField<T> dataField = (DataField<T>)data.get(columnName);
+		DataField<T> dataField = (DataField<T>)data.get(
+			tableSchema.treatIdentifier(columnName)
+		);
 		if (dataField == null) {
 			throw new IllegalArgumentException(String.format("Cannot find column: \"%s\"", columnName));
 		}
@@ -368,13 +390,58 @@ public class DataRow {
 		return validated;
 	}
 
+	/**
+	 * Gets attribute of this row.
+	 *
+	 * @param <T> The expected type of result
+	 * @param name The name of attribute
+	 *
+	 * @return null if attribute is not existing
+	 *
+	 * @see #hasAttribute
+	 * @see #putAttribute
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T getAttribute(String name)
+	{
+		return (T)attributes.get(name);
+	}
+	/**
+	 * Checks whether or not a attribute is existing.
+	 *
+	 * @param name The name of attribute
+	 *
+	 * @return true if the attribute is existing
+	 *
+	 * @see #getAttribute
+	 * @see #putAttribute
+	 */
+	public boolean hasAttribute(String name)
+	{
+		return attributes.containsKey(name);
+	}
+	/**
+	 * Puts a attribute.
+	 *
+	 * @param name The name of attribute
+	 * @param value the value of attribute
+	 *
+	 * @see #getAttribute
+	 * @see #hasAttribute
+	 */
+	public void putAttribute(String name, Object value)
+	{
+		attributes.put(name, value);
+	}
+
 	@Override
-	public DataRow clone()
+	protected DataRow clone()
 	{
 		DataRow newRow = new DataRow();
 		newRow.tableSchema = this.tableSchema;
 		newRow.data = Collections.unmodifiableMap(this.data);
 		newRow.validated = this.validated;
+		newRow.attributes = new HashMap<>(this.attributes);
 
 		return newRow;
 	}
@@ -385,6 +452,7 @@ public class DataRow {
 		newRow.tableSchema = this.tableSchema;
 		newRow.data = new HashMap<>(this.data);
 		newRow.validated = this.validated;
+		newRow.attributes = new HashMap<>(this.attributes);
 
 		return newRow;
 	}

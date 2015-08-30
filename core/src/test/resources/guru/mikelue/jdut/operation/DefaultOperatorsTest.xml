@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="
+		http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	">
+	<changeSet id="insert" labels="insert" author="${testClassName}">
+		<createTable tableName="do_insert">
+			<column name="dm_id" type="INTEGER" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="PK_do_insert" />
+			</column>
+			<column name="dm_v1" type="INTEGER">
+				<constraints nullable="false" />
+			</column>
+			<column name="dm_v2" type="VARCHAR(32)" defaultValue="C1">
+				<constraints nullable="false" />
+			</column>
+			<column name="dm_v3" type="INTEGER">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+
+		<rollback>
+			<dropTable tableName="do_insert" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="update" labels="update" author="${testClassName}">
+		<createTable tableName="do_update">
+			<column name="du_id" type="INTEGER" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="PK_do_update" />
+			</column>
+			<column name="du_v1" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<sql dbms="mssql">SET IDENTITY_INSERT do_update ON</sql>
+		<insert tableName="do_update">
+			<column name="du_id" valueNumeric="1"/>
+			<column name="du_v1" value="GC1"/>
+		</insert>
+		<insert tableName="do_update">
+			<column name="du_id" valueNumeric="2"/>
+			<column name="du_v1" value="GC2"/>
+		</insert>
+		<insert tableName="do_update">
+			<column name="du_id" valueNumeric="3"/>
+			<column name="du_v1" value="GC3"/>
+		</insert>
+		<sql dbms="mssql">SET IDENTITY_INSERT do_update OFF</sql>
+
+		<rollback>
+			<dropTable tableName="do_update" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="refresh" labels="refresh" author="${testClassName}">
+		<createTable tableName="do_refresh">
+			<column name="dr_id" type="INTEGER" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="PK_do_refresh" />
+			</column>
+			<column name="dr_v1" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<sql dbms="mssql">SET IDENTITY_INSERT do_refresh ON</sql>
+		<insert tableName="do_refresh">
+			<column name="dr_id" valueNumeric="1"/>
+			<column name="dr_v1" value="GC2"/>
+		</insert>
+		<sql dbms="mssql">SET IDENTITY_INSERT do_refresh OFF</sql>
+
+		<rollback>
+			<dropTable tableName="do_refresh" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="delete" labels="delete" author="${testClassName}">
+		<createTable tableName="do_delete">
+			<column name="dd_id" type="INTEGER">
+				<constraints primaryKey="true" primaryKeyName="PK_do_delete" />
+			</column>
+			<column name="dd_v1" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<insert tableName="do_delete">
+			<column name="dd_id" valueNumeric="1"/>
+			<column name="dd_v1" value="GC1"/>
+		</insert>
+		<insert tableName="do_delete">
+			<column name="dd_id" valueNumeric="2"/>
+			<column name="dd_v1" value="GC2"/>
+		</insert>
+
+		<rollback>
+			<dropTable tableName="do_delete" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="deleteAll" labels="deleteAll" author="${testClassName}">
+		<createTable tableName="do_delete_all">
+			<column name="dda_id" type="INTEGER">
+				<constraints primaryKey="true" primaryKeyName="PK_do_deleteAll" />
+			</column>
+			<column name="dda_v1" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<insert tableName="do_delete_all">
+			<column name="dda_id" valueNumeric="1"/>
+			<column name="dda_v1" value="GC1"/>
+		</insert>
+		<insert tableName="do_delete_all">
+			<column name="dda_id" valueNumeric="2"/>
+			<column name="dda_v1" value="GC2"/>
+		</insert>
+
+		<rollback>
+			<dropTable tableName="do_delete_all" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="truncate" labels="truncate" author="${testClassName}">
+		<createTable tableName="do_truncate">
+			<column name="dt_id" type="INTEGER">
+				<constraints primaryKey="true" primaryKeyName="PK_do_truncate" />
+			</column>
+			<column name="dt_v1" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<insert tableName="do_truncate">
+			<column name="dt_id" valueNumeric="1"/>
+			<column name="dt_v1" value="GC1"/>
+		</insert>
+		<insert tableName="do_truncate">
+			<column name="dt_id" valueNumeric="2"/>
+			<column name="dt_v1" value="GC2"/>
+		</insert>
+
+		<rollback>
+			<dropTable tableName="do_truncate" />
+		</rollback>
+	</changeSet>
+</databaseChangeLog>

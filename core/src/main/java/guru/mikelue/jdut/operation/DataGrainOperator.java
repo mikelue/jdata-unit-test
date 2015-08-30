@@ -36,8 +36,7 @@ public interface DataGrainOperator {
 	 *
 	 * @param dataGrain The data grain to be fed
 	 *
-	 * @return The JDBC function
-	 */
+	 * @return The JDBC function */
 	default JdbcFunction<Connection, DataGrain> toJdbcFunction(DataGrain dataGrain)
 	{
 		return conn -> operate(conn, dataGrain);

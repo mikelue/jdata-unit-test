@@ -3,16 +3,21 @@ package guru.mikelue.jdut.operation;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.datagrain.DataRow;
-import guru.mikelue.jdut.operation.DataGrainOperator.SurroundOperator;
 
 /**
  * Operator to execute code by fed {@link List} of {@link DataRow}.
  */
 @FunctionalInterface
 public interface DataRowsOperator {
+	/**
+	 * The operator for surrounding of {@link DataRowsOperator}.
+	 */
+	public interface SurroundOperator extends UnaryOperator<DataRowsOperator> {}
+
 	/**
 	 * Does nothing.
 	 *
@@ -34,15 +39,27 @@ public interface DataRowsOperator {
 	}
 
 	/**
-	 * Surrounds this instance by {@link SurroundOperator}.
+	 * Surrounds this instance by {@link DataGrainOperator.SurroundOperator}.
 	 *
 	 * @param surroundOperator The operator to surrounding staff
 	 *
 	 * @return new operator of data grain
 	 */
-	default DataGrainOperator surroundedBy(SurroundOperator surroundOperator)
+	default DataGrainOperator surroundedBy(DataGrainOperator.SurroundOperator surroundOperator)
 	{
 		return this.toDataGrainOperator().surroundedBy(surroundOperator);
+	}
+
+	/**
+	 * Surrounds this instance by {@link SurroundOperator}.
+	 *
+	 * @param surroundOperator The operator to surrounding staff
+	 *
+	 * @return new operator of data rows
+	 */
+	default DataRowsOperator surroundedBy(SurroundOperator surroundOperator)
+	{
+		return surroundOperator.apply(this);
 	}
 
 	/**

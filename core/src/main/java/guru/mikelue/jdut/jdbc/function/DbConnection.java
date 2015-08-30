@@ -8,7 +8,7 @@ import guru.mikelue.jdut.jdbc.JdbcFunction;
 import guru.mikelue.jdut.jdbc.JdbcRunnable;
 
 /**
- * Functions for {@link Connection}, which are used to wrap existing {@link JdbcFunction} with database features(e.x. transaction).
+ * Functions for {@link Connection}, which are used to wrap existing {@link JdbcFunction} with database features(e.g., transaction).
  *
  * @see JdbcFunction.SurroundOperator
  */
