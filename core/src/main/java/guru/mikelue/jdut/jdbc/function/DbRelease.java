@@ -12,7 +12,9 @@ import guru.mikelue.jdut.jdbc.JdbcFunction;
  *
  * @see JdbcFunction.SurroundOperator
  */
-public interface DbRelease {
+public final class DbRelease {
+	private DbRelease() {}
+
 	/**
 	 * Surrounds surroundedFunction to surrounding closing block for object of {@link AutoCloseable}.
 	 *
@@ -29,7 +31,7 @@ public interface DbRelease {
 	) {
 		return jdbcObject -> {
 			try {
-				return surroundedFunction.apply(jdbcObject);
+				return surroundedFunction.applyJdbc(jdbcObject);
 			} finally {
 				try {
 					jdbcObject.close();

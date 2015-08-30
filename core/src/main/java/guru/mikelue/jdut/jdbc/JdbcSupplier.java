@@ -39,7 +39,7 @@ public interface JdbcSupplier<R> {
 	{
 		return () -> {
 			try {
-				return get();
+				return getJdbc();
 			} catch (SQLException e) {
 				throw exceptionConvert.apply(e);
 			}
@@ -53,5 +53,5 @@ public interface JdbcSupplier<R> {
 	 *
 	 * @throws SQLException eliminate the exception block of JDBC
 	 */
-	public R get() throws SQLException;
+	public R getJdbc() throws SQLException;
 }

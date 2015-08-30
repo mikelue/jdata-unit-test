@@ -54,7 +54,7 @@ public class JdbcVoidFunctionTest {
 			buildSurrounding(surroundingSampleData)
 		));
 
-		surroundedFunc.apply(9);
+		surroundedFunc.applyJdbc(9);
 
 		Assert.assertEquals(surroundedSampleData.intValue(), 119); // Asserts the execution surrounded function
 		Assert.assertEquals(surroundingSampleData.intValue(), 122); // Asserts execution of the surrounding function
@@ -65,7 +65,7 @@ public class JdbcVoidFunctionTest {
 		return f -> v -> {
 			sampleData.increment();
 
-			T result = f.apply(v);
+			T result = f.applyJdbc(v);
 
 			sampleData.increment();
 

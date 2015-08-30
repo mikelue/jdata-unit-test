@@ -36,7 +36,7 @@ public interface JdbcRunnable {
 	{
 		return () -> {
 			try {
-				run();
+				runJdbc();
 			} catch (SQLException e) {
 				throw exceptionConvert.apply(e);
 			}
@@ -48,5 +48,5 @@ public interface JdbcRunnable {
 	 *
 	 * @throws SQLException eliminate the exception block of JDBC
 	 */
-    public void run() throws SQLException;
+    public void runJdbc() throws SQLException;
 }

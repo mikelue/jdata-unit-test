@@ -39,7 +39,7 @@ public class IdentityInsertOperatorTest extends AbstractDataSourceTestBase {
 			conn -> MsSql.DEFAULT_OPERATORS.get(
 				DefaultOperators.INSERT
 			).operate(conn, dataGrain)
-		).run();
+		).runJdbc();
 		// :~)
 
 		/**
@@ -59,8 +59,8 @@ public class IdentityInsertOperatorTest extends AbstractDataSourceTestBase {
 					.assertString("ti_value", "GP-2")
 
 					.assertNextFalse()
-			).run()
-		).run();
+			).runJdbc()
+		).runJdbc();
 		// :~)
 	}
 }

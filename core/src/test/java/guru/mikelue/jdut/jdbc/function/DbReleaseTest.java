@@ -26,7 +26,7 @@ public class DbReleaseTest {
 
 		testedFunction = testedFunction.surroundedBy(DbRelease::autoClose);
 
-		Assert.assertEquals(testedFunction.apply(mockedCloseable), sampleValue);
+		Assert.assertEquals(testedFunction.applyJdbc(mockedCloseable), sampleValue);
 		new Verifications() {{
 			mockedCloseable.close();
 			times = 1;

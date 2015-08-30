@@ -46,7 +46,7 @@ public final class DbStatement {
 						.asConsumer()
 				);
 
-				executor.apply(stat);
+				executor.applyJdbc(stat);
 			}
 		);
 	}
@@ -77,7 +77,7 @@ public final class DbStatement {
 						.asConsumer()
 				);
 
-				return supplier.apply(stat);
+				return supplier.applyJdbc(stat);
 			}
 		);
 	}
@@ -95,7 +95,7 @@ public final class DbStatement {
 		}
 
 		@Override
-		public void apply(String columnName) throws SQLException
+		public void applyJdbc(String columnName) throws SQLException
 		{
 			PreparedStatements.setParameter(
 				statement, dataRow, columnName,

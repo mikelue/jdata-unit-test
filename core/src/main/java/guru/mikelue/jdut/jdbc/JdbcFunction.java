@@ -46,7 +46,26 @@ public interface JdbcFunction<T, R> {
 	 * @see JdbcFunction#surroundedBy
 	 */
 	@FunctionalInterface
-	public interface SurroundOperator<T, R> extends UnaryOperator<JdbcFunction<T, R>> {}
+	public interface SurroundOperator<T, R> {
+		/**
+		 * Converts this operator ot {@link UnaryOperator}.
+		 *
+		 * @return The unary operator
+		 */
+		default UnaryOperator<JdbcFunction<T, R>> asUnaryOperator()
+		{
+			return jdbcFunction -> surround(jdbcFunction);
+		}
+
+		/**
+		 * Surrounds function.
+		 *
+		 * @param surroundedFunction The function to be surrounded
+		 *
+		 * @return The final function
+		 */
+		public JdbcFunction<T, R> surround(JdbcFunction<T, R> surroundedFunction);
+	}
 
 	/**
 	 * Converts this expression to {@link Function}.
@@ -73,7 +92,7 @@ public interface JdbcFunction<T, R> {
 	{
 		return t -> {
 			try {
-				return apply(t);
+				return applyJdbc(t);
 			} catch (SQLException e) {
 				throw exceptionConvert.apply(e);
 			}
@@ -91,7 +110,7 @@ public interface JdbcFunction<T, R> {
 	 */
 	default JdbcFunction<T, R> surroundedBy(SurroundOperator<T, R> surroundOperator)
 	{
-		return surroundOperator.apply(this);
+		return surroundOperator.surround(this);
 	}
 
 	/**
@@ -103,5 +122,5 @@ public interface JdbcFunction<T, R> {
 	 *
 	 * @throws SQLException eliminate the exception block of JDBC
 	 */
-	public R apply(T jdbcObject) throws SQLException;
+	public R applyJdbc(T jdbcObject) throws SQLException;
 }

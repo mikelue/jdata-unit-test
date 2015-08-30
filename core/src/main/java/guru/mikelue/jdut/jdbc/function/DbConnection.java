@@ -108,7 +108,7 @@ public interface DbConnection {
 
 			R result = null;
 			try {
-				result = surroundedFunction.apply(conn);
+				result = surroundedFunction.applyJdbc(conn);
 			} catch (SQLException e) {
 				conn.rollback();
 				throw e;

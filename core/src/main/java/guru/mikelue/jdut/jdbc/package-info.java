@@ -25,12 +25,12 @@
  *                     statement.executeUpdate("INSERT INTO tab_car VALUES('CC-01', 20)");
  *                 };
  *             )
- *         ).run();
+ *         ).runJdbc();
  *     }
  * );
  *
  * try {
- *     jdbcFunc.run();
+ *     jdbcFunc.runJdbc();
  * } catch (SQLException e) {
  *     throws new RuntimeException(e);
  * }
@@ -53,7 +53,7 @@
  * funcGetCount.surroundedBy(
  *     func -> conn -> {
  *         logger.info("Before calling");
- *         func.apply(conn);
+ *         func.applyJdbc(conn);
  *         logger.info("After calling");
  *     }
  * );

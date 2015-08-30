@@ -110,7 +110,7 @@ public class IdentityInsertOperator implements DataRowOperator {
 					"SET IDENTITY_INSERT %s ON",
 					table.quoteIdentifier(table.getName())
 				))
-			).run();
+			).runJdbc();
 		}
 		// :~)
 
@@ -127,7 +127,7 @@ public class IdentityInsertOperator implements DataRowOperator {
 					"SET IDENTITY_INSERT %s OFF",
 					table.quoteIdentifier(table.getName())
 				))
-			).run();
+			).runJdbc();
 		}
 		// :~)
 

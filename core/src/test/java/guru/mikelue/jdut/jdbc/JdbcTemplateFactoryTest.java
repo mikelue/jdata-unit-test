@@ -27,12 +27,12 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 		testedFunc = JdbcTemplateFactory.surround(
 			testedFunc,
 			surroundingList -> {
-				surroundingList.add(f -> v -> f.apply(v * 2));
-				surroundingList.add(f -> v -> f.apply(v + 3));
+				surroundingList.add(f -> v -> f.applyJdbc(v * 2));
+				surroundingList.add(f -> v -> f.applyJdbc(v + 3));
 			}
 		);
 
-		Assert.assertEquals(testedFunc.apply(9), new Integer(23));
+		Assert.assertEquals(testedFunc.applyJdbc(9), new Integer(23));
 	}
 
 	/**
@@ -46,11 +46,11 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 
 		testedFunc = JdbcTemplateFactory.surround(
 			testedFunc,
-			f -> v -> f.apply(v * 3),
-			f -> v -> f.apply(v + 2)
+			f -> v -> f.applyJdbc(v * 3),
+			f -> v -> f.applyJdbc(v + 2)
 		);
 
-		Assert.assertEquals(testedFunc.apply(8), new Integer(28));
+		Assert.assertEquals(testedFunc.applyJdbc(8), new Integer(28));
 	}
 
 	/**
@@ -79,12 +79,12 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 					surroundingList -> surroundingList.add(
 						f -> stat -> {
 							surroundingExecutedForRunnable.setTrue();
-							return f.apply(stat);
+							return f.applyJdbc(stat);
 						}
 					)
-				).run();
+				).runJdbc();
 			}
-		).run();
+		).runJdbc();
 		// :~)
 
 		Assert.assertTrue(testedConn.isClosed()); // Ensure the closing of resource
@@ -113,12 +113,12 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 							surroundingList -> surroundingList.add(
 								f -> rs -> {
 									surroundingExecutedForSupplier.setTrue();
-									return f.apply(rs);
+									return f.applyJdbc(rs);
 								}
 							)
-						).get();
+						).getJdbc();
 					}
-				).get();
+				).getJdbc();
 				// :~)
 
 				/**
@@ -128,14 +128,14 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 					JdbcTemplateFactory.buildSupplier(
 						() -> conn.createStatement(),
 						stat -> stat.executeUpdate("DELETE FROM tab_data")
-					).get(),
+					).getJdbc(),
 					new Integer(1)
 				);
 				// :~)
 
 				return result;
 			}
-		).get();
+		).getJdbc();
 		// :~)
 
 		Assert.assertEquals(testedValue, "GTO-98");

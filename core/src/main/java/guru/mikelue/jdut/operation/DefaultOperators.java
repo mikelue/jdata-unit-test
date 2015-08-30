@@ -246,7 +246,7 @@ public final class DefaultOperators {
 		DbStatement.buildRunnableForPreparedStatement(
 			conn, sql, nameOfColumns, dataRow,
 			stat -> stat.executeUpdate()
-		).run();
+		).runJdbc();
 
 		return dataRow;
 	}
@@ -311,7 +311,7 @@ public final class DefaultOperators {
 		DbStatement.buildRunnableForPreparedStatement(
 			conn, sql, columnsAndKeys, dataRow,
 			stat -> stat.executeUpdate()
-		).run();
+		).runJdbc();
 
 		return dataRow;
 	}
@@ -354,8 +354,8 @@ public final class DefaultOperators {
 					rs.next();
 					return rs.getInt(1) > 0;
 				}
-			).get()
-		).get();
+			).getJdbc()
+		).getJdbc();
 
 		if (dataExisting) {
 			logger.debug("[Refresh] Do update");
@@ -398,7 +398,7 @@ public final class DefaultOperators {
 			queryData, keys,
 			dataRow,
 			stat -> stat.executeUpdate()
-		).get();
+		).getJdbc();
 
 		logger.debug("Delete [{}] rows.", affectedRows);
 
@@ -433,7 +433,7 @@ public final class DefaultOperators {
 			conn,
 			queryData, Collections.emptyList(), dataRow,
 			stat -> stat.executeUpdate()
-		).get();
+		).getJdbc();
 
 		logger.debug("Delete all [{}] rows from table \"{}\".", affectedRows, table.getName());
 
@@ -469,7 +469,7 @@ public final class DefaultOperators {
 			conn,
 			queryData, Collections.emptyList(), dataRow,
 			stat -> stat.executeUpdate()
-		).run();
+		).runJdbc();
 
 		return dataRow;
 	}

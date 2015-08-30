@@ -86,7 +86,7 @@ public interface DatabaseSurroundOperators {
 				surroundedOperator.operate(autoCloseConn, dataGrain);
 			autoCloseJdbcFunction = autoCloseJdbcFunction.surroundedBy(DbConnection.operateTransactional(transactionIsolation));
 
-			return autoCloseJdbcFunction.apply(connection);
+			return autoCloseJdbcFunction.applyJdbc(connection);
 		};
 	}
 
@@ -106,7 +106,7 @@ public interface DatabaseSurroundOperators {
 				surroundedOperator.operate(autoCloseConn, dataGrain);
 			autoCloseJdbcFunction = autoCloseJdbcFunction.surroundedBy(DbRelease::autoClose);
 
-			return autoCloseJdbcFunction.apply(connection);
+			return autoCloseJdbcFunction.applyJdbc(connection);
 		};
 	}
 }

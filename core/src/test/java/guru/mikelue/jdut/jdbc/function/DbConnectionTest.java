@@ -39,7 +39,7 @@ public class DbConnectionTest {
 
 		sampleFunc = sampleFunc.surroundedBy(surroundingFunc);
 
-		Assert.assertEquals(sampleFunc.apply(mockedConn), new Integer(sampleValue));
+		Assert.assertEquals(sampleFunc.applyJdbc(mockedConn), new Integer(sampleValue));
 
 		new Verifications() {{
 			mockedConn.setAutoCommit(false);
@@ -91,7 +91,7 @@ public class DbConnectionTest {
 		sampleFunc = sampleFunc.surroundedBy(DbConnection::transactional);
 
 		try {
-			sampleFunc.apply(mockedConn);
+			sampleFunc.applyJdbc(mockedConn);
 		} catch (SQLException e) {
 			new Verifications() {{
 				mockedConn.rollback();

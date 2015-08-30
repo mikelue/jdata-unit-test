@@ -3,7 +3,6 @@ package guru.mikelue.jdut.jdbc;
 import java.sql.SQLException;
 import java.util.function.Function;
 
-import org.apache.commons.lang3.mutable.MutableInt;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -47,9 +46,9 @@ public class JdbcFunctionTest {
 	{
 		JdbcFunction<Integer, Integer> sampleFunc = v -> v + 4;
 		JdbcFunction<Integer, Integer> surroundedFunc = sampleFunc.surroundedBy(
-			f -> v -> f.apply(v * 3)
+			f -> v -> f.applyJdbc(v * 3)
 		);
 
-		Assert.assertEquals(surroundedFunc.apply(7), new Integer(25));
+		Assert.assertEquals(surroundedFunc.applyJdbc(7), new Integer(25));
 	}
 }

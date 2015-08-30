@@ -78,8 +78,8 @@ public class SequenceGetter {
 						rs.next();
 						return rs.getLong(1);
 					}
-				).get()
-			).get()
+				).getJdbc()
+			).getJdbc()
 		).asSupplier().get();
 	}
 }

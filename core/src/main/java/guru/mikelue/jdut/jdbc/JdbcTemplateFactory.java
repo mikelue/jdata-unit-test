@@ -94,7 +94,7 @@ public final class JdbcTemplateFactory {
 	) {
 		return () -> buildSupplier(
 			supplier, worker.asJdbcFunction()
-		).get();
+		).getJdbc();
 	}
 
 	/**
@@ -115,7 +115,7 @@ public final class JdbcTemplateFactory {
 	) {
 		return () -> buildSupplier(
 			supplier, surround(worker.asJdbcFunction(), surroundingConfig)
-		).get();
+		).getJdbc();
 	}
 
 	/**
@@ -132,7 +132,7 @@ public final class JdbcTemplateFactory {
 		JdbcSupplier<? extends T> supplier,
 		JdbcFunction<T, R> worker
 	) {
-		return () -> worker.surroundedBy(DbRelease::autoClose).apply(supplier.get());
+		return () -> worker.surroundedBy(DbRelease::autoClose).applyJdbc(supplier.getJdbc());
 	}
 
 	/**

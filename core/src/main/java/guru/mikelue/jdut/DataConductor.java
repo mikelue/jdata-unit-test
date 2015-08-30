@@ -129,7 +129,7 @@ public class DataConductor {
 	{
 		try {
 			return jdbcFunction.surroundedBy(DbRelease::autoClose)
-				.apply(dataSource.getConnection());
+				.applyJdbc(dataSource.getConnection());
 		} catch (SQLException e) {
 			throw new DataConductException(e);
 		}

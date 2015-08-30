@@ -26,7 +26,7 @@ public interface JdbcVoidFunction<T> {
 	 */
 	static <T> JdbcVoidFunction<T> fromJdbcFunction(JdbcFunction<T, Void> jdbcFunction)
 	{
-		return jdbcObject -> jdbcFunction.apply(jdbcObject);
+		return jdbcObject -> jdbcFunction.applyJdbc(jdbcObject);
 	}
 
 	/**
@@ -54,7 +54,7 @@ public interface JdbcVoidFunction<T> {
 	{
 		return t -> {
 			try {
-				apply(t);
+				applyJdbc(t);
 			} catch (SQLException e) {
 				throw exceptionConvert.apply(e);
 			}
@@ -69,7 +69,7 @@ public interface JdbcVoidFunction<T> {
 	default JdbcFunction<T, Void> asJdbcFunction()
 	{
 		return jdbcObject -> {
-			apply(jdbcObject);
+			applyJdbc(jdbcObject);
 			return null;
 		};
 	}
@@ -96,5 +96,5 @@ public interface JdbcVoidFunction<T> {
 	 *
 	 * @throws SQLException eliminate the exception block of JDBC
 	 */
-	public void apply(T jdbcObject) throws SQLException;
+	public void applyJdbc(T jdbcObject) throws SQLException;
 }

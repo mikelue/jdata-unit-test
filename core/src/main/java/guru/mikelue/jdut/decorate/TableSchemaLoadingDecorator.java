@@ -77,7 +77,7 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 		);
 
 		try {
-			return funcForLoadingSchema.get();
+			return funcForLoadingSchema.getJdbc();
 		} catch (SQLException e) {
 			logger.error("SQL error while loading schema of table: {}", source.toString());
 			throw SQLExceptionConvert.runtimeException(e);

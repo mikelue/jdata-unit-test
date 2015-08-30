@@ -14,7 +14,9 @@ import guru.mikelue.jdut.jdbc.JdbcVoidFunction;
  * Utility used to build {@link JdbcRunnable} or {@link JdbcSupplier}
  * for processing a {@link ResultSet} with some primitive values(e.g., SQL string).
  */
-public interface DbResultSet {
+public final class DbResultSet {
+	private DbResultSet() {}
+
 	/**
 	 * Builds runnable by connection and SQL string.<br>
 	 *
@@ -34,8 +36,8 @@ public interface DbResultSet {
 			() -> conn.createStatement(),
 			stat -> JdbcTemplateFactory.buildRunnable(
 				() -> stat.executeQuery(sql),
-				rs -> executor.apply(rs)
-			).run()
+				rs -> executor.applyJdbc(rs)
+			).runJdbc()
 		);
 	}
 
@@ -56,7 +58,7 @@ public interface DbResultSet {
 	) {
 		return JdbcTemplateFactory.buildRunnable(
 			() -> statement.executeQuery(sql),
-			rs -> executor.apply(rs)
+			rs -> executor.applyJdbc(rs)
 		);
 	}
 
@@ -80,8 +82,8 @@ public interface DbResultSet {
 			() -> conn.createStatement(),
 			stat -> JdbcTemplateFactory.buildSupplier(
 				() -> stat.executeQuery(sql),
-				rs -> supplier.apply(rs)
-			).get()
+				rs -> supplier.applyJdbc(rs)
+			).getJdbc()
 		);
 	}
 
@@ -103,7 +105,7 @@ public interface DbResultSet {
 	) {
 		return JdbcTemplateFactory.buildSupplier(
 			() -> statement.executeQuery(sql),
-			rs -> supplier.apply(rs)
+			rs -> supplier.applyJdbc(rs)
 		);
 	}
 }

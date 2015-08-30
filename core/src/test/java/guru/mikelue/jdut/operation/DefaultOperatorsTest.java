@@ -1,7 +1,6 @@
 package guru.mikelue.jdut.operation;
 
 import java.sql.SQLException;
-import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -12,7 +11,6 @@ import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
 import guru.mikelue.jdut.jdbc.function.DbResultSet;
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.test.DoLiquibase;
-import guru.mikelue.jdut.vendor.oracle.SequenceGetter;
 
 /**
  * This test uses {@link DefaultOperatorFactory} without any added customized operators.
@@ -44,7 +42,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 		JdbcTemplateFactory.buildRunnable(
 			() -> getDataSource().getConnection(),
 			conn -> operatorFactory.get(DefaultOperators.INSERT).operate(conn, dataGrain)
-		).run();
+		).runJdbc();
 		// :~)
 
 		/**
@@ -76,8 +74,8 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 					.assertWasNotNull()
 
 					.assertNextFalse()
-			).run()
-		).run();
+			).runJdbc()
+		).runJdbc();
 		// :~)
 	}
 
@@ -98,7 +96,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 		JdbcTemplateFactory.buildRunnable(
 			() -> getDataSource().getConnection(),
 			conn -> operatorFactory.get(DefaultOperators.UPDATE).operate(conn, dataGrain)
-		).run();
+		).runJdbc();
 		// :~)
 ;
 		/**
@@ -123,8 +121,8 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 					// :~)
 
 					.assertNextFalse()
-			).run()
-		).run();
+			).runJdbc()
+		).runJdbc();
 		// :~)
 	}
 
@@ -145,7 +143,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 		JdbcTemplateFactory.buildRunnable(
 			() -> getDataSource().getConnection(),
 			conn -> operatorFactory.get(DefaultOperators.REFRESH).operate(conn, dataGrain)
-		).run();
+		).runJdbc();
 		// :~)
 
 		/**
@@ -163,8 +161,8 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 					.assertString("dr_v1", "RPC-2")
 
 					.assertNextFalse()
-			).run()
-		).run();
+			).runJdbc()
+		).runJdbc();
 		// :~)
 	}
 
@@ -185,7 +183,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 		JdbcTemplateFactory.buildRunnable(
 			() -> getDataSource().getConnection(),
 			conn -> operatorFactory.get(DefaultOperators.DELETE).operate(conn, dataGrain)
-		).run();
+		).runJdbc();
 		// :~)
 
 		/**
@@ -198,8 +196,8 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 				rs -> new ResultSetAssert(rs)
 					.assertNextTrue()
 					.assertInt(1, 0)
-			).run()
-		).run();
+			).runJdbc()
+		).runJdbc();
 		// :~)
 	}
 
@@ -220,7 +218,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 		JdbcTemplateFactory.buildRunnable(
 			() -> getDataSource().getConnection(),
 			conn -> operatorFactory.get(DefaultOperators.DELETE_ALL).operate(conn, dataGrain)
-		).run();
+		).runJdbc();
 		// :~)
 
 		/**
@@ -233,8 +231,8 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 				rs -> new ResultSetAssert(rs)
 					.assertNextTrue()
 					.assertInt(1, 0)
-			).run()
-		).run();
+			).runJdbc()
+		).runJdbc();
 		// :~)
 	}
 
@@ -255,7 +253,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 		JdbcTemplateFactory.buildRunnable(
 			() -> getDataSource().getConnection(),
 			conn -> operatorFactory.get(DefaultOperators.TRUNCATE).operate(conn, dataGrain)
-		).run();
+		).runJdbc();
 		// :~)
 
 		/**
@@ -268,8 +266,8 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 				rs -> new ResultSetAssert(rs)
 					.assertNextTrue()
 					.assertInt(1, 0)
-			).run()
-		).run();
+			).runJdbc()
+		).runJdbc();
 		// :~)
 	}
 
