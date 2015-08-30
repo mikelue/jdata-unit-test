@@ -19,7 +19,26 @@ public interface DataGrainOperator {
 	/**
 	 * The operator for surrounding of {@link DataGrainOperator}.
 	 */
-	public interface SurroundOperator extends UnaryOperator<DataGrainOperator> {}
+	public interface SurroundOperator {
+		/**
+		 * Converts this operator ot {@link UnaryOperator}.
+		 *
+		 * @return The unary operator
+		 */
+		default UnaryOperator<DataGrainOperator> asUnaryOperator()
+		{
+			return operator -> surround(operator);
+		}
+
+		/**
+		 * Surrounds operator.
+		 *
+		 * @param surroundedOperator The oprator to be surrounded
+		 *
+		 * @return The final function
+		 */
+		public DataGrainOperator surround(DataGrainOperator surroundedOperator);
+	}
 
 	/**
 	 * Does nothing.
@@ -79,7 +98,7 @@ public interface DataGrainOperator {
 	 */
 	default DataGrainOperator surroundedBy(SurroundOperator surroundOperator)
 	{
-		return surroundOperator.apply(this);
+		return surroundOperator.surround(this);
 	}
 
 	/**

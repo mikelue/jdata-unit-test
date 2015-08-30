@@ -1,97 +1,16 @@
 package guru.mikelue.jdut.function;
 
 import java.sql.Connection;
-import java.util.Optional;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.jdbc.JdbcFunction;
-import guru.mikelue.jdut.jdbc.function.Transactional;
 import guru.mikelue.jdut.jdbc.function.DbRelease;
 import guru.mikelue.jdut.operation.DataGrainOperator;
-import guru.mikelue.jdut.operation.DataGrainOperator.SurroundOperator;
 
 /**
  * Builds surrounding operator with database operations.
  */
 public interface DatabaseSurroundOperators {
-	/**
-	 * Builds surrounding operator to make <em>operator</em> to be transactional.
-	 *
-	 * @param transactionIsolation The value of transaction isolation
-	 *
-	 * @return The operate starts the transaction of connection before executing and commits after executing.
-	 *
-	 * @see DataGrainOperator.SurroundOperator
-	 */
-	public static SurroundOperator operateTransactional(int transactionIsolation)
-	{
-		return operateTransactional(Optional.of(transactionIsolation));
-	}
-	/**
-	 * Builds surrounding operator to make <em>operator</em> to be transactional.
-	 *
-	 * @param transactionIsolation The value of transaction isolation
-	 *
-	 * @return The operate starts the transaction of connection before executing and commits after executing.
-	 *
-	 * @see DataGrainOperator.SurroundOperator
-	 */
-	public static SurroundOperator operateTransactional(Optional<Integer> transactionIsolation)
-	{
-		return o -> transactional(o, transactionIsolation);
-	}
-
-	/**
-	 * Surrounds <em>operator</em> to be transactional.
-	 *
- 	 * @param surroundedOperator The operator to be surrounded
-	 *
-	 * @return The operate starts the transaction of connection before executing and commits after executing.
-	 *
-	 * @see DataGrainOperator.SurroundOperator
-	 */
-	public static DataGrainOperator transactional(DataGrainOperator surroundedOperator)
-	{
-		return transactional(surroundedOperator, Optional.empty());
-	}
-	/**
-	 * Surrounds <em>operator</em> to be transactional.
-	 *
- 	 * @param surroundedOperator The operator to be surrounded
-	 * @param transactionIsolation The value of transaction isolation
-	 *
-	 * @return The operate starts the transaction of connection before executing and commits after executing.
-	 *
-	 * @see DataGrainOperator.SurroundOperator
-	 */
-	public static DataGrainOperator transactional(DataGrainOperator surroundedOperator, int transactionIsolation)
-	{
-		return transactional(surroundedOperator, Optional.of(transactionIsolation));
-	}
-
-	/**
-	 * Surrounds <em>operator</em> to be transactional.
-	 *
- 	 * @param surroundedOperator The operator to be surrounded
-	 * @param transactionIsolation The value of transaction isolation
-	 *
-	 * @return The operate starts the transaction of connection before executing and commits after executing.
-	 *
-	 * @see DataGrainOperator.SurroundOperator
-	 */
-	public static DataGrainOperator transactional(DataGrainOperator surroundedOperator, Optional<Integer> transactionIsolation)
-	{
-		return (connection, dataGrain) -> {
-			JdbcFunction<Connection, DataGrain> txJdbcFunction = (autoCloseConn) ->
-				surroundedOperator.operate(autoCloseConn, dataGrain);
-			txJdbcFunction = txJdbcFunction.surroundedBy(
-				new Transactional<>(transactionIsolation)
-			);
-
-			return txJdbcFunction.applyJdbc(connection);
-		};
-	}
-
 	/**
 	 * Surrounds <em>operator</em> to be auto closed.
 	 *

@@ -9,25 +9,31 @@ import org.testng.annotations.Test;
 
 import guru.mikelue.jdut.operation.DataGrainOperator;
 
-public class DatabaseSurroundOperatorsTest {
+public class DatabaseTransactionalTest {
 	@Injectable
 	private Connection mockConn;
 
-	public DatabaseSurroundOperatorsTest() {}
+	public DatabaseTransactionalTest() {}
 
 	/**
-	 * Tests the auto-closed operator.
+	 * Tests the transactional operator.
 	 */
 	@Test
-	public void autoClose() throws SQLException
+	public void transactional() throws SQLException
 	{
 		DataGrainOperator testedOperator = DataGrainOperator::none;
-		testedOperator = testedOperator.surroundedBy(DatabaseSurroundOperators::autoClose);
+		testedOperator = testedOperator.surroundedBy(new DatabaseTransactional(2));
 
 		testedOperator.operate(mockConn, null);
 
 		new Verifications() {{
-			mockConn.close();
+			mockConn.setAutoCommit(false);
+			times = 1;
+
+			mockConn.setTransactionIsolation(2);
+			times = 1;
+
+			mockConn.commit();
 			times = 1;
 		}};
 	}

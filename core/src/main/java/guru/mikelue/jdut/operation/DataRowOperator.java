@@ -17,7 +17,26 @@ public interface DataRowOperator {
 	/**
 	 * The operator for surrounding of {@link DataRowOperator}.
 	 */
-	public interface SurroundOperator extends UnaryOperator<DataRowOperator> {}
+	public interface SurroundOperator extends UnaryOperator<DataRowOperator> {
+		/**
+		 * Converts this operator ot {@link UnaryOperator}.
+		 *
+		 * @return The unary operator
+		 */
+		default UnaryOperator<DataRowOperator> asUnaryOperator()
+		{
+			return operator -> surround(operator);
+		}
+
+		/**
+		 * Surrounds operator.
+		 *
+		 * @param surroundedOperator The oprator to be surrounded
+		 *
+		 * @return The final function
+		 */
+		public DataRowOperator surround(DataRowOperator surroundedOperator);
+	}
 
 	/**
 	 * Does nothing.
@@ -59,30 +78,6 @@ public interface DataRowOperator {
 	}
 
 	/**
-	 * Surrounds this instance by {@link DataGrainOperator.SurroundOperator}.
-	 *
-	 * @param surroundOperator The operator to surrounding self
-	 *
-	 * @return new operator of data grain
-	 */
-	default DataGrainOperator surroundedBy(DataGrainOperator.SurroundOperator surroundOperator)
-	{
-		return this.toDataGrainOperator().surroundedBy(surroundOperator);
-	}
-
-	/**
-	 * Surrounds this instance by {@link DataRowsOperator.SurroundOperator}.
-	 *
-	 * @param surroundOperator The operator to surrounding self
-	 *
-	 * @return new operator of data rows
-	 */
-	default DataRowsOperator surroundedBy(DataRowsOperator.SurroundOperator surroundOperator)
-	{
-		return this.toDataRowsOperator().surroundedBy(surroundOperator);
-	}
-
-	/**
 	 * Surrounds this instance by {@link SurroundOperator}.
 	 *
 	 * @param surroundOperator The operator to surrounding self
@@ -91,7 +86,7 @@ public interface DataRowOperator {
 	 */
 	default DataRowOperator surroundedBy(SurroundOperator surroundOperator)
 	{
-		return surroundOperator.apply(this);
+		return surroundOperator.surround(this);
 	}
 
 	/**
