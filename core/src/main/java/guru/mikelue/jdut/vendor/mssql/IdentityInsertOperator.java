@@ -19,10 +19,6 @@ public class IdentityInsertOperator implements DataRowOperator {
 	private Logger logger = LoggerFactory.getLogger(IdentityInsertOperator.class);
 
 	/**
-	 * Used as flag to indicate enable/disable of identity for current row.
-	 */
-	private final static String IDENTITY_CHECKED = "_mssql_identity_checked_";
-	/**
 	 * Used as flag to indicate the current data row has data of identity column.
 	 */
 	private final static String HAS_IDENTITY_COLUMN = "_mssql_has_identity_column_";
@@ -49,7 +45,7 @@ public class IdentityInsertOperator implements DataRowOperator {
 	 */
 	public static boolean identityChecked(DataRow dataRow)
 	{
-		return dataRow.hasAttribute(IDENTITY_CHECKED);
+		return dataRow.hasAttribute(HAS_IDENTITY_COLUMN);
 	}
 
 	private final DataRowOperator op;
@@ -86,7 +82,6 @@ public class IdentityInsertOperator implements DataRowOperator {
 						return autoIncremental.isPresent() && autoIncremental.get();
 					})
 			);
-			dataRow.putAttribute(IDENTITY_CHECKED, true);
 		}
 		// :~)
 
