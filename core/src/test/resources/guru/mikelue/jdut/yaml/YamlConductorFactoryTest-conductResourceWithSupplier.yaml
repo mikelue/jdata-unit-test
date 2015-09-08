@@ -1,0 +1,9 @@
+%TAG !jdut! tag:jdut.mikelue.guru:1.0/
+%TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
+%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
+
+---
+
+- !sql!table sp_tab_1 :
+  - { st_id: !jdut!supplier "id_generator", st_value: "String Value" }
+  - { st_id: !jdut!supplier "id_generator", st_value: "String Value" }

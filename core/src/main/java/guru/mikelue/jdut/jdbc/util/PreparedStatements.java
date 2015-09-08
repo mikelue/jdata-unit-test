@@ -5,7 +5,6 @@ import java.net.URL;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
-import java.sql.Date;
 import java.sql.JDBCType;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
@@ -13,8 +12,7 @@ import java.sql.Ref;
 import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLXML;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -86,23 +84,23 @@ public final class PreparedStatements {
 		}
 
 		if (java.util.Date.class.isInstance(data)) {
-			if (Timestamp.class.isInstance(data)) {
-				statement.setTimestamp(paramIndex, (Timestamp)data);
+			if (java.sql.Timestamp.class.isInstance(data)) {
+				statement.setTimestamp(paramIndex, (java.sql.Timestamp)data);
 				return;
 			}
 
-			if (Date.class.isInstance(data)) {
-				statement.setDate(paramIndex, (Date)data);
+			if (java.sql.Date.class.isInstance(data)) {
+				statement.setDate(paramIndex, (java.sql.Date)data);
 				return;
 			}
 
-			if (Time.class.isInstance(data)) {
-				statement.setTime(paramIndex, (Time)data);
+			if (java.sql.Time.class.isInstance(data)) {
+				statement.setTime(paramIndex, (java.sql.Time)data);
 				return;
 			}
 
 			Date value = (Date)data;
-			statement.setTimestamp(paramIndex, new Timestamp(value.getTime()));
+			statement.setTimestamp(paramIndex, new java.sql.Timestamp(value.getTime()));
 			return;
 		}
 

@@ -55,8 +55,12 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 
 		SchemaTable table = rowBuilder.getTable();
 		String tableIdentifier = table.getFullTableName();
+		logger.debug("Current table: [{}]", tableIdentifier);
+
 		if (!cachedTables.containsKey(tableIdentifier)) {
-			cachedTables.put(tableIdentifier, loadSchema(table));
+			SchemaTable newTableSchema = loadSchema(table);
+
+			cachedTables.put(tableIdentifier, newTableSchema);
 		}
 
 		rowBuilder.tableSchema(cachedTables.get(tableIdentifier));
@@ -91,6 +95,10 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 
 		logger.debug("Loading schema of table: \"{}\"", sourceTable.getName());
 
+		/**
+		 * In order to respect the case-sensitive of identifiers,
+		 * this new table doesn't clone from old table schema
+		 */
 		return SchemaTable.build(tableBuilder -> {
 			tableBuilder.metaData(metaData);
 			tableBuilder.name(sourceTable.getName());
@@ -107,6 +115,7 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 			}
 			// :~)
 		});
+		// :~)
 	}
 
 	private void loadColumns(

@@ -1,0 +1,32 @@
+%TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
+%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
+
+---
+
+- config : {
+    build_operation: "REFRESH",
+    clean_operation: "DELETE_ALL"
+}
+
+# ==================================================
+# Uses "REFRESH" to insert data
+# ==================================================
+- !sql!table op_tab_1 :
+  - { st_id: 1, st_value: "String Value" }
+  - { st_id: 2, st_value: "String Value" }
+# ================================================== :~)
+
+# ==================================================
+# Uses "INSERT" to insert data
+# ==================================================
+- !sql!table op_tab_2 : {
+  config : {
+      build_operation: "INSERT_V1",
+      clean_operation: "DELETE_V1"
+  },
+  data : [
+    { st_id: 1, st_value: "String Value" },
+    { st_id: 2, st_value: "String Value" }
+  ]
+}
+# ================================================== :~)

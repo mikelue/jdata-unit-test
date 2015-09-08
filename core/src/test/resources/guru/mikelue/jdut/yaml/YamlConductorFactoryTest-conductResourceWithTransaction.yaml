@@ -1,0 +1,25 @@
+%TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
+%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
+
+---
+- config : {
+    transaction: true,
+    transaction_isolation: "REPEATABLE_READ"
+}
+
+- defines : [
+    &v1 1,
+    &v2 2,
+]
+
+- !sql!table tx_tab_1 :
+  - { st_id: *v1, st_value: "String Value" }
+  - { st_id: *v2, st_value: "String Value" }
+
+- !sql!code
+  build_operation: !sql!statement
+    INSERT INTO tx_tab_1(st_id, st_value)
+    VALUES(2, 'String Value')
+
+- !sql!table tx_tab_1 :
+  - { st_id: 3, st_value: "String Value" }

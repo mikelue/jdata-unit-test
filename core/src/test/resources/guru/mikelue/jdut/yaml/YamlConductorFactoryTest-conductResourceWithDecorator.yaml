@@ -1,0 +1,19 @@
+%TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
+%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
+
+---
+- config : {
+    decorator: "global_decorator"
+}
+
+- !sql!table dc_tab_1 :
+    - { st_id: 1, st_value: "NP-1" }
+
+- !sql!table dc_tab_1 : {
+    config: {
+        decorator: "local_decorator"
+    },
+    data: [
+        { st_id: 2, st_value: "NP-2" }
+    ]
+}

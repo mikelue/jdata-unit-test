@@ -1,0 +1,35 @@
+%TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
+%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
+
+---
+
+- !sql!table sd_tab_1 :
+  - { st_id: &id_1 1, st_value: "String Value" }
+  - { st_id: &id_2 2, st_value: "String Value" }
+
+- !sql!table sd_tab_2 : {
+  columns : [ "st_id", "st_value", "st_tab_1_id" ],
+  data : [
+      [1, "Z1", *id_1],
+      [2, "Z2", *id_2],
+      { st_id: 3, st_value: "Z3", st_tab_1_id: *id_2 }
+  ]
+}
+
+- !sql!table sd_tab_1 :
+  - { st_id: 3, st_value: "String Value" }
+  - { st_id: 4, st_value: "String Value" }
+
+# ==================================================
+# Uses the "key" property
+# ==================================================
+- !sql!table sd_tab_2 : {
+  keys : [ "st_value" ],
+  columns : [ "st_id", "st_value", "st_tab_1_id" ],
+  data : [
+      [4, "Z4", *id_1],
+      [5, "Z5", *id_2],
+      { st_id: 6, st_value: "Z6", st_tab_1_id: *id_2 }
+  ]
+}
+# ================================================== :~)

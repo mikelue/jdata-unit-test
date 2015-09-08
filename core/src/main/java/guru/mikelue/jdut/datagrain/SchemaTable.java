@@ -370,7 +370,7 @@ public class SchemaTable {
 	}
 
 	/**
-	 * Gets name of table with catalog and schema.<br>
+	 * Gets name of table with catalog and schema and keys.<br>
 	 *
 	 * Use <em>{@code "<null>"}</em> if the value is not set
 	 *
@@ -378,7 +378,14 @@ public class SchemaTable {
 	 */
 	public String getFullTableName()
 	{
-		return String.format("%s.%s.%s", catalog.orElse(NULL_NAMING), schema.orElse(NULL_NAMING), name);
+		return String.format(
+			"%s.%s.%s|%s",
+			catalog.orElse(NULL_NAMING), schema.orElse(NULL_NAMING),
+			name,
+			keys.stream().collect(
+				Collectors.joining(",")
+			)
+		);
 	}
 
     /**

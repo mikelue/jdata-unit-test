@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.decorate.DataGrainDecorator;
+import guru.mikelue.jdut.decorate.TableSchemaLoadingDecorator;
 import guru.mikelue.jdut.jdbc.JdbcFunction;
 import guru.mikelue.jdut.jdbc.function.DbRelease;
 import guru.mikelue.jdut.operation.DataGrainOperator;
@@ -18,6 +19,7 @@ import guru.mikelue.jdut.operation.DataRowsOperator;
  */
 public class DataConductor {
 	private final DataSource dataSource;
+	private final DataGrainDecorator schemaLoadingDecorator;
 
 	/**
 	 * Constructs this object with a valid {@link DataSource} object.
@@ -27,6 +29,28 @@ public class DataConductor {
 	public DataConductor(DataSource newDataSource)
 	{
 		dataSource = newDataSource;
+		schemaLoadingDecorator = new TableSchemaLoadingDecorator(dataSource);
+	}
+
+	public JdbcFunction<Connection, DataGrain> buildJdbcFunction(
+		DataGrain dataGrain, DataGrainOperator operator,
+		DataGrainDecorator decorator
+	) {
+		return conn -> {
+			DataGrain dataGrainOfSchemaLoaded = dataGrain.decorate(schemaLoadingDecorator);
+
+			if (decorator != null) {
+				dataGrainOfSchemaLoaded = dataGrain.decorate(decorator);
+			}
+
+			return operator.toJdbcFunction(dataGrainOfSchemaLoaded)
+				.asFunction().apply(conn);
+		};
+	}
+	public JdbcFunction<Connection, DataGrain> buildJdbcFunction(
+		DataGrain dataGrain, DataGrainOperator operator
+	) {
+		return buildJdbcFunction(dataGrain, operator, null);
 	}
 
 	/**
@@ -108,6 +132,8 @@ public class DataConductor {
 
 	private DataGrain conduct(DataGrain dataGrain, DataGrainOperator operator, Optional<DataGrainDecorator> decorator)
 	{
+		dataGrain = dataGrain.decorate(schemaLoadingDecorator);
+
 		if (decorator.isPresent()) {
 			dataGrain = dataGrain.decorate(decorator.get());
 		}

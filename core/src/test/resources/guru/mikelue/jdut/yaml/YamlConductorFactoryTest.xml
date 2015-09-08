@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="
+		http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	">
+	<changeSet id="conductResourceWithSimpleData" labels="conductResourceWithSimpleData" author="${testClassName}">
+		<createTable tableName="sd_tab_1">
+			<column name="st_id" type="INTEGER">
+				<constraints primaryKey="true" />
+			</column>
+			<column name="st_value" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<createTable tableName="sd_tab_2">
+			<column name="st_id" type="INTEGER">
+				<constraints primaryKey="true" />
+			</column>
+			<column name="st_value" type="VARCHAR(32)">
+				<constraints nullable="false" unique="true" />
+			</column>
+			<column name="st_tab_1_id" type="INTEGER">
+				<constraints nullable="false" foreignKeyName="fk_sd_tab_2__sd_tab_1" references="sd_tab_1(st_id)" />
+			</column>
+		</createTable>
+
+		<rollback>
+			<dropTable tableName="sd_tab_2" />
+			<dropTable tableName="sd_tab_1" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="conductResourceWithCode" labels="conductResourceWithCode" author="${testClassName}">
+		<createTable tableName="sc_tab_1">
+			<column name="st_id" type="INTEGER">
+				<constraints primaryKey="true" />
+			</column>
+			<column name="st_value" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<rollback>
+			<dropTable tableName="sc_tab_1" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="conductResourceWithTransaction" labels="conductResourceWithTransaction" author="${testClassName}">
+		<createTable tableName="tx_tab_1">
+			<column name="st_id" type="INTEGER">
+				<constraints primaryKey="true" />
+			</column>
+			<column name="st_value" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<rollback>
+			<dropTable tableName="tx_tab_1" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="conductResourceWithOperation" labels="conductResourceWithOperation" author="${testClassName}">
+		<createTable tableName="op_tab_1">
+			<column name="st_id" type="INTEGER">
+				<constraints primaryKey="true" />
+			</column>
+			<column name="st_value" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<insert tableName="op_tab_1">
+			<column name="st_id" valueNumeric="1"/>
+			<column name="st_value" value="B-01"/>
+		</insert>
+
+		<createTable tableName="op_tab_2">
+			<column name="st_id" type="INTEGER">
+				<constraints primaryKey="true" />
+			</column>
+			<column name="st_value" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<rollback>
+			<dropTable tableName="op_tab_1" />
+			<dropTable tableName="op_tab_2" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="conductResourceWithDecorator" labels="conductResourceWithDecorator" author="${testClassName}">
+		<createTable tableName="dc_tab_1">
+			<column name="st_id" type="INTEGER">
+				<constraints primaryKey="true" />
+			</column>
+			<column name="st_value" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<rollback>
+			<dropTable tableName="dc_tab_1" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="conductResourceWithSupplier" labels="conductResourceWithSupplier" author="${testClassName}">
+		<createTable tableName="sp_tab_1">
+			<column name="st_id" type="INTEGER">
+				<constraints primaryKey="true" />
+			</column>
+			<column name="st_value" type="VARCHAR(32)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<rollback>
+			<dropTable tableName="sp_tab_1" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="conductResourceWithDbType" labels="conductResourceWithDbType" author="${testClassName}">
+		<createTable tableName="dbp_tab_1">
+			<column name="dt_id" type="INTEGER">
+				<constraints primaryKey="true" />
+			</column>
+
+			<column name="dt_bigint" type="BIGINT" />
+			<column name="dt_string" type="VARCHAR(64)" />
+			<column name="dt_clob" type="CLOB" />
+			<column name="dt_boolean" type="BOOLEAN" />
+			<column name="dt_decimal" type="DECIMAL(10, 2)" />
+			<column name="dt_binary" type="VARBINARY(128)" />
+			<column name="dt_blob" type="BLOB" />
+			<column name="dt_date" type="date" />
+			<column name="dt_time" type="time" />
+			<column name="dt_timestamp" type="timestamp" />
+		</createTable>
+		<rollback>
+			<dropTable tableName="dbp_tab_1" />
+		</rollback>
+	</changeSet>
+</databaseChangeLog>

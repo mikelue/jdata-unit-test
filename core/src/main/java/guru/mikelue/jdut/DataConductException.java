@@ -36,4 +36,9 @@ public class DataConductException extends RuntimeException {
 	{
 		super(throwable);
 	}
+
+	public DataConductException(String format, Object... args)
+	{
+		super(String.format(format, args));
+	}
 }

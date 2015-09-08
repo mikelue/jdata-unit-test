@@ -24,7 +24,7 @@ public interface JdbcVoidFunction<T> {
 	 *
 	 * @return The using of <em>jdbcFunction</em> without returned value
 	 */
-	static <T> JdbcVoidFunction<T> fromJdbcFunction(JdbcFunction<T, Void> jdbcFunction)
+	static <T> JdbcVoidFunction<T> fromJdbcFunction(JdbcFunction<T, ?> jdbcFunction)
 	{
 		return jdbcObject -> jdbcFunction.applyJdbc(jdbcObject);
 	}

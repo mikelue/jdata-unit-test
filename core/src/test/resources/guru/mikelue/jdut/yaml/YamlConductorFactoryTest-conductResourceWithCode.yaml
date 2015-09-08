@@ -1,0 +1,24 @@
+%TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
+%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
+
+---
+- !sql!code
+  build_operation: !sql!statement
+    INSERT INTO sc_tab_1(st_id, st_value)
+    VALUES(1, 'CC-01')
+
+- !sql!code
+  build_operation: !sql!statement
+    INSERT INTO sc_tab_1(st_id, st_value)
+    VALUES(2, 'CC-02')
+
+- !sql!code
+  clean_operation: !sql!jdbcfunction "test_clean_func"
+
+- !sql!code
+  build_operation: !sql!statement
+    INSERT INTO sc_tab_1(st_id, st_value)
+    VALUES(3, 'CC-03')
+  clean_operation: !sql!statement
+    DELETE FROM sc_tab_1
+    WHERE st_id = 3

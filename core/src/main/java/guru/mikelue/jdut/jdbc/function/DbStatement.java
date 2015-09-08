@@ -52,7 +52,7 @@ public final class DbStatement {
 	}
 
 	/**
-	 * Builds supplier to set-up {@link PreparedStatement} and fed it to void function.
+	 * Builds supplier to set-up {@link PreparedStatement} and fed it to function.
 	 *
 	 * @param <T> The type of returned value
 	 * @param conn The connection of database(won't be closed in the lambda)
@@ -79,6 +79,43 @@ public final class DbStatement {
 
 				return supplier.applyJdbc(stat);
 			}
+		);
+	}
+
+	/**
+	 * Builds runnable to set-up {@link Statement} and fed it to void function.
+	 *
+	 * @param conn The connection of database(won't be closed in the lambda)
+	 * @param executor The executor for built statement
+	 *
+	 * @return The instance of lambda
+	 */
+	public static JdbcRunnable buildRunnableForStatement(
+		Connection conn,
+		JdbcVoidFunction<Statement> executor
+	) {
+		return JdbcTemplateFactory.buildRunnable(
+			() -> conn.createStatement(),
+			stat -> executor.applyJdbc(stat)
+		);
+	}
+
+	/**
+	 * Builds supplier to set-up {@link Statement} and fed it to function.
+	 *
+	 * @param <T> The type of returned value
+	 * @param conn The connection of database(won't be closed in the lambda)
+	 * @param supplier The supplier for built statement
+	 *
+	 * @return The instance of lambda
+	 */
+	public static <T> JdbcSupplier<T> buildSupplierForStatement(
+		Connection conn,
+		JdbcFunction<? super Statement, ? extends T> supplier
+	) {
+		return JdbcTemplateFactory.buildSupplier(
+			() -> conn.createStatement(),
+			stat -> supplier.applyJdbc(stat)
 		);
 	}
 

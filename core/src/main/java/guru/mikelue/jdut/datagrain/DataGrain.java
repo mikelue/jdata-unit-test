@@ -135,6 +135,19 @@ public class DataGrain {
 
 		return new DataGrain(result);
 	}
+
+	/**
+	 * Reverses the data grain.
+	 *
+	 * @return A new data grain which is reversed(same row of copied data grain)
+	 */
+	public DataGrain reverse()
+	{
+		List<DataRow> reversedRows = new ArrayList<>(rows);
+		Collections.reverse(reversedRows);
+
+		return new DataGrain(reversedRows);
+	}
 }
 
 /**
