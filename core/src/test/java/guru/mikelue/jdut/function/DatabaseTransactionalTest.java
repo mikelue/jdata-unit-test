@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import mockit.Injectable;
+import mockit.NonStrictExpectations;
 import mockit.Verifications;
+
 import org.testng.annotations.Test;
 
 import guru.mikelue.jdut.operation.DataGrainOperator;
@@ -21,6 +23,11 @@ public class DatabaseTransactionalTest {
 	@Test
 	public void transactional() throws SQLException
 	{
+		new NonStrictExpectations() {{
+			mockConn.getAutoCommit();
+			result = true;
+		}};
+
 		DataGrainOperator testedOperator = DataGrainOperator::none;
 		testedOperator = testedOperator.surroundedBy(new DatabaseTransactional(2));
 

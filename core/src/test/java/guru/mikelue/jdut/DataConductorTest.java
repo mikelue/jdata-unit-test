@@ -1,27 +1,18 @@
 package guru.mikelue.jdut;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import javax.sql.DataSource;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import mockit.Injectable;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
-import mockit.Verifications;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.operation.DataGrainOperator;
+import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
+import guru.mikelue.jdut.test.DoLiquibase;
 
-public class DataConductorTest {
-	@Mocked
-	private DataSource mockDataSource;
-	@Injectable
-	private Connection mockConn;
-
+public class DataConductorTest extends AbstractDataSourceTestBase {
 	public DataConductorTest() {}
 
 	/**
@@ -32,19 +23,14 @@ public class DataConductorTest {
 	 *   <li>The using of decorator</li>
 	 * </ol>
 	 */
-	@Test(dataProvider="Conduct")
+	@Test(dataProvider="Conduct") @DoLiquibase
 	public void conduct(
 		boolean hasDecorator
 	) throws SQLException {
-		new NonStrictExpectations() {{
-			mockDataSource.getConnection();
-			result = mockConn;
-		}};
-
 		MutableBoolean operated = new MutableBoolean(false);
 		MutableBoolean decorated = new MutableBoolean(false);
 
-		DataConductor testedConductor = new DataConductor(mockDataSource);
+		DataConductor testedConductor = new DataConductor(getDataSource());
 		if (hasDecorator) {
 			testedConductor.conduct(
 				DataGrain.build(
@@ -76,15 +62,6 @@ public class DataConductorTest {
 
 		Assert.assertTrue(operated.booleanValue());
 		Assert.assertEquals(decorated.booleanValue(), hasDecorator);
-
-		/**
-		 * Asserts the closing of database connectino
-		 */
-		new Verifications() {{
-			mockConn.close();
-			times = 1;
-		}};
-		// :~)
 	}
 	@DataProvider(name="Conduct")
 	private Object[][] getConduct()
