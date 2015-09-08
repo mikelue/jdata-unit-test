@@ -15,6 +15,7 @@ import org.apache.commons.lang3.Validate;
 
 import guru.mikelue.jdut.decorate.DataGrainDecorator;
 import guru.mikelue.jdut.jdbc.JdbcFunction;
+import guru.mikelue.jdut.jdbc.SQLExceptionConvert;
 import guru.mikelue.jdut.operation.DataGrainOperator;
 import guru.mikelue.jdut.operation.OperatorFactory;
 
@@ -26,6 +27,7 @@ import guru.mikelue.jdut.operation.OperatorFactory;
  * <h3>Building blocks</h3>
  * <ol>
  * 	<li>The loader of resource</li>
+ * 	<li>The {@link SQLExceptionConvert}</li>
  * 	<li>The operation factory</li>
  * 	<li>The named operators</li>
  * 	<li>The named decoration</li>
@@ -62,6 +64,19 @@ public class ConductorConfig {
 		public Builder resourceLoader(Function<String, Reader> newResourceLoader)
 		{
 			resourceLoader = Optional.ofNullable(newResourceLoader);
+			return this;
+		}
+
+		/**
+		 * Sets the convertion for {@link SQLException}.
+		 *
+		 * @param newSqlExceptionConvert The convertion for {@link SQLException}
+		 *
+		 * @return cascading self
+		 */
+		public <E extends RuntimeException> Builder sqlExceptionConvert(SQLExceptionConvert<E> newSqlExceptionConvert)
+		{
+			sqlExceptionConvert = Optional.ofNullable(newSqlExceptionConvert);
 			return this;
 		}
 
@@ -199,6 +214,7 @@ public class ConductorConfig {
 	private Map<String, Supplier<?>> namedSuppliers = new HashMap<>(4);
 	private Optional<Function<String, Reader>> resourceLoader = Optional.empty();
 	private Optional<OperatorFactory> operatorFactory = Optional.empty();
+	private Optional<SQLExceptionConvert<?>> sqlExceptionConvert = Optional.empty();
 
 	private ConductorConfig() {}
 
@@ -339,6 +355,24 @@ public class ConductorConfig {
 		return Optional.empty();
 	}
 
+	/**
+	 * Gets the function for convertion of {@link SQLException}.
+	 *
+	 * @return The optional object of lambd
+	 */
+	public Optional<SQLExceptionConvert<?>> getSqlExceptionConvert()
+	{
+		if (sqlExceptionConvert.isPresent()) {
+			return sqlExceptionConvert;
+		}
+
+		if (parent.isPresent()) {
+			return parent.get().getSqlExceptionConvert();
+		}
+
+		return Optional.empty();
+	}
+
 	@Override
 	protected ConductorConfig clone()
 	{
@@ -368,6 +402,7 @@ public class ConductorConfig {
 		newConfig.parent = this.parent;
 		newConfig.resourceLoader = this.resourceLoader;
 		newConfig.operatorFactory = this.operatorFactory;
+		newConfig.sqlExceptionConvert = this.sqlExceptionConvert;
 
 		return newConfig;
 	}

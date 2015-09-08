@@ -32,9 +32,11 @@ import guru.mikelue.jdut.DuetConductor;
 import guru.mikelue.jdut.DuetFunctions;
 import guru.mikelue.jdut.jdbc.JdbcFunction;
 import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
+import guru.mikelue.jdut.jdbc.SQLExceptionConvert;
 import guru.mikelue.jdut.jdbc.function.Transactional;
 import guru.mikelue.jdut.operation.DefaultOperatorFactory;
 import guru.mikelue.jdut.yaml.node.*;
+import static guru.mikelue.jdut.yaml.YamlTags.*;
 
 /**
  * The factory used to build {@link DuetConductor} by data definition of YAML format.
@@ -129,12 +131,7 @@ public class YamlConductorFactory {
         String yamlResourceName,
         Consumer<ConductorConfig.Builder> builderConsumer
     ) {
-		final ConductorConfig finalConfig = ConductorConfig.build(
-			builder -> {
-				builderConsumer.accept(builder);
-				builder.parent(conductorConfig);
-			}
-		);
+		final ConductorConfig finalConfig = buildConfig(builderConsumer);
 
 		try (
 			Reader yamlReader = finalConfig.getResourceLoader().get().apply(yamlResourceName)
@@ -175,12 +172,7 @@ public class YamlConductorFactory {
         Reader yamlReader,
         Consumer<ConductorConfig.Builder> builderConsumer
     ) {
-		final ConductorConfig finalConfig = ConductorConfig.build(
-			builder -> {
-				builderConsumer.accept(builder);
-				builder.parent(conductorConfig);
-			}
-		);
+		final ConductorConfig finalConfig = buildConfig(builderConsumer);
 
 		List<DuetFunctions> operationsInAllDoc = new ArrayList<>(4);
 
@@ -219,7 +211,7 @@ public class YamlConductorFactory {
 			 * Builds building and cleaning functions for a document
 			 */
 			final DuetFunctionsImpleOfDoc operationsInDoc =
-				new DuetFunctionsImpleOfDoc();
+				new DuetFunctionsImpleOfDoc(finalConfig);
 			operationsInDoc.setTransactional(configNode.getTransactionl());
 			operationsInDoc.setTransactionIsolation(configNode.getTransactionIsolation());
 
@@ -251,14 +243,20 @@ public class YamlConductorFactory {
 
 		return new DuetConductorImplOfAssembly(dataConductor, operationsInAllDoc);
     }
+
+	private ConductorConfig buildConfig(Consumer<ConductorConfig.Builder> builderConsumer)
+	{
+		return ConductorConfig.build(
+			builder -> {
+				builderConsumer.accept(builder);
+				builder.parent(conductorConfig);
+			}
+		);
+	}
 }
 
 class JdutConstructor extends Constructor {
 	private Logger logger = LoggerFactory.getLogger(YamlConductorFactory.class);
-
-	private final static String NAMESPACE_DB_TYPE = "tag:jdut.mikelue.guru:jdbcType:1.8/";
-	private final static String NAMESPACE_JDUT = "tag:jdut.mikelue.guru:1.0/";
-	private final static String NAMESPACE_SQL = "tag:jdut.mikelue.guru:sql:1.0/";
 
 	private final ConductorConfig conductorConfig;
 	private final DataSource dataSource;
@@ -534,10 +532,14 @@ class JdutConstructor extends Constructor {
 class DuetFunctionsImpleOfDoc implements DuetFunctions {
 	private Boolean transactional = null;
 	private Optional<Integer> transactionIsolation = null;
+	private Optional<SQLExceptionConvert<?>> sqlExceptionConvert = null;
 
 	final List<DuetFunctions> buildFunctions = new ArrayList<>(4);
 
-	DuetFunctionsImpleOfDoc() {}
+	DuetFunctionsImpleOfDoc(ConductorConfig conductorConfig)
+	{
+		sqlExceptionConvert = conductorConfig.getSqlExceptionConvert();
+	}
 
 	void add(DuetFunctions duetFunctions)
 	{
@@ -557,7 +559,10 @@ class DuetFunctionsImpleOfDoc implements DuetFunctions {
 	public JdbcFunction<Connection, ?> getBuildFunction()
 	{
 		JdbcFunction<Connection, ?> mainFunction = conn -> {
-			buildFunctions.forEach(duetFunc -> duetFunc.getBuildFunction().asFunction().apply(conn));
+			buildFunctions.forEach(duetFunc -> duetFunc.getBuildFunction()
+				.asFunction(sqlExceptionConvert.orElse(SQLExceptionConvert::runtimeException))
+				.apply(conn)
+			);
 			return buildFunctions.size();
 		};
 
@@ -571,7 +576,10 @@ class DuetFunctionsImpleOfDoc implements DuetFunctions {
 		Collections.reverse(cleanFunctions);
 
 		JdbcFunction<Connection, ?> mainFunction = conn -> {
-			cleanFunctions.forEach(duetFunc -> duetFunc.getCleanFunction().asFunction().apply(conn));
+			cleanFunctions.forEach(duetFunc -> duetFunc.getCleanFunction()
+				.asFunction(sqlExceptionConvert.orElse(SQLExceptionConvert::runtimeException))
+				.apply(conn)
+			);
 			return cleanFunctions.size();
 		};
 

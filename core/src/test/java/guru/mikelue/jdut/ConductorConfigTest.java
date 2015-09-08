@@ -2,6 +2,7 @@ package guru.mikelue.jdut;
 
 import java.io.Reader;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -14,6 +15,7 @@ import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.datagrain.DataRow;
 import guru.mikelue.jdut.decorate.DataGrainDecorator;
 import guru.mikelue.jdut.jdbc.JdbcFunction;
+import guru.mikelue.jdut.jdbc.SQLExceptionConvert;
 import guru.mikelue.jdut.operation.DataGrainOperator;
 import guru.mikelue.jdut.operation.OperatorFactory;
 
@@ -56,6 +58,46 @@ public class ConductorConfigTest {
 			{ null, null, false, 0 }, // No resource loader
 			{ null, new SampleResourceLoader(1), true, 1 }, // Has resource loader
 			{ parent, new SampleResourceLoader(1), true, 1 }, // Overrides parent's loader
+			{ parent, null, true, 2 }, // Use parent's resource loader
+		};
+	}
+
+	/**
+	 * Tests the getting of resource loader.
+	 */
+	@Test(dataProvider="GetSqlExceptionConvert")
+	public void getSqlExceptionConvert(
+		ConductorConfig sampleParent, SQLExceptionConvert<?> sqlExceptionConvert,
+		boolean expectedSqlExceptionConvert, int expectedValueOfSqlExceptionConvert
+	) {
+		ConductorConfig testedConfig = ConductorConfig.build(
+			builder -> builder
+				.parent(sampleParent)
+				.sqlExceptionConvert(sqlExceptionConvert)
+		);
+
+		Optional<SQLExceptionConvert<?>> testedLoader = testedConfig.getSqlExceptionConvert();
+		Assert.assertEquals(testedLoader.isPresent(), expectedSqlExceptionConvert);
+
+		if (testedLoader.isPresent()) {
+			Assert.assertEquals(
+				((SampleSqlExceptionConvert)testedLoader.get()).v,
+				expectedValueOfSqlExceptionConvert
+			);
+		}
+	}
+	@DataProvider(name="GetSqlExceptionConvert")
+	private Object[][] getGetSqlExceptionConvert()
+	{
+		ConductorConfig parent = ConductorConfig.build(
+			builder -> builder
+				.sqlExceptionConvert(new SampleSqlExceptionConvert(2))
+		);
+
+		return new Object[][] {
+			{ null, null, false, 0 }, // No resource loader
+			{ null, new SampleSqlExceptionConvert(1), true, 1 }, // Has resource loader
+			{ parent, new SampleSqlExceptionConvert(1), true, 1 }, // Overrides parent's loader
 			{ parent, null, true, 2 }, // Use parent's resource loader
 		};
 	}
@@ -308,4 +350,19 @@ class SampleSupplier implements Supplier<Integer> {
 
 	@Override
 	public Integer get() { return v; }
+}
+
+class SampleSqlExceptionConvert implements SQLExceptionConvert<RuntimeException> {
+	int v;
+
+	SampleSqlExceptionConvert(int value)
+	{
+		v = value;
+	}
+
+	@Override
+	public RuntimeException apply(SQLException e)
+	{
+		return new RuntimeException(e);
+	}
 }

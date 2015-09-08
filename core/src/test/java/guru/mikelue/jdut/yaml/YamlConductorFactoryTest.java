@@ -1,11 +1,15 @@
 package guru.mikelue.jdut.yaml;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.NClob;
 import java.sql.SQLException;
 import java.util.function.Supplier;
+
 import javax.xml.bind.DatatypeConverter;
 
 import org.testng.Assert;
@@ -493,5 +497,30 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 		).runJdbc();
 
 		conductor.clean();
+	}
+
+	/**
+	 * Tests the exception convertion
+	 */
+	@Test(expectedExceptions=RuntimeException.class, expectedExceptionsMessageRegExp="Test for sqlExceptionConvert")
+	public void sqlExceptionConvert() throws IOException
+	{
+		YamlConductorFactory factory = YamlConductorFactory.build(
+			getDataSource()
+		);
+
+		try (
+			Reader r = new StringReader(
+				"%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/\n" +
+				"---\n" +
+				"- !sql!code { build_operation: !sql!statement \"CREATE TABE g1(g_id ZNTP)\" }"
+			);
+		) {
+			DuetConductor conductor = factory.conductYaml(
+				r, builder -> builder.sqlExceptionConvert(e -> new RuntimeException("Test for sqlExceptionConvert"))
+			);
+
+			conductor.build();
+		}
 	}
 }
