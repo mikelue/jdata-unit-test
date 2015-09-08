@@ -5,6 +5,9 @@ import java.sql.SQLException;
 import java.util.Optional;
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.decorate.DataGrainDecorator;
 import guru.mikelue.jdut.decorate.TableSchemaLoadingDecorator;
@@ -18,6 +21,7 @@ import guru.mikelue.jdut.operation.DataRowsOperator;
  * The main executor for testing data.
  */
 public class DataConductor {
+	private Logger logger = LoggerFactory.getLogger(DataConductor.class);
 	private final DataSource dataSource;
 	private final DataGrainDecorator schemaLoadingDecorator;
 
@@ -144,7 +148,7 @@ public class DataConductor {
 	}
 
 	/**
-	 * Executes a {@link JdbcFunction}.
+	 * Executes a {@link JdbcFunction}, the connection would be put into {@link ConductorContext}.
 	 *
 	 * @param <T> The type of returned value
 	 * @param jdbcFunction The JDBC function to be executed
@@ -154,7 +158,21 @@ public class DataConductor {
 	public <T> T conduct(JdbcFunction<Connection, T> jdbcFunction)
 	{
 		try {
-			return jdbcFunction.surroundedBy(DbRelease::autoClose)
+			return jdbcFunction
+				.surroundedBy(
+					f -> conn -> {
+						logger.debug("Put connection to context: [{}]", conn);
+						ConductorContext.setCurrentConnection(conn);
+
+						try {
+							return f.applyJdbc(conn);
+						} finally {
+							logger.debug("Remove connection from context: [{}]", conn);
+							ConductorContext.cleanCurrentConnection();
+						}
+					}
+				)
+				.surroundedBy(DbRelease::autoClose)
 				.applyJdbc(dataSource.getConnection());
 		} catch (SQLException e) {
 			throw new DataConductException(e);

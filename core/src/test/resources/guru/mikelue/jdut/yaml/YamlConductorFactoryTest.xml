@@ -131,17 +131,31 @@
 
 			<column name="dt_bigint" type="BIGINT" />
 			<column name="dt_string" type="VARCHAR(64)" />
-			<column name="dt_clob" type="CLOB" />
 			<column name="dt_boolean" type="BOOLEAN" />
 			<column name="dt_decimal" type="DECIMAL(10, 2)" />
 			<column name="dt_binary" type="VARBINARY(128)" />
-			<column name="dt_blob" type="BLOB" />
 			<column name="dt_date" type="date" />
 			<column name="dt_time" type="time" />
 			<column name="dt_timestamp" type="timestamp" />
 		</createTable>
 		<rollback>
 			<dropTable tableName="dbp_tab_1" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="conductResourceWithDbTypeOfSpecificVendors" labels="conductResourceWithDbTypeOfSpecificVendors" author="${testClassName}">
+		<createTable tableName="nsv_1">
+			<column name="nt_id" type="INTEGER">
+				<constraints primaryKey="true" />
+			</column>
+
+			<column name="nt_nstring" type="NVARCHAR(64)" />
+			<column name="nt_blob" type="BLOB" />
+			<column name="nt_clob" type="CLOB" />
+			<column name="nt_nclob" type="NCLOB" />
+		</createTable>
+		<rollback>
+			<dropTable tableName="nsv_1" />
 		</rollback>
 	</changeSet>
 </databaseChangeLog>

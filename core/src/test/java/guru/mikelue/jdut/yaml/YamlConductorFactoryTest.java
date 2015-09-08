@@ -4,19 +4,26 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.Connection;
 import java.sql.NClob;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import javax.xml.bind.DatatypeConverter;
 
 import org.testng.Assert;
+import org.testng.SkipException;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import guru.mikelue.jdut.DuetConductor;
 import guru.mikelue.jdut.assertion.ResultSetAssert;
 import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
+import guru.mikelue.jdut.jdbc.JdbcVoidFunction;
 import guru.mikelue.jdut.jdbc.function.DbResultSet;
 import guru.mikelue.jdut.jdbc.function.DbStatement;
 import guru.mikelue.jdut.operation.DefaultOperatorFactory;
@@ -24,7 +31,6 @@ import guru.mikelue.jdut.operation.DefaultOperators;
 import guru.mikelue.jdut.operation.OperatorFactory;
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.test.DoLiquibase;
-import guru.mikelue.jdut.annotation.IfDatabaseVendor;
 import guru.mikelue.jdut.vendor.DatabaseVendor;
 
 public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
@@ -365,7 +371,7 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the construction for direct type of database in value of field.
 	 */
-	@Test @DoLiquibase @IfDatabaseVendor(match=DatabaseVendor.H2)
+	@Test @DoLiquibase
 	public void conductResourceWithDbType() throws SQLException
 	{
 		YamlConductorFactory factory = YamlConductorFactory.build(
@@ -415,27 +421,7 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 					.assertString("dt_string", "CH-2")
 
 					.assertNextTrue()
-					.assertString("dt_string", "CH-3")
-
-					.assertNextTrue()
-					.assertNString("dt_string", "CH-4")
-
-					.assertNextTrue()
-					.assertNString("dt_string", "CH-5")
-
-					.assertNextTrue()
-					.assertNString("dt_string", "CH-6");
-
-					Clob expectedClob = conn.createClob();
-					expectedClob.setString(1, "CLOB-1");
-					NClob expectedNClob = conn.createNClob();
-					expectedNClob.setString(1, "CLOB-2");
-
-					new ResultSetAssert(rs)
-					.assertNextTrue()
-					.assertClob("dt_clob", expectedClob)
-					.assertNextTrue()
-					.assertNClob("dt_clob", expectedNClob);
+					.assertString("dt_string", "CH-3");
 					// :~)
 
 					/**
@@ -451,23 +437,21 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 					 */
 					new ResultSetAssert(rs)
 					.assertNextTrue()
-					.assertFloat("dt_decimal", 2.3f)
+					.assertFloat("dt_decimal", 2.0f)
 					.assertNextTrue()
 					.assertDouble("dt_decimal", 3.5)
 					.assertNextTrue()
-					.assertBigDecimal("dt_decimal", new BigDecimal("4.70"))
+					.assertBigDecimal("dt_decimal", new BigDecimal("4.7"), new MathContext(2))
 					.assertNextTrue()
-					.assertBigDecimal("dt_decimal", new BigDecimal("5.20"))
+					.assertBigDecimal("dt_decimal", new BigDecimal("5.2"), new MathContext(2))
 					.assertNextTrue()
-					.assertBigDecimal("dt_decimal", new BigDecimal("6.20"));
+					.assertBigDecimal("dt_decimal", new BigDecimal("6.2"), new MathContext(2));
 					// :~)
 
 					/**
 					 * Asserts the binary data
 					 */
 					byte[] expectedBytes = DatatypeConverter.parseBase64Binary("VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=");
-					Blob expectedBlob = conn.createBlob();
-					expectedBlob.setBytes(1, expectedBytes);
 
 					new ResultSetAssert(rs)
 					.assertNextTrue()
@@ -475,9 +459,7 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 					.assertNextTrue()
 					.assertBytes("dt_binary", expectedBytes)
 					.assertNextTrue()
-					.assertBytes("dt_binary", expectedBytes)
-					.assertNextTrue()
-					.assertBlob("dt_blob", expectedBlob);
+					.assertBytes("dt_binary", expectedBytes);
 					// :~)
 
 					/**
@@ -496,6 +478,100 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 		).runJdbc();
 
 		conductor.clean();
+	}
+
+	@Test(dataProvider="ConductResourceWithDbTypeOfSpecificVendors") @DoLiquibase
+	public void conductResourceWithDbTypeOfSpecificVendors(
+		String yamlData, int sampleId,
+		DatabaseVendor[] excludeVendors,
+		JdbcVoidFunction<ResultSet> assertionFunction
+	) throws SQLException, IOException {
+		if (Stream.of(excludeVendors).anyMatch(excludeVendor -> excludeVendor == getCurrentVendor())) {
+			throw new SkipException("Skip vendor: " + getCurrentVendor());
+		}
+
+		YamlConductorFactory factory = YamlConductorFactory.build(
+			getDataSource(), builder -> builder
+				.resourceLoader(ReaderFunctions.loadByClass(getClass()))
+		);
+
+		DuetConductor conductor = null;
+		try (
+			Reader reader = new StringReader(
+				YamlTags.DEFAULT_TAGS +
+				"---\n" +
+				"- !sql!table nsv_1 : [" + yamlData + "]"
+			);
+		) {
+			conductor = factory.conductYaml(reader);
+		}
+
+		conductor.build();
+
+		JdbcTemplateFactory.buildRunnable(
+			() -> getDataSource().getConnection(),
+			conn -> DbResultSet.buildRunnable(
+				conn, "SELECT * FROM nsv_1 WHERE nt_id = " + sampleId,
+				assertionFunction
+			).runJdbc()
+		).runJdbc();
+
+		conductor.clean();
+	}
+	@DataProvider(name="ConductResourceWithDbTypeOfSpecificVendors")
+	private Object[][] getConductResourceWithDbTypeOfSpecificVendors()
+	{
+		byte[] expectedBytes = DatatypeConverter.parseBase64Binary("VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=");
+
+		return new Object[][] {
+			{ // CLOB
+				"{ nt_id: 13, nt_clob: !dbtype!clob \"GABB-3\" }", 13,
+				new DatabaseVendor[] { DatabaseVendor.PostgreSql },
+				(JdbcVoidFunction<ResultSet>)rs -> {
+					Connection conn = rs.getStatement().getConnection();
+					Clob clob = conn.createClob();
+					clob.setString(1, "GABB-3");
+
+					new ResultSetAssert(rs)
+					.assertNextTrue()
+					.assertClob("nt_clob", clob);
+				}
+			},
+			{ // BLOB
+				"{ nt_id: 1, nt_blob: !dbtype!blob \"VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=\" }", 1,
+				new DatabaseVendor[] { DatabaseVendor.PostgreSql },
+				(JdbcVoidFunction<ResultSet>)rs -> {
+					Connection conn = rs.getStatement().getConnection();
+					Blob blob = conn.createBlob();
+					blob.setBytes(1, expectedBytes);
+
+					new ResultSetAssert(rs)
+					.assertNextTrue()
+					.assertBlob("nt_blob", blob);
+				}
+			},
+			{ // NSTRING
+				"{ nt_id: 2, nt_nstring: !dbtype!nvarchar \"NSTR-1\" }", 2,
+				new DatabaseVendor[] { DatabaseVendor.Derby, DatabaseVendor.PostgreSql },
+				(JdbcVoidFunction<ResultSet>)rs -> new ResultSetAssert(rs)
+					.assertNextTrue()
+					.assertNString("nt_nstring", "NSTR-1")
+			},
+			{ // NCLOB
+				"{ nt_id: 3, nt_nclob: !dbtype!nclob \"NSTR-2\" }", 3,
+				new DatabaseVendor[] { DatabaseVendor.Derby, DatabaseVendor.PostgreSql },
+				(JdbcVoidFunction<ResultSet>)rs -> {
+					Connection conn = rs.getStatement().getConnection();
+
+					NClob nclob = conn.createNClob();
+					nclob.setString(1, "NSTR-2");
+
+					new ResultSetAssert(rs)
+						.assertNextTrue()
+						.assertNClob("nt_nclob", nclob);
+				}
+			},
+		};
 	}
 
 	/**

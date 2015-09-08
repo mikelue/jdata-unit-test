@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
@@ -27,10 +28,13 @@ import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 
 import guru.mikelue.jdut.ConductorConfig;
+import guru.mikelue.jdut.ConductorContext;
+import guru.mikelue.jdut.DataConductException;
 import guru.mikelue.jdut.DataConductor;
 import guru.mikelue.jdut.DuetConductor;
 import guru.mikelue.jdut.DuetFunctions;
 import guru.mikelue.jdut.jdbc.JdbcFunction;
+import guru.mikelue.jdut.jdbc.JdbcSupplier;
 import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
 import guru.mikelue.jdut.jdbc.SQLExceptionConvert;
 import guru.mikelue.jdut.jdbc.function.Transactional;
@@ -100,7 +104,7 @@ public class YamlConductorFactory {
 		YamlConductorFactory newFactory = new YamlConductorFactory();
 		newFactory.conductorConfig = finalConfig;
 		newFactory.dataConductor = new DataConductor(dataSource);
-		newFactory.jdutConstructor = new JdutConstructor(finalConfig, dataSource);
+		newFactory.jdutConstructor = new JdutConstructor(finalConfig);
 
 		return newFactory;
     }
@@ -259,16 +263,14 @@ class JdutConstructor extends Constructor {
 	private Logger logger = LoggerFactory.getLogger(YamlConductorFactory.class);
 
 	private final ConductorConfig conductorConfig;
-	private final DataSource dataSource;
 
 	private final Construct sqlConstruct = new SqlConstruct();
 	private final Construct jdutConstruct = new JdutConstruct();
 	private final Construct dbTypeConstruct = new DbTypeConstruct();
 
-    JdutConstructor(ConductorConfig newConfig, DataSource newDataSource)
+    JdutConstructor(ConductorConfig newConfig)
 	{
 		conductorConfig = newConfig;
-		dataSource = newDataSource;
     }
 
 	@Override
@@ -326,10 +328,11 @@ class JdutConstructor extends Constructor {
 
 				case FLOAT:
 				case DOUBLE:
+					return makeDoubleNumber(targetType, (Double)JdutConstructor.this.yamlConstructors.get(Tag.FLOAT).construct(node));
 				case NUMERIC:
 				case DECIMAL:
 				case REAL:
-					return makeDecimalNumber(targetType, (Double)JdutConstructor.this.yamlConstructors.get(Tag.FLOAT).construct(node));
+					return makeDecimalNumber(targetType, (String)JdutConstructor.this.yamlConstructors.get(Tag.STR).construct(node));
 
 				// Unsupported type
 				//case ARRAY:
@@ -377,14 +380,14 @@ class JdutConstructor extends Constructor {
 					return binaryData;
 
 				case BLOB:
-					return JdbcTemplateFactory.buildSupplier(
-						() -> dataSource.getConnection(),
-						conn -> {
+					return buildSupplier(
+						() -> {
+							Connection conn = getConnectionFromCondcutorContext();
 							Blob blob = conn.createBlob();
 							blob.setBytes(1, binaryData);
 							return blob;
 						}
-					).asSupplier().get();
+					);
 
 				default:
 					throw new LoadingYamlException("Unsupported binary type: [%s]", jdbcType);
@@ -401,32 +404,32 @@ class JdutConstructor extends Constructor {
 				case VARCHAR:
 					return value;
 				case CLOB:
-					return JdbcTemplateFactory.buildSupplier(
-						() -> dataSource.getConnection(),
-						conn -> {
+					return buildSupplier(
+						() -> {
+							Connection conn = getConnectionFromCondcutorContext();
 							Clob clob = conn.createClob();
 							clob.setString(1, value);
 							return clob;
 						}
-					).asSupplier().get();
+					);
 				case NCLOB:
-					return JdbcTemplateFactory.buildSupplier(
-						() -> dataSource.getConnection(),
-						conn -> {
+					return buildSupplier(
+						() -> {
+							Connection conn = getConnectionFromCondcutorContext();
 							NClob nclob = conn.createNClob();
 							nclob.setString(1, value);
 							return nclob;
 						}
-					).asSupplier().get();
+					);
 				case SQLXML:
-					return JdbcTemplateFactory.buildSupplier(
-						() -> dataSource.getConnection(),
-						conn -> {
+					return buildSupplier(
+						() -> {
+							Connection conn = getConnectionFromCondcutorContext();
 							SQLXML sqlXml = conn.createSQLXML();
 							sqlXml.setString(value);
 							return sqlXml;
 						}
-					).asSupplier().get();
+					);
 				default:
 					throw new LoadingYamlException("Unsupported text type: [%s]", jdbcType);
 			}
@@ -447,21 +450,41 @@ class JdutConstructor extends Constructor {
 					throw new LoadingYamlException("Unsupported integer type: [%s]", jdbcType);
 			}
 		}
-		private Object makeDecimalNumber(JDBCType jdbcType, Double doubleValue)
+		private Object makeDoubleNumber(JDBCType jdbcType, Double doubleValue)
 		{
 			switch (jdbcType) {
 				case FLOAT:
 					return doubleValue.floatValue();
 				case DOUBLE:
 					return doubleValue;
+				default:
+					throw new LoadingYamlException("Unsupported double type: [%s]", jdbcType);
+			}
+		}
+		private Object makeDecimalNumber(JDBCType jdbcType, String decimalValue)
+		{
+			switch (jdbcType) {
 				case NUMERIC:
 				case DECIMAL:
 				case REAL:
-					return new BigDecimal(doubleValue);
+					return new BigDecimal(decimalValue);
 
 				default:
 					throw new LoadingYamlException("Unsupported decimal type: [%s]", jdbcType);
 			}
+		}
+
+		private <T> Supplier<T> buildSupplier(JdbcSupplier<T> jdbcSupplier)
+		{
+			return jdbcSupplier.asSupplier(
+				conductorConfig.getSqlExceptionConvert().orElse(SQLExceptionConvert::runtimeException)
+			);
+		}
+
+		private Connection getConnectionFromCondcutorContext()
+		{
+			return ConductorContext.getCurrentConnection()
+				.orElseThrow(() -> new DataConductException("The conductor did not initialize a thread local connection"));
 		}
 	}
 

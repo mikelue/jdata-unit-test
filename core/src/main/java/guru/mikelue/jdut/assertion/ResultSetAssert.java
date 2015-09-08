@@ -1,6 +1,7 @@
 package guru.mikelue.jdut.assertion;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.net.URL;
 import java.sql.Array;
 import java.sql.Blob;
@@ -1031,26 +1032,26 @@ public class ResultSetAssert {
 		);
 	}
 
-	public ResultSetAssert assertBigDecimal(String columnName, BigDecimal expectedBigDecimal)
+	public ResultSetAssert assertBigDecimal(String columnName, BigDecimal expectedBigDecimal, MathContext roundMathContext)
 		throws SQLException
 	{
 		return assertBigDecimal(
-			columnName, expectedBigDecimal, () -> ""
+			columnName, expectedBigDecimal, roundMathContext, () -> ""
 		);
 	}
-	public ResultSetAssert assertBigDecimal(String columnName, BigDecimal expectedBigDecimal, String message)
+	public ResultSetAssert assertBigDecimal(String columnName, BigDecimal expectedBigDecimal, MathContext roundMathContext, String message)
 		throws SQLException
 	{
 		return assertBigDecimal(
-			columnName, expectedBigDecimal, () -> message
+			columnName, expectedBigDecimal, roundMathContext, () -> message
 		);
 	}
-	public ResultSetAssert assertBigDecimal(String columnName, BigDecimal expectedBigDecimal, Supplier<String> messageBuilder)
+	public ResultSetAssert assertBigDecimal(String columnName, BigDecimal expectedBigDecimal, MathContext roundMathContext, Supplier<String> messageBuilder)
 		throws SQLException
 	{
 		BigDecimal testedValue = testedResultSet.getBigDecimal(columnName);
-		return assertEqualValue(
-			testedValue, expectedBigDecimal,
+		return assertBigDecimal(
+			testedValue, expectedBigDecimal, roundMathContext,
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedBigDecimal,
@@ -1058,26 +1059,26 @@ public class ResultSetAssert {
 			)
 		);
 	}
-	public ResultSetAssert assertBigDecimal(int columnIndex, BigDecimal expectedBigDecimal)
+	public ResultSetAssert assertBigDecimal(int columnIndex, BigDecimal expectedBigDecimal, MathContext roundMathContext)
 		throws SQLException
 	{
 		return assertBigDecimal(
-			columnIndex, expectedBigDecimal, () -> ""
+			columnIndex, expectedBigDecimal, roundMathContext, () -> ""
 		);
 	}
-	public ResultSetAssert assertBigDecimal(int columnIndex, BigDecimal expectedBigDecimal, String message)
+	public ResultSetAssert assertBigDecimal(int columnIndex, BigDecimal expectedBigDecimal, MathContext roundMathContext, String message)
 		throws SQLException
 	{
 		return assertBigDecimal(
-			columnIndex, expectedBigDecimal, () -> message
+			columnIndex, expectedBigDecimal, roundMathContext, () -> message
 		);
 	}
-	public ResultSetAssert assertBigDecimal(int columnIndex, BigDecimal expectedBigDecimal, Supplier<String> messageBuilder)
+	public ResultSetAssert assertBigDecimal(int columnIndex, BigDecimal expectedBigDecimal, MathContext roundMathContext, Supplier<String> messageBuilder)
 		throws SQLException
 	{
 		BigDecimal testedValue = testedResultSet.getBigDecimal(columnIndex);
-		return assertEqualValue(
-			testedValue, expectedBigDecimal,
+		return assertBigDecimal(
+			testedValue, expectedBigDecimal, roundMathContext,
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedBigDecimal,
@@ -1706,6 +1707,24 @@ public class ResultSetAssert {
 		assertEqualValue(
 			testedDate.toString(), expectedDate.toString(),
 			messageBuilder
+		);
+
+		return this;
+	}
+
+	private ResultSetAssert assertBigDecimal(BigDecimal testedObject, BigDecimal expectedObject, MathContext roundMathContext, Supplier<String> messageBuilder)
+	{
+		if (testedObject == null && expectedObject == null) {
+			return this;
+		}
+		if (testedObject == null || expectedObject == null) {
+			throw new AssertException(
+				messageBuilder.get()
+			);
+		}
+
+		assertEqualValue(
+			testedObject.round(roundMathContext), expectedObject.round(roundMathContext), messageBuilder
 		);
 
 		return this;

@@ -20,35 +20,24 @@
         [ 6, !dbtype!char "CH-1" ],
         [ 7, !dbtype!varchar "CH-2" ],
         [ 8, !dbtype!longvarchar "CH-3" ],
-        [ 9, !dbtype!nchar "CH-4" ],
-        [ 10, !dbtype!nvarchar "CH-5" ],
-        [ 11, !dbtype!longnvarchar "CH-6" ]
-    ]
-}
-
-- !sql!table dbp_tab_1 : {
-    columns : [ "dt_id", "dt_clob" ],
-    data : [
-        [ 12, !dbtype!clob "CLOB-1" ],
-        [ 13, !dbtype!nclob "CLOB-2" ],
     ]
 }
 
 - !sql!table dbp_tab_1 : {
     columns : [ "dt_id", "dt_boolean" ],
     data : [
-        [ 14, !dbtype!boolean true ],
+        [ 9, !dbtype!boolean true ],
     ]
 }
 
 - !sql!table dbp_tab_1 : {
     columns : [ "dt_id", "dt_decimal" ],
     data : [
-        [ 15, !dbtype!float 2.3 ],
-        [ 16, !dbtype!double 3.5 ],
-        [ 17, !dbtype!numeric 4.7 ],
-        [ 18, !dbtype!decimal 5.2 ],
-        [ 19, !dbtype!real 6.2 ],
+        [ 10, !dbtype!float 2.0 ],
+        [ 11, !dbtype!double 3.5 ],
+        [ 12, !dbtype!numeric 4.7 ],
+        [ 13, !dbtype!decimal 5.2 ],
+        [ 14, !dbtype!real 6.2 ],
     ]
 }
 
@@ -56,22 +45,14 @@
 - !sql!table dbp_tab_1 : {
     columns : [ "dt_id", "dt_binary" ],
     data : [
-        [ 20, !dbtype!binary "VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=" ],
-        [ 21, !dbtype!varbinary "VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=" ],
-        [ 22, !dbtype!longvarbinary "VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=" ],
-    ]
-}
-
-# Use UTF-8 binary - THE King was on his thorne
-- !sql!table dbp_tab_1 : {
-    columns : [ "dt_id", "dt_blob" ],
-    data : [
-        [ 23, !dbtype!blob "VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=" ],
+        [ 15, !dbtype!binary "VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=" ],
+        [ 16, !dbtype!varbinary "VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=" ],
+        [ 17, !dbtype!longvarbinary "VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=" ],
     ]
 }
 
 - !sql!table dbp_tab_1 : [
-    { dt_id: 24, dt_date: !dbtype!date "2015-05-05 11:20:04+08" },
-    { dt_id: 25, dt_time: !dbtype!time "2014-11-25 10:20:30+08" },
-    { dt_id: 26, dt_timestamp: !dbtype!timestamp "2014-02-30 20:20:10+08" },
+    { dt_id: 18, dt_date: !dbtype!date "2015-05-05 11:20:04+08" },
+    { dt_id: 19, dt_time: !dbtype!time "2014-11-25 10:20:30+08" },
+    { dt_id: 20, dt_timestamp: !dbtype!timestamp "2014-02-30 20:20:10+08" },
 ]

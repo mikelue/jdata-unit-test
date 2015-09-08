@@ -1,5 +1,8 @@
 package guru.mikelue.jdut.jdbc.function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import guru.mikelue.jdut.jdbc.JdbcFunction;
 
 /**
@@ -13,6 +16,7 @@ import guru.mikelue.jdut.jdbc.JdbcFunction;
  * @see JdbcFunction.SurroundOperator
  */
 public final class DbRelease {
+	private static Logger logger = LoggerFactory.getLogger(DbRelease.class);
 	private DbRelease() {}
 
 	/**
@@ -34,6 +38,7 @@ public final class DbRelease {
 				return surroundedFunction.applyJdbc(jdbcObject);
 			} finally {
 				try {
+					logger.debug("Close resource: {}", jdbcObject);
 					jdbcObject.close();
 				} catch (Exception e) {
 					throw new RuntimeException(e);
