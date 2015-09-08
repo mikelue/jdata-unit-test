@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.test.DoLiquibase;
-import guru.mikelue.jdut.test.IfVendor;
+import guru.mikelue.jdut.annotation.IfDatabaseVendor;
 import guru.mikelue.jdut.vendor.DatabaseVendor;
 
 public class SequenceGetterTest extends AbstractDataSourceTestBase {
@@ -14,7 +14,7 @@ public class SequenceGetterTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the getting of "NEXTVAL".
 	 */
-	@Test @DoLiquibase @IfVendor(match=DatabaseVendor.Oracle)
+	@Test @DoLiquibase @IfDatabaseVendor(match=DatabaseVendor.Oracle)
 	public void nextValAsInt()
 	{
 		SequenceGetter testedGetter = new SequenceGetter(getDataSource());
@@ -25,7 +25,7 @@ public class SequenceGetterTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the getting of "CURRENTVAL".
 	 */
-	@Test @DoLiquibase @IfVendor(match=DatabaseVendor.Oracle)
+	@Test @DoLiquibase @IfDatabaseVendor(match=DatabaseVendor.Oracle)
 	public void currentValAsInt()
 	{
 		SequenceGetter testedGetter = new SequenceGetter(getDataSource());

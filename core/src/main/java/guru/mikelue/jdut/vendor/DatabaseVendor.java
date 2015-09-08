@@ -18,6 +18,7 @@ public enum DatabaseVendor implements VendorType {
 	MySql("mysql"),
 	H2("h2"),
 	HsqlDb("hsqldb"),
+	Derby("derby"),
 	Sqlite("sqlite"),
 	Unknown("unknown");
 
@@ -71,6 +72,10 @@ public enum DatabaseVendor implements VendorType {
 
 		if (driverName.contains("mysql")) {
 			return MySql;
+		}
+
+		if (driverName.contains("derby")) {
+			return Derby;
 		}
 
 		if (driverName.contains("postgresql")) {

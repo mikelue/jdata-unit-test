@@ -11,7 +11,7 @@ import guru.mikelue.jdut.jdbc.function.DbResultSet;
 import guru.mikelue.jdut.operation.DefaultOperators;
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.test.DoLiquibase;
-import guru.mikelue.jdut.test.IfVendor;
+import guru.mikelue.jdut.annotation.IfDatabaseVendor;
 import guru.mikelue.jdut.vendor.DatabaseVendor;
 
 public class IdentityInsertOperatorTest extends AbstractDataSourceTestBase {
@@ -20,7 +20,7 @@ public class IdentityInsertOperatorTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the disabling identity function for MS SQL server.
 	 */
-	@Test @DoLiquibase @IfVendor(match=DatabaseVendor.MsSql)
+	@Test @DoLiquibase @IfDatabaseVendor(match=DatabaseVendor.MsSql)
 	public void operate() throws SQLException
 	{
 		final DataGrain dataGrain = DataGrain.build(

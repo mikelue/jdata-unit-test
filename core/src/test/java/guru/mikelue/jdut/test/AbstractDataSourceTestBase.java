@@ -23,6 +23,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
+import guru.mikelue.jdut.annotation.AnnotationUtil;
+import guru.mikelue.jdut.annotation.IfDatabaseVendor;
 import guru.mikelue.jdut.decorate.DataGrainDecorator;
 import guru.mikelue.jdut.decorate.TableSchemaLoadingDecorator;
 import guru.mikelue.jdut.jdbc.JdbcRunnable;
@@ -62,27 +64,10 @@ public abstract class AbstractDataSourceTestBase {
 	@BeforeMethod(firstTimeOnly=true)
 	protected void checkVendorCondition(Method method)
 	{
-		IfVendor vendorCondition = method.getAnnotation(IfVendor.class);
-		if (vendorCondition == null) {
-			return;
-		}
-
+		IfDatabaseVendor vendorCondition = method.getAnnotation(IfDatabaseVendor.class);
 		DatabaseVendor currentVendor = ctx.getBean(DatabaseVendor.class);
 
-		boolean matched = Stream.of(vendorCondition.match())
-			.anyMatch(
-				vendor -> currentVendor.equals(vendor) || vendor == DatabaseVendor.Unknown
-			);
-		if (!matched) {
-			throw new SkipException("Skip test because not matched needed database");
-		}
-
-		boolean notMatched = Stream.of(vendorCondition.notMatch())
-			.filter(vendor -> vendor != DatabaseVendor.Unknown)
-			.anyMatch(
-				vendor -> currentVendor.equals(vendor) && vendor != DatabaseVendor.Unknown
-			);
-		if (notMatched) {
+		if (!AnnotationUtil.matchDatabaseVendor(currentVendor, vendorCondition)) {
 			throw new SkipException("Skip test because not matched needed database");
 		}
 	}

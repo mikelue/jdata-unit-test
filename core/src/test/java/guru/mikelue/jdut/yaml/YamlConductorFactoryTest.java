@@ -9,7 +9,6 @@ import java.sql.Clob;
 import java.sql.NClob;
 import java.sql.SQLException;
 import java.util.function.Supplier;
-
 import javax.xml.bind.DatatypeConverter;
 
 import org.testng.Assert;
@@ -25,7 +24,7 @@ import guru.mikelue.jdut.operation.DefaultOperators;
 import guru.mikelue.jdut.operation.OperatorFactory;
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.test.DoLiquibase;
-import guru.mikelue.jdut.test.IfVendor;
+import guru.mikelue.jdut.annotation.IfDatabaseVendor;
 import guru.mikelue.jdut.vendor.DatabaseVendor;
 
 public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
@@ -366,7 +365,7 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the construction for direct type of database in value of field.
 	 */
-	@Test @DoLiquibase @IfVendor(match=DatabaseVendor.H2)
+	@Test @DoLiquibase @IfDatabaseVendor(match=DatabaseVendor.H2)
 	public void conductResourceWithDbType() throws SQLException
 	{
 		YamlConductorFactory factory = YamlConductorFactory.build(
