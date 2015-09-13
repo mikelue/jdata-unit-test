@@ -15,11 +15,19 @@ import guru.mikelue.jdut.vendor.DatabaseVendor;
 @Documented @Inherited
 public @interface IfDatabaseVendor {
 	/**
-	 * Any one of the vendors matches environment.
+	 * Any one of the vendors matches environment.<br>
+	 *
+	 * Default value is {@link DatabaseVendor#Unknown}
+	 *
+	 * @return The array of vendors that any one of them is matched
 	 */
 	public DatabaseVendor[] match() default DatabaseVendor.Unknown;
 	/**
-	 * Any one of the vendors must not match environment.
+	 * Any one of the vendors must not match environment.<br>
+	 *
+	 * Default value is {@link DatabaseVendor#Unknown}
+	 *
+	 * @return The array of vendors that any one of them is not matched
 	 */
 	public DatabaseVendor[] notMatch() default DatabaseVendor.Unknown;
 }

@@ -4,9 +4,11 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.vendor.DatabaseVendor;
+import guru.mikelue.jdut.yaml.YamlConductorFactory;
 
-public class AnnotationUtilTest {
+public class AnnotationUtilTest extends AbstractDataSourceTestBase {
 	public AnnotationUtilTest() {}
 
 	/**
@@ -44,7 +46,68 @@ public class AnnotationUtilTest {
 			{ "multiple", DatabaseVendor.PostgreSql, false },
 		};
 	}
+
+	/**
+	 * Tests the building of duet conductor by convention.
+	 */
+	@Test(dataProvider="BuildConductorByConventionAndMethod")
+	public void buildConductorByConventionAndMethod(
+		String sampleMethodName,
+		boolean hasConductor
+	) throws NoSuchMethodException {
+		YamlConductorFactory sampleFactory = YamlConductorFactory.build(getDataSource());
+
+		Assert.assertEquals(
+			AnnotationUtil.buildConductorByConvention(
+				sampleFactory, AnnotationUtilTest.class.getMethod(sampleMethodName)
+			).isPresent(),
+			hasConductor
+		);
+	}
+	@DataProvider(name="BuildConductorByConventionAndMethod")
+	private Object[][] getBuildConductorByConventionAndMethod()
+	{
+		return new Object[][] {
+			{ "withJdutResource", true },
+			{ "withoutJdutResource", false }
+		};
+	}
+
+	@Test(enabled=false) @JdutResource
+	public void withJdutResource() {}
+	@Test(enabled=false)
+	public void withoutJdutResource() {}
+
+	/**
+	 * Tests the building of duet conductor by convention.
+	 */
+	@Test(dataProvider="BuildConductorByConventionAndClass")
+	public void buildConductorByConventionAndClass(
+		Class<?> sampleClass,
+		boolean hasConductor
+	) {
+		YamlConductorFactory sampleFactory = YamlConductorFactory.build(getDataSource());
+
+		Assert.assertEquals(
+			AnnotationUtil.buildConductorByConvention(
+				sampleFactory, sampleClass
+			).isPresent(),
+			hasConductor
+		);
+	}
+	@DataProvider(name="BuildConductorByConventionAndClass")
+	private Object[][] getBuildConductorByConventionAndClass()
+	{
+		return new Object[][] {
+			{ WithAnnotation.class, true },
+			{ WithoutAnnotation.class, false }
+		};
+	}
 }
+
+@JdutResource
+class WithAnnotation {}
+class WithoutAnnotation {}
 
 interface SampleForIfDatabaseVendor {
 	void nullMethod();

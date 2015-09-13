@@ -2,6 +2,7 @@ package guru.mikelue.jdut;
 
 import java.io.Reader;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,9 +69,10 @@ public class ConductorConfig {
 		}
 
 		/**
-		 * Sets the convertion for {@link SQLException}.
+		 * Sets the conversion for {@link SQLException}.
 		 *
-		 * @param newSqlExceptionConvert The convertion for {@link SQLException}
+		 * @param <E> The type of {@link RuntimeException} to be the result exception
+		 * @param newSqlExceptionConvert The conversion for {@link SQLException}
 		 *
 		 * @return cascading self
 		 */
@@ -233,9 +235,9 @@ public class ConductorConfig {
 	}
 
 	/**
-	 * Gets facotry of operator(optional).
+	 * Gets factory of operator(optional).
 	 *
-	 * @return The facotry of operators
+	 * @return The factory of operators
 	 */
 	public Optional<OperatorFactory> getOperatorFactory()
 	{
@@ -356,9 +358,9 @@ public class ConductorConfig {
 	}
 
 	/**
-	 * Gets the function for convertion of {@link SQLException}.
+	 * Gets the function for conversion of {@link SQLException}.
 	 *
-	 * @return The optional object of lambd
+	 * @return The optional object of lambda
 	 */
 	public Optional<SQLExceptionConvert<?>> getSqlExceptionConvert()
 	{

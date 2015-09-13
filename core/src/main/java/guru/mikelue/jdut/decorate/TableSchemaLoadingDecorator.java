@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ import guru.mikelue.jdut.datagrain.DataRow;
 import guru.mikelue.jdut.datagrain.DataRowException;
 import guru.mikelue.jdut.datagrain.SchemaColumn;
 import guru.mikelue.jdut.datagrain.SchemaTable;
-import guru.mikelue.jdut.jdbc.JdbcFunction;
 import guru.mikelue.jdut.jdbc.JdbcVoidFunction;
 import guru.mikelue.jdut.jdbc.JdbcRunnable;
 import guru.mikelue.jdut.jdbc.JdbcSupplier;
@@ -30,13 +30,14 @@ import guru.mikelue.jdut.jdbc.SQLExceptionConvert;
 /**
  * Loads database schema and validating rows.<br>
  *
- * To improve performance, this object would cache {@link SchemaTable} by its name.
+ * To improve performance, this object would cache {@link SchemaTable} by its name,
+ * but this class is thread-safe for the caching mechanism.
  */
 public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 	private Logger logger = LoggerFactory.getLogger(TableSchemaLoadingDecorator.class);
 
 	private final DataSource dataSource;
-	private Map<String, SchemaTable> cachedTables = new HashMap<>(32);
+	private Map<String, SchemaTable> cachedTables = new ConcurrentHashMap<>(32);
 
 	public TableSchemaLoadingDecorator(DataSource newDataSource)
 	{
@@ -129,10 +130,10 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 				tableBuilder.getName(),
 				null
 			),
-			rsColumns -> {
-				/**
-				 * Builds information of columns
-				 */
+			/**
+			 * Builds information of columns
+			 */
+			(ResultSet rsColumns) -> {
 				while (rsColumns.next()) {
 					String columnName = rsColumns.getString("COLUMN_NAME");
 					JDBCType jdbcType = JDBCType.valueOf(rsColumns.getInt("DATA_TYPE"));

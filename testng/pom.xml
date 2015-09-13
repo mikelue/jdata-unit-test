@@ -8,10 +8,10 @@
     </parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>core</artifactId>
+	<artifactId>testng</artifactId>
 
-	<name>core</name>
-	<description>Core module of JDUT</description>
+	<name>testng</name>
+	<description>TestNG module of JDUT</description>
 	<url>https://github.com/mikelue/jdata-unit-test/wiki</url>
 
 	<build>
@@ -35,6 +35,15 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<links>
+						<link>http://testng.org/javadocs/</link>
+					</links>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 				<configuration>
 					<siteDirectory>${basedir}/../src/site</siteDirectory>
@@ -45,16 +54,23 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
+			<groupId>guru.mikelue.jdut</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 
 		<!--
-		  - Testing
+		  - The testng library
+		  -->
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- :~) -->
+
+		<!--
+		  - Misc(Testing)
 		  -->
 		<dependency>
 			<groupId>org.jmockit</groupId>
@@ -62,15 +78,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+			<version>4.0</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- :~) -->
-
-		<!--
-		  - Misc(Testing)
-		  -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -79,17 +91,6 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.mattbertolini</groupId>
-			<artifactId>liquibase-slf4j</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<!-- :~) -->

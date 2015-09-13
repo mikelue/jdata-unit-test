@@ -1,0 +1,10 @@
+%TAG !jdut! tag:jdut.mikelue.guru:1.0/
+%TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
+%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
+
+---
+- !sql!code
+  build_operation: !sql!statement
+    CREATE TABLE suite_t1(t1_id INTEGER)
+  clean_operation: !sql!statement
+    DROP TABLE suite_t1

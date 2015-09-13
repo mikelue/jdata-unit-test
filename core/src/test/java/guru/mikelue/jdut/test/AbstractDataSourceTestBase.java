@@ -1,7 +1,6 @@
 package guru.mikelue.jdut.test;
 
 import java.lang.reflect.Method;
-import java.util.stream.Stream;
 import javax.sql.DataSource;
 
 import liquibase.Contexts;
@@ -15,12 +14,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.testng.IInvokedMethod;
+import org.testng.IInvokedMethodListener;
+import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 import guru.mikelue.jdut.annotation.AnnotationUtil;
@@ -31,8 +34,41 @@ import guru.mikelue.jdut.jdbc.JdbcRunnable;
 import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
 import guru.mikelue.jdut.vendor.DatabaseVendor;
 
-@Test(suiteName="DataSourceSuite", groups="DataSourceGroup")
+@Listeners(AbstractDataSourceTestBase.IfDatabaseVendorListener.class)
+@Test(testName="DataSourceTest", groups="DataSourceGroup")
 public abstract class AbstractDataSourceTestBase {
+	public static class IfDatabaseVendorListener implements IInvokedMethodListener {
+		private Logger logger = LoggerFactory.getLogger(IfDatabaseVendorListener.class);
+
+		public IfDatabaseVendorListener() {}
+
+		@Override
+		public void beforeInvocation(IInvokedMethod method, ITestResult testResult)
+		{
+			if (!method.isTestMethod()) {
+				return;
+			}
+
+			if (!"DataSourceTest".equals(testResult.getTestContext().getName())) {
+				return;
+			}
+
+			IfDatabaseVendor vendorCondition = method.getTestMethod().getConstructorOrMethod()
+					.getMethod()
+					.getAnnotation(IfDatabaseVendor.class);
+			DatabaseVendor currentVendor = ctx.getBean(DatabaseVendor.class);
+
+			if (!AnnotationUtil.matchDatabaseVendor(currentVendor, vendorCondition)) {
+				logger.debug("Skip test because of current vendor: [{}]", currentVendor);
+
+				throw new SkipException("Skip test because not matched needed database");
+			}
+		}
+
+		@Override
+		public void afterInvocation(IInvokedMethod method, ITestResult testResult) {}
+	}
+
 	private Logger mainLogger = LoggerFactory.getLogger(AbstractDataSourceTestBase.class);
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -42,17 +78,17 @@ public abstract class AbstractDataSourceTestBase {
 
 	protected AbstractDataSourceTestBase() {}
 
-	@BeforeSuite
-	public static void initDataSourceSuite()
+	@BeforeTest
+	public static void initDataSourceTest()
 	{
 		ctx = new AnnotationConfigApplicationContext();
 		ctx.register(DataSourceContext.class);
 		ctx.refresh();
 	}
-	@AfterSuite
-	public static void closeDataSourceSuite()
+	@AfterTest
+	public static void closeDataSourceTest()
 	{
-		ctx.stop();
+		ctx.close();
 	}
 
 	@BeforeClass
@@ -62,17 +98,6 @@ public abstract class AbstractDataSourceTestBase {
 	}
 
 	@BeforeMethod(firstTimeOnly=true)
-	protected void checkVendorCondition(Method method)
-	{
-		IfDatabaseVendor vendorCondition = method.getAnnotation(IfDatabaseVendor.class);
-		DatabaseVendor currentVendor = ctx.getBean(DatabaseVendor.class);
-
-		if (!AnnotationUtil.matchDatabaseVendor(currentVendor, vendorCondition)) {
-			throw new SkipException("Skip test because not matched needed database");
-		}
-	}
-
-	@BeforeMethod(firstTimeOnly=true, dependsOnMethods="checkVendorCondition")
 	protected void doLiquibaseBefore(Method method)
 	{
 		DoLiquibase doLiquibase = method.getAnnotation(DoLiquibase.class);
