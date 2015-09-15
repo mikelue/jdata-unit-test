@@ -1,7 +1,9 @@
 package guru.mikelue.jdut;
 
 /**
- * Defines the method for data conduction of testing.
+ * Defines the method for data building/cleaning for testing.
+ *
+ * @see DuetFunctions
  */
 public interface DuetConductor {
     /**
@@ -9,7 +11,7 @@ public interface DuetConductor {
      */
     public void build();
     /**
-     * Clean data.
+     * Cleans data.
      */
     public void clean();
 }

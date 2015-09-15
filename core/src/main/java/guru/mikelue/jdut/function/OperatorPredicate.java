@@ -8,7 +8,18 @@ import guru.mikelue.jdut.jdbc.SQLExceptionConvert;
 import guru.mikelue.jdut.operation.DefaultOperatorFactory;
 
 /**
- * Used with {@link DefaultOperatorFactory.Builder} to check the matching condition for operators of vendor.
+ * Used with {@link DefaultOperatorFactory.Builder} to check the matching condition for operators of vendor.<br>
+ *
+ * <p>Example:</p>
+ * <pre>{@code
+ * // dataSource - Initialized instance of data source
+ * // your_map_of_operators - The map of operators by String key
+ * OperatorFactory yourFactory = DefaultOperatorFactory.build(
+ *     dataSource,
+ *     builder -> builder
+ *         .add(metaData -> { metaData.getXXX().equals("XXX") }, your_map_of_operators)
+ * )
+ * }</pre>
  */
 @FunctionalInterface
 public interface OperatorPredicate {

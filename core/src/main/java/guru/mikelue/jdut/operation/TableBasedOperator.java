@@ -2,16 +2,40 @@ package guru.mikelue.jdut.operation;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import guru.mikelue.jdut.datagrain.DataRow;
 
 /**
- * This operator operates every table only once.
+ * This operator operates every table only once.<br>
+ *
+ * <p>This object is not thread-safe. For a thread-safe version, please use {@link #buildThreadSafe TableBasedOperator.buildThreadSafe} to instantiate this class.</p>
  */
 public class TableBasedOperator implements DataRowOperator {
-	private Set<String> processedTable = new HashSet<>(8);
+	/**
+	 * Builds this operator with thread-safe property.
+	 *
+	 * @param newDataRowOperator The operator to be wrapped
+	 *
+	 * @return The new instance of thread-safe
+	 */
+	public static TableBasedOperator buildThreadSafe(DataRowOperator newDataRowOperator)
+	{
+		return new TableBasedOperator(
+			newDataRowOperator,
+			Collections.synchronizedSet(new HashSet<>(8))
+		) {
+			@Override
+			public synchronized DataRow operate(Connection conn, DataRow dataRow) throws SQLException
+			{
+				return super.operate(conn, dataRow);
+			}
+		};
+	}
+
+	private Set<String> processedTable;
 	private final DataRowOperator dataRowOperator;
 
 	/**
@@ -21,7 +45,13 @@ public class TableBasedOperator implements DataRowOperator {
 	 */
 	public TableBasedOperator(DataRowOperator newDataRowOperator)
 	{
+		this(newDataRowOperator, new HashSet<>(8));
+	}
+
+	private TableBasedOperator(DataRowOperator newDataRowOperator, Set<String> processTableImpl)
+	{
 		dataRowOperator = newDataRowOperator;
+		processedTable = processTableImpl;
 	}
 
 	/**

@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 import static java.lang.annotation.ElementType.*;
 
 /**
- * Only defines the annotation of resources, the detail of usage is defined by controller/contrainer which
+ * Only defines the annotation of resources, the detail of usage is defined by controller/container which
  * loads the instance of this annotation.
  */
 @Target({ANNOTATION_TYPE, CONSTRUCTOR, FIELD, LOCAL_VARIABLE, METHOD, PACKAGE, PARAMETER, TYPE, TYPE_PARAMETER, TYPE_USE})

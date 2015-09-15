@@ -28,11 +28,11 @@ import guru.mikelue.jdut.operation.OperatorFactory;
  * <h3>Building blocks</h3>
  * <ol>
  * 	<li>The loader of resource</li>
- * 	<li>The {@link SQLExceptionConvert}</li>
- * 	<li>The operation factory</li>
- * 	<li>The named operators</li>
- * 	<li>The named decoration</li>
- * 	<li>The named {@link JdbcFunction}</li>
+ * 	<li>The {@link SQLExceptionConvert SQLExceptionConvert}</li>
+ * 	<li>The {@link OperatorFactory operation factory}</li>
+ * 	<li>The named {@link DataGrainOperator operators}</li>
+ * 	<li>The named {@link DataGrainDecorator decorations}</li>
+ * 	<li>The named {@link JdbcFunction JdbcFunction}</li>
  * </ol>
  */
 public class ConductorConfig {

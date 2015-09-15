@@ -10,7 +10,9 @@ import guru.mikelue.jdut.operation.DataGrainOperator;
 /**
  * Builds surrounding operator with database operations.
  */
-public interface DatabaseSurroundOperators {
+public final class DatabaseSurroundOperators {
+	private DatabaseSurroundOperators() {}
+
 	/**
 	 * Surrounds <em>operator</em> to be auto closed.
 	 *

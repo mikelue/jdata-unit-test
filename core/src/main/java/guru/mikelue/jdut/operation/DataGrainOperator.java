@@ -19,9 +19,10 @@ public interface DataGrainOperator {
 	/**
 	 * The operator for surrounding of {@link DataGrainOperator}.
 	 */
+	@FunctionalInterface
 	public interface SurroundOperator {
 		/**
-		 * Converts this operator ot {@link UnaryOperator}.
+		 * Converts this lambda to {@link UnaryOperator}.
 		 *
 		 * @return The unary operator
 		 */

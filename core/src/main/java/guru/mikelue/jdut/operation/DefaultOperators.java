@@ -146,7 +146,9 @@ public final class DefaultOperators {
 	}
 
 	/**
-	 * Default operator of removal of all data of a table. As lambda of {@link DataGrainOperator}.
+	 * Default operator of removal of all data of a table. As lambda of {@link DataGrainOperator}.<br>
+	 *
+	 * <p>This operator is wrapped by {@link TableBasedOperator}(not thread-safe).</p>
 	 *
 	 * @param conn The connection object of initialized
 	 * @param dataGrain The data grain to be processed
@@ -172,6 +174,8 @@ public final class DefaultOperators {
 
 	/**
 	 * Default operator of truncating table. As lambda of {@link DataGrainOperator}.
+	 *
+	 * <p>This operator is wrapped by {@link TableBasedOperator}(not thread-safe).</p>
 	 *
 	 * @param conn The connection object of initialized
 	 * @param dataGrain The data grain to be processed

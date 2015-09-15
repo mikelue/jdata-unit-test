@@ -441,7 +441,7 @@ public class ResultSetAssert {
 			columnName, expectedString, () -> message
 		);
 	}
-	public ResultSetAssert assertString(String columnName, String expectedString, Supplier<String> messageBuilder)
+	public ResultSetAssert assertString(String columnName, String expectedString, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		String testedValue = testedResultSet.getString(columnName);
@@ -450,7 +450,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedString,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -468,7 +468,7 @@ public class ResultSetAssert {
 			columnIndex, expectedString, () -> message
 		);
 	}
-	public ResultSetAssert assertString(int columnIndex, String expectedString, Supplier<String> messageBuilder)
+	public ResultSetAssert assertString(int columnIndex, String expectedString, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		String testedValue = testedResultSet.getString(columnIndex);
@@ -477,7 +477,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedString,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -496,7 +496,7 @@ public class ResultSetAssert {
 			columnName, expectedNString, () -> message
 		);
 	}
-	public ResultSetAssert assertNString(String columnName, String expectedNString, Supplier<String> messageBuilder)
+	public ResultSetAssert assertNString(String columnName, String expectedNString, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		String testedValue = testedResultSet.getNString(columnName);
@@ -505,7 +505,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedNString,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -523,7 +523,7 @@ public class ResultSetAssert {
 			columnIndex, expectedNString, () -> message
 		);
 	}
-	public ResultSetAssert assertNString(int columnIndex, String expectedNString, Supplier<String> messageBuilder)
+	public ResultSetAssert assertNString(int columnIndex, String expectedNString, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		String testedValue = testedResultSet.getNString(columnIndex);
@@ -532,7 +532,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedNString,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -551,7 +551,7 @@ public class ResultSetAssert {
 			columnName, expectedObject, () -> message
 		);
 	}
-	public ResultSetAssert assertObject(String columnName, Object expectedObject, Supplier<String> messageBuilder)
+	public ResultSetAssert assertObject(String columnName, Object expectedObject, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Object testedValue = testedResultSet.getObject(columnName);
@@ -560,7 +560,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedObject,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -578,7 +578,7 @@ public class ResultSetAssert {
 			columnIndex, expectedObject, () -> message
 		);
 	}
-	public ResultSetAssert assertObject(int columnIndex, Object expectedObject, Supplier<String> messageBuilder)
+	public ResultSetAssert assertObject(int columnIndex, Object expectedObject, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Object testedValue = testedResultSet.getObject(columnIndex);
@@ -587,7 +587,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedObject,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -606,7 +606,7 @@ public class ResultSetAssert {
 			columnName, expectedArray, () -> message
 		);
 	}
-	public ResultSetAssert assertArray(String columnName, Array expectedArray, Supplier<String> messageBuilder)
+	public ResultSetAssert assertArray(String columnName, Array expectedArray, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Array testedValue = testedResultSet.getArray(columnName);
@@ -615,7 +615,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedArray,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -633,7 +633,7 @@ public class ResultSetAssert {
 			columnIndex, expectedArray, () -> message
 		);
 	}
-	public ResultSetAssert assertArray(int columnIndex, Array expectedArray, Supplier<String> messageBuilder)
+	public ResultSetAssert assertArray(int columnIndex, Array expectedArray, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Array testedValue = testedResultSet.getArray(columnIndex);
@@ -642,7 +642,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedArray,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -661,7 +661,7 @@ public class ResultSetAssert {
 			columnName, expectedByte, () -> message
 		);
 	}
-	public ResultSetAssert assertByte(String columnName, byte expectedByte, Supplier<String> messageBuilder)
+	public ResultSetAssert assertByte(String columnName, byte expectedByte, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		byte testedValue = testedResultSet.getByte(columnName);
@@ -670,7 +670,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedByte,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -688,7 +688,7 @@ public class ResultSetAssert {
 			columnIndex, expectedByte, () -> message
 		);
 	}
-	public ResultSetAssert assertByte(int columnIndex, byte expectedByte, Supplier<String> messageBuilder)
+	public ResultSetAssert assertByte(int columnIndex, byte expectedByte, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		byte testedValue = testedResultSet.getByte(columnIndex);
@@ -697,7 +697,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedByte,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -716,7 +716,7 @@ public class ResultSetAssert {
 			columnName, expectedShort, () -> message
 		);
 	}
-	public ResultSetAssert assertShort(String columnName, short expectedShort, Supplier<String> messageBuilder)
+	public ResultSetAssert assertShort(String columnName, short expectedShort, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		short testedValue = testedResultSet.getShort(columnName);
@@ -725,7 +725,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedShort,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -743,7 +743,7 @@ public class ResultSetAssert {
 			columnIndex, expectedShort, () -> message
 		);
 	}
-	public ResultSetAssert assertShort(int columnIndex, short expectedShort, Supplier<String> messageBuilder)
+	public ResultSetAssert assertShort(int columnIndex, short expectedShort, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		short testedValue = testedResultSet.getShort(columnIndex);
@@ -752,7 +752,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedShort,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -771,7 +771,7 @@ public class ResultSetAssert {
 			columnName, expectedBoolean, () -> message
 		);
 	}
-	public ResultSetAssert assertBoolean(String columnName, boolean expectedBoolean, Supplier<String> messageBuilder)
+	public ResultSetAssert assertBoolean(String columnName, boolean expectedBoolean, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		boolean testedValue = testedResultSet.getBoolean(columnName);
@@ -780,7 +780,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedBoolean,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -798,7 +798,7 @@ public class ResultSetAssert {
 			columnIndex, expectedBoolean, () -> message
 		);
 	}
-	public ResultSetAssert assertBoolean(int columnIndex, boolean expectedBoolean, Supplier<String> messageBuilder)
+	public ResultSetAssert assertBoolean(int columnIndex, boolean expectedBoolean, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		boolean testedValue = testedResultSet.getBoolean(columnIndex);
@@ -807,7 +807,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedBoolean,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -826,7 +826,7 @@ public class ResultSetAssert {
 			columnName, expectedInt, () -> message
 		);
 	}
-	public ResultSetAssert assertInt(String columnName, int expectedInt, Supplier<String> messageBuilder)
+	public ResultSetAssert assertInt(String columnName, int expectedInt, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		int testedValue = testedResultSet.getInt(columnName);
@@ -835,7 +835,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedInt,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -853,7 +853,7 @@ public class ResultSetAssert {
 			columnIndex, expectedInt, () -> message
 		);
 	}
-	public ResultSetAssert assertInt(int columnIndex, int expectedInt, Supplier<String> messageBuilder)
+	public ResultSetAssert assertInt(int columnIndex, int expectedInt, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		int testedValue = testedResultSet.getInt(columnIndex);
@@ -862,7 +862,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedInt,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -881,7 +881,7 @@ public class ResultSetAssert {
 			columnName, expectedLong, () -> message
 		);
 	}
-	public ResultSetAssert assertLong(String columnName, long expectedLong, Supplier<String> messageBuilder)
+	public ResultSetAssert assertLong(String columnName, long expectedLong, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		long testedValue = testedResultSet.getLong(columnName);
@@ -890,7 +890,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedLong,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -908,7 +908,7 @@ public class ResultSetAssert {
 			columnIndex, expectedLong, () -> message
 		);
 	}
-	public ResultSetAssert assertLong(int columnIndex, long expectedLong, Supplier<String> messageBuilder)
+	public ResultSetAssert assertLong(int columnIndex, long expectedLong, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		long testedValue = testedResultSet.getLong(columnIndex);
@@ -917,7 +917,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedLong,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -936,7 +936,7 @@ public class ResultSetAssert {
 			columnName, expectedFloat, () -> message
 		);
 	}
-	public ResultSetAssert assertFloat(String columnName, float expectedFloat, Supplier<String> messageBuilder)
+	public ResultSetAssert assertFloat(String columnName, float expectedFloat, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		float testedValue = testedResultSet.getFloat(columnName);
@@ -945,7 +945,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedFloat,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -963,7 +963,7 @@ public class ResultSetAssert {
 			columnIndex, expectedFloat, () -> message
 		);
 	}
-	public ResultSetAssert assertFloat(int columnIndex, float expectedFloat, Supplier<String> messageBuilder)
+	public ResultSetAssert assertFloat(int columnIndex, float expectedFloat, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		float testedValue = testedResultSet.getFloat(columnIndex);
@@ -972,7 +972,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedFloat,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -991,7 +991,7 @@ public class ResultSetAssert {
 			columnName, expectedDouble, () -> message
 		);
 	}
-	public ResultSetAssert assertDouble(String columnName, double expectedDouble, Supplier<String> messageBuilder)
+	public ResultSetAssert assertDouble(String columnName, double expectedDouble, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		double testedValue = testedResultSet.getDouble(columnName);
@@ -1000,7 +1000,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedDouble,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1018,7 +1018,7 @@ public class ResultSetAssert {
 			columnIndex, expectedDouble, () -> message
 		);
 	}
-	public ResultSetAssert assertDouble(int columnIndex, double expectedDouble, Supplier<String> messageBuilder)
+	public ResultSetAssert assertDouble(int columnIndex, double expectedDouble, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		double testedValue = testedResultSet.getDouble(columnIndex);
@@ -1027,7 +1027,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedDouble,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1046,7 +1046,7 @@ public class ResultSetAssert {
 			columnName, expectedBigDecimal, roundMathContext, () -> message
 		);
 	}
-	public ResultSetAssert assertBigDecimal(String columnName, BigDecimal expectedBigDecimal, MathContext roundMathContext, Supplier<String> messageBuilder)
+	public ResultSetAssert assertBigDecimal(String columnName, BigDecimal expectedBigDecimal, MathContext roundMathContext, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		BigDecimal testedValue = testedResultSet.getBigDecimal(columnName);
@@ -1055,7 +1055,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedBigDecimal,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1073,7 +1073,7 @@ public class ResultSetAssert {
 			columnIndex, expectedBigDecimal, roundMathContext, () -> message
 		);
 	}
-	public ResultSetAssert assertBigDecimal(int columnIndex, BigDecimal expectedBigDecimal, MathContext roundMathContext, Supplier<String> messageBuilder)
+	public ResultSetAssert assertBigDecimal(int columnIndex, BigDecimal expectedBigDecimal, MathContext roundMathContext, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		BigDecimal testedValue = testedResultSet.getBigDecimal(columnIndex);
@@ -1082,11 +1082,22 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedBigDecimal,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
 
+	/**
+	 * Asserts the containing bytes of the object, this method would check
+	 * {@link Blob#getBytes Blob.getBytes(1, Blob.length())} of the two object.
+	 *
+	 * @param columnName The name of column
+	 * @param expectedBlob The expected Blob object
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
 	public ResultSetAssert assertBlob(String columnName, Blob expectedBlob)
 		throws SQLException
 	{
@@ -1094,6 +1105,18 @@ public class ResultSetAssert {
 			columnName, expectedBlob, () -> ""
 		);
 	}
+	/**
+	 * Asserts the containing bytes of the object, this method would check
+	 * {@link Blob#getBytes Blob.getBytes(1, Blob.length())} of the two object.
+	 *
+	 * @param columnName The name of column
+	 * @param expectedBlob The expected Blob object
+	 * @param message The message shown if the assertion is failed
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
 	public ResultSetAssert assertBlob(String columnName, Blob expectedBlob, String message)
 		throws SQLException
 	{
@@ -1101,7 +1124,19 @@ public class ResultSetAssert {
 			columnName, expectedBlob, () -> message
 		);
 	}
-	public ResultSetAssert assertBlob(String columnName, Blob expectedBlob, Supplier<String> messageBuilder)
+	/**
+	 * Asserts the containing bytes of the object, this method would check
+	 * {@link Blob#getBytes Blob.getBytes(1, Blob.length())} of the two object.
+	 *
+	 * @param columnName The name of column
+	 * @param expectedBlob The expected Blob object
+	 * @param messageSupplier The message supplier if the assertion is failed
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
+	public ResultSetAssert assertBlob(String columnName, Blob expectedBlob, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Blob testedValue = testedResultSet.getBlob(columnName);
@@ -1110,10 +1145,21 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedBlob,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
+	/**
+	 * Asserts the containing bytes of the object, this method would check
+	 * {@link Blob#getBytes Blob.getBytes(1, Blob.length())} of the two object.
+	 *
+	 * @param columnIndex The index of column to be checked
+	 * @param expectedBlob The expected Blob object
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
 	public ResultSetAssert assertBlob(int columnIndex, Blob expectedBlob)
 		throws SQLException
 	{
@@ -1121,6 +1167,18 @@ public class ResultSetAssert {
 			columnIndex, expectedBlob, () -> ""
 		);
 	}
+	/**
+	 * Asserts the containing bytes of the object, this method would check
+	 * {@link Blob#getBytes Blob.getBytes(1, Blob.length())} of the two object.
+	 *
+	 * @param columnIndex The index of column to be checked
+	 * @param expectedBlob The expected Blob object
+	 * @param message The message shown if the assertion is failed
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
 	public ResultSetAssert assertBlob(int columnIndex, Blob expectedBlob, String message)
 		throws SQLException
 	{
@@ -1128,7 +1186,19 @@ public class ResultSetAssert {
 			columnIndex, expectedBlob, () -> message
 		);
 	}
-	public ResultSetAssert assertBlob(int columnIndex, Blob expectedBlob, Supplier<String> messageBuilder)
+	/**
+	 * Asserts the containing bytes of the object, this method would check
+	 * {@link Blob#getBytes Blob.getBytes(1, Blob.length())} of the two object.
+	 *
+	 * @param columnIndex The index of column to be checked
+	 * @param expectedBlob The expected Blob object
+	 * @param messageSupplier The message supplier if the assertion is failed
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
+	public ResultSetAssert assertBlob(int columnIndex, Blob expectedBlob, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Blob testedValue = testedResultSet.getBlob(columnIndex);
@@ -1137,11 +1207,22 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedBlob,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
 
+	/**
+	 * Asserts the columns with {@link Clob} type,
+	 * this method checks the equality of {@link Clob#getSubString Clob.getSubString(1, Clob.length())} of the two objects.
+	 *
+	 * @param columnName The name of column
+	 * @param expectedClob The expected object of Clob
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
 	public ResultSetAssert assertClob(String columnName, Clob expectedClob)
 		throws SQLException
 	{
@@ -1149,6 +1230,18 @@ public class ResultSetAssert {
 			columnName, expectedClob, () -> ""
 		);
 	}
+	/**
+	 * Asserts the columns with {@link Clob} type,
+	 * this method checks the equality of {@link Clob#getSubString Clob.getSubString(1, Clob.length())} of the two objects.
+	 *
+	 * @param columnName The name of column
+	 * @param expectedClob The expected object of Clob
+	 * @param message The message while the assertion is failed
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
 	public ResultSetAssert assertClob(String columnName, Clob expectedClob, String message)
 		throws SQLException
 	{
@@ -1156,7 +1249,19 @@ public class ResultSetAssert {
 			columnName, expectedClob, () -> message
 		);
 	}
-	public ResultSetAssert assertClob(String columnName, Clob expectedClob, Supplier<String> messageBuilder)
+	/**
+	 * Asserts the columns with {@link Clob} type,
+	 * this method checks the equality of {@link Clob#getSubString Clob.getSubString(1, Clob.length())} of the two objects.
+	 *
+	 * @param columnName The name of column
+	 * @param expectedClob The expected object of Clob
+	 * @param messageSupplier The lazy loading of message while the assertion is failed
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
+	public ResultSetAssert assertClob(String columnName, Clob expectedClob, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Clob testedValue = testedResultSet.getClob(columnName);
@@ -1166,10 +1271,21 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedClob,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
+	/**
+	 * Asserts the columns with {@link Clob} type,
+	 * this method checks the equality of {@link Clob#getSubString Clob.getSubString(1, Clob.length())} of the two objects.
+	 *
+	 * @param columnIndex The index of column to be checked
+	 * @param expectedClob The expected object of Clob
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
 	public ResultSetAssert assertClob(int columnIndex, Clob expectedClob)
 		throws SQLException
 	{
@@ -1177,6 +1293,18 @@ public class ResultSetAssert {
 			columnIndex, expectedClob, () -> ""
 		);
 	}
+	/**
+	 * Asserts the columns with {@link Clob} type,
+	 * this method checks the equality of {@link Clob#getSubString Clob.getSubString(1, Clob.length())} of the two objects.
+	 *
+	 * @param columnIndex The index of column to be checked
+	 * @param expectedClob The expected object of Clob
+	 * @param message The message while the assertion is failed
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
 	public ResultSetAssert assertClob(int columnIndex, Clob expectedClob, String message)
 		throws SQLException
 	{
@@ -1184,7 +1312,19 @@ public class ResultSetAssert {
 			columnIndex, expectedClob, () -> message
 		);
 	}
-	public ResultSetAssert assertClob(int columnIndex, Clob expectedClob, Supplier<String> messageBuilder)
+	/**
+	 * Asserts the columns with {@link Clob} type,
+	 * this method checks the equality of {@link Clob#getSubString Clob.getSubString(1, Clob.length())} of the two objects.
+	 *
+	 * @param columnIndex The index of column to be checked
+	 * @param expectedClob The expected object of Clob
+	 * @param messageSupplier The lazy loading of message while the assertion is failed
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
+	public ResultSetAssert assertClob(int columnIndex, Clob expectedClob, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Clob testedValue = testedResultSet.getClob(columnIndex);
@@ -1193,11 +1333,22 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedClob,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
 
+	/**
+	 * Asserts the columns with {@link NClob} type,
+	 * this method checks the equality of {@link NClob#getSubString Clob.getSubString(1, Clob.length())} of the two objects.
+	 *
+	 * @param columnName The name of column
+	 * @param expectedNClob The expected object of NClob
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
 	public ResultSetAssert assertNClob(String columnName, NClob expectedNClob)
 		throws SQLException
 	{
@@ -1205,6 +1356,18 @@ public class ResultSetAssert {
 			columnName, expectedNClob, () -> ""
 		);
 	}
+	/**
+	 * Asserts the columns with {@link NClob} type,
+	 * this method checks the equality of {@link NClob#getSubString Clob.getSubString(1, Clob.length())} of the two objects.
+	 *
+	 * @param columnName The name of column
+	 * @param expectedNClob The expected object of NClob
+	 * @param message The message while the assertion is failed
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
 	public ResultSetAssert assertNClob(String columnName, NClob expectedNClob, String message)
 		throws SQLException
 	{
@@ -1212,7 +1375,19 @@ public class ResultSetAssert {
 			columnName, expectedNClob, () -> message
 		);
 	}
-	public ResultSetAssert assertNClob(String columnName, NClob expectedNClob, Supplier<String> messageBuilder)
+	/**
+	 * Asserts the columns with {@link NClob} type,
+	 * this method checks the equality of {@link NClob#getSubString Clob.getSubString(1, Clob.length())} of the two objects.
+	 *
+	 * @param columnName The name of column
+	 * @param expectedNClob The expected object of NClob
+	 * @param messageSupplier The lazy loading of message while the assertion is failed
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
+	public ResultSetAssert assertNClob(String columnName, NClob expectedNClob, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		NClob testedValue = testedResultSet.getNClob(columnName);
@@ -1221,10 +1396,21 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedNClob,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
+	/**
+	 * Asserts the columns with {@link NClob} type,
+	 * this method checks the equality of {@link NClob#getSubString Clob.getSubString(1, Clob.length())} of the two objects.
+	 *
+	 * @param columnIndex The index of column to be checked
+	 * @param expectedNClob The expected object of NClob
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
 	public ResultSetAssert assertNClob(int columnIndex, NClob expectedNClob)
 		throws SQLException
 	{
@@ -1232,6 +1418,18 @@ public class ResultSetAssert {
 			columnIndex, expectedNClob, () -> ""
 		);
 	}
+	/**
+	 * Asserts the columns with {@link NClob} type,
+	 * this method checks the equality of {@link NClob#getSubString Clob.getSubString(1, Clob.length())} of the two objects.
+	 *
+	 * @param columnIndex The index of column to be checked
+	 * @param expectedNClob The expected object of NClob
+	 * @param message The message while the assertion is failed
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
 	public ResultSetAssert assertNClob(int columnIndex, NClob expectedNClob, String message)
 		throws SQLException
 	{
@@ -1239,7 +1437,19 @@ public class ResultSetAssert {
 			columnIndex, expectedNClob, () -> message
 		);
 	}
-	public ResultSetAssert assertNClob(int columnIndex, NClob expectedNClob, Supplier<String> messageBuilder)
+	/**
+	 * Asserts the columns with {@link NClob} type,
+	 * this method checks the equality of {@link NClob#getSubString Clob.getSubString(1, Clob.length())} of the two objects.
+	 *
+	 * @param columnIndex The index of column to be checked
+	 * @param expectedNClob The expected object of NClob
+	 * @param messageSupplier The lazy loading of message while the assertion is failed
+	 *
+	 * @return cascading self
+	 *
+	 * @throws SQLException If the calling method of result set has error
+	 */
+	public ResultSetAssert assertNClob(int columnIndex, NClob expectedNClob, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		NClob testedValue = testedResultSet.getNClob(columnIndex);
@@ -1248,7 +1458,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedNClob,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1267,7 +1477,7 @@ public class ResultSetAssert {
 			columnName, expectedDate, () -> message
 		);
 	}
-	public ResultSetAssert assertDate(String columnName, Date expectedDate, Supplier<String> messageBuilder)
+	public ResultSetAssert assertDate(String columnName, Date expectedDate, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Date testedValue = testedResultSet.getDate(columnName);
@@ -1276,7 +1486,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedDate,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1294,7 +1504,7 @@ public class ResultSetAssert {
 			columnIndex, expectedDate, () -> message
 		);
 	}
-	public ResultSetAssert assertDate(int columnIndex, Date expectedDate, Supplier<String> messageBuilder)
+	public ResultSetAssert assertDate(int columnIndex, Date expectedDate, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Date testedValue = testedResultSet.getDate(columnIndex);
@@ -1303,7 +1513,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedDate,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1322,7 +1532,7 @@ public class ResultSetAssert {
 			columnName, expectedTime, () -> message
 		);
 	}
-	public ResultSetAssert assertTime(String columnName, Time expectedTime, Supplier<String> messageBuilder)
+	public ResultSetAssert assertTime(String columnName, Time expectedTime, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Time testedValue = testedResultSet.getTime(columnName);
@@ -1331,7 +1541,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedTime,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1349,7 +1559,7 @@ public class ResultSetAssert {
 			columnIndex, expectedTime, () -> message
 		);
 	}
-	public ResultSetAssert assertTime(int columnIndex, Time expectedTime, Supplier<String> messageBuilder)
+	public ResultSetAssert assertTime(int columnIndex, Time expectedTime, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Time testedValue = testedResultSet.getTime(columnIndex);
@@ -1358,7 +1568,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedTime,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1377,7 +1587,7 @@ public class ResultSetAssert {
 			columnName, expectedTimestamp, () -> message
 		);
 	}
-	public ResultSetAssert assertTimestamp(String columnName, Timestamp expectedTimestamp, Supplier<String> messageBuilder)
+	public ResultSetAssert assertTimestamp(String columnName, Timestamp expectedTimestamp, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Timestamp testedValue = testedResultSet.getTimestamp(columnName);
@@ -1386,7 +1596,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedTimestamp,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1404,7 +1614,7 @@ public class ResultSetAssert {
 			columnIndex, expectedTimestamp, () -> message
 		);
 	}
-	public ResultSetAssert assertTimestamp(int columnIndex, Timestamp expectedTimestamp, Supplier<String> messageBuilder)
+	public ResultSetAssert assertTimestamp(int columnIndex, Timestamp expectedTimestamp, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Timestamp testedValue = testedResultSet.getTimestamp(columnIndex);
@@ -1413,7 +1623,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedTimestamp,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1432,7 +1642,7 @@ public class ResultSetAssert {
 			columnName, expectedURL, () -> message
 		);
 	}
-	public ResultSetAssert assertURL(String columnName, URL expectedURL, Supplier<String> messageBuilder)
+	public ResultSetAssert assertURL(String columnName, URL expectedURL, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		URL testedValue = testedResultSet.getURL(columnName);
@@ -1441,7 +1651,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedURL,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1459,7 +1669,7 @@ public class ResultSetAssert {
 			columnIndex, expectedURL, () -> message
 		);
 	}
-	public ResultSetAssert assertURL(int columnIndex, URL expectedURL, Supplier<String> messageBuilder)
+	public ResultSetAssert assertURL(int columnIndex, URL expectedURL, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		URL testedValue = testedResultSet.getURL(columnIndex);
@@ -1468,7 +1678,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedURL,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1487,7 +1697,7 @@ public class ResultSetAssert {
 			columnName, expectedRef, () -> message
 		);
 	}
-	public ResultSetAssert assertRef(String columnName, Ref expectedRef, Supplier<String> messageBuilder)
+	public ResultSetAssert assertRef(String columnName, Ref expectedRef, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Ref testedValue = testedResultSet.getRef(columnName);
@@ -1496,7 +1706,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedRef,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1514,7 +1724,7 @@ public class ResultSetAssert {
 			columnIndex, expectedRef, () -> message
 		);
 	}
-	public ResultSetAssert assertRef(int columnIndex, Ref expectedRef, Supplier<String> messageBuilder)
+	public ResultSetAssert assertRef(int columnIndex, Ref expectedRef, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		Ref testedValue = testedResultSet.getRef(columnIndex);
@@ -1523,7 +1733,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedRef,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1542,7 +1752,7 @@ public class ResultSetAssert {
 			columnName, expectedRowId, () -> message
 		);
 	}
-	public ResultSetAssert assertRowId(String columnName, RowId expectedRowId, Supplier<String> messageBuilder)
+	public ResultSetAssert assertRowId(String columnName, RowId expectedRowId, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		RowId testedValue = testedResultSet.getRowId(columnName);
@@ -1551,7 +1761,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedRowId,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1569,7 +1779,7 @@ public class ResultSetAssert {
 			columnIndex, expectedRowId, () -> message
 		);
 	}
-	public ResultSetAssert assertRowId(int columnIndex, RowId expectedRowId, Supplier<String> messageBuilder)
+	public ResultSetAssert assertRowId(int columnIndex, RowId expectedRowId, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		RowId testedValue = testedResultSet.getRowId(columnIndex);
@@ -1578,7 +1788,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedRowId,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1597,7 +1807,7 @@ public class ResultSetAssert {
 			columnName, expectedSQLXML, () -> message
 		);
 	}
-	public ResultSetAssert assertSQLXML(String columnName, SQLXML expectedSQLXML, Supplier<String> messageBuilder)
+	public ResultSetAssert assertSQLXML(String columnName, SQLXML expectedSQLXML, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		SQLXML testedValue = testedResultSet.getSQLXML(columnName);
@@ -1606,7 +1816,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedSQLXML,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1624,7 +1834,7 @@ public class ResultSetAssert {
 			columnIndex, expectedSQLXML, () -> message
 		);
 	}
-	public ResultSetAssert assertSQLXML(int columnIndex, SQLXML expectedSQLXML, Supplier<String> messageBuilder)
+	public ResultSetAssert assertSQLXML(int columnIndex, SQLXML expectedSQLXML, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		SQLXML testedValue = testedResultSet.getSQLXML(columnIndex);
@@ -1633,7 +1843,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedSQLXML,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1652,7 +1862,7 @@ public class ResultSetAssert {
 			columnName, expectedBytes, () -> message
 		);
 	}
-	public ResultSetAssert assertBytes(String columnName, byte[] expectedBytes, Supplier<String> messageBuilder)
+	public ResultSetAssert assertBytes(String columnName, byte[] expectedBytes, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		byte[] testedValue = testedResultSet.getBytes(columnName);
@@ -1661,7 +1871,7 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[\"%s\"] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnName, testedValue, expectedBytes,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
@@ -1679,7 +1889,7 @@ public class ResultSetAssert {
 			columnIndex, expectedBytes, () -> message
 		);
 	}
-	public ResultSetAssert assertBytes(int columnIndex, byte[] expectedBytes, Supplier<String> messageBuilder)
+	public ResultSetAssert assertBytes(int columnIndex, byte[] expectedBytes, Supplier<String> messageSupplier)
 		throws SQLException
 	{
 		byte[] testedValue = testedResultSet.getBytes(columnIndex);
@@ -1688,56 +1898,56 @@ public class ResultSetAssert {
 			() -> String.format(
 				"The value of field[%d] is not matched. Value: [%s]. Expected: [%s]. %s",
 				columnIndex, testedValue, expectedBytes,
-				messageBuilder.get()
+				messageSupplier.get()
 			)
 		);
 	}
 
-	private ResultSetAssert assertDateValue(java.util.Date testedDate, java.util.Date expectedDate, Supplier<String> messageBuilder)
+	private ResultSetAssert assertDateValue(java.util.Date testedDate, java.util.Date expectedDate, Supplier<String> messageSupplier)
 	{
 		if (testedDate == null && expectedDate == null) {
 			return this;
 		}
 		if (testedDate == null || expectedDate == null) {
 			throw new AssertException(
-				messageBuilder.get()
+				messageSupplier.get()
 			);
 		}
 
 		assertEqualValue(
 			testedDate.toString(), expectedDate.toString(),
-			messageBuilder
+			messageSupplier
 		);
 
 		return this;
 	}
 
-	private ResultSetAssert assertBigDecimal(BigDecimal testedObject, BigDecimal expectedObject, MathContext roundMathContext, Supplier<String> messageBuilder)
+	private ResultSetAssert assertBigDecimal(BigDecimal testedObject, BigDecimal expectedObject, MathContext roundMathContext, Supplier<String> messageSupplier)
 	{
 		if (testedObject == null && expectedObject == null) {
 			return this;
 		}
 		if (testedObject == null || expectedObject == null) {
 			throw new AssertException(
-				messageBuilder.get()
+				messageSupplier.get()
 			);
 		}
 
 		assertEqualValue(
-			testedObject.round(roundMathContext), expectedObject.round(roundMathContext), messageBuilder
+			testedObject.round(roundMathContext), expectedObject.round(roundMathContext), messageSupplier
 		);
 
 		return this;
 	}
 
-	private ResultSetAssert assertBlobValue(Blob testedObject, Blob expectedObject, Supplier<String> messageBuilder)
+	private ResultSetAssert assertBlobValue(Blob testedObject, Blob expectedObject, Supplier<String> messageSupplier)
 	{
 		if (testedObject == null && expectedObject == null) {
 			return this;
 		}
 		if (testedObject == null || expectedObject == null) {
 			throw new AssertException(
-				messageBuilder.get()
+				messageSupplier.get()
 			);
 		}
 
@@ -1745,7 +1955,7 @@ public class ResultSetAssert {
 			assertBytes(
 				testedObject.getBytes(1L, (int)testedObject.length()),
 				expectedObject.getBytes(1L, (int)expectedObject.length()),
-				messageBuilder
+				messageSupplier
 			);
 		} catch (SQLException e) {
 			throw SQLExceptionConvert.runtimeException(e);
@@ -1754,14 +1964,14 @@ public class ResultSetAssert {
 		return this;
 	}
 
-	private ResultSetAssert assertBytes(byte[] testedBytes, byte[] expectedBytes, Supplier<String> messageBuilder)
+	private ResultSetAssert assertBytes(byte[] testedBytes, byte[] expectedBytes, Supplier<String> messageSupplier)
 	{
 		if (testedBytes == null && expectedBytes == null) {
 			return this;
 		}
 		if (testedBytes == null || expectedBytes == null) {
 			throw new AssertException(
-				messageBuilder.get()
+				messageSupplier.get()
 			);
 		}
 
@@ -1769,21 +1979,21 @@ public class ResultSetAssert {
 			testedBytes, expectedBytes
 		)) {
 			throw new AssertException(
-				messageBuilder.get()
+				messageSupplier.get()
 			);
 		}
 
 		return this;
 	}
 
-	private ResultSetAssert assertClobValue(Clob testedObject, Clob expectedObject, Supplier<String> messageBuilder)
+	private ResultSetAssert assertClobValue(Clob testedObject, Clob expectedObject, Supplier<String> messageSupplier)
 	{
 		if (testedObject == null && expectedObject == null) {
 			return this;
 		}
 		if (testedObject == null || expectedObject == null) {
 			throw new AssertException(
-				messageBuilder.get()
+				messageSupplier.get()
 			);
 		}
 
@@ -1794,7 +2004,7 @@ public class ResultSetAssert {
 				)
 			) {
 				throw new AssertException(
-					messageBuilder.get()
+					messageSupplier.get()
 				);
 			}
 		} catch (SQLException e) {
@@ -1804,7 +2014,7 @@ public class ResultSetAssert {
 		return this;
 	}
 
-	private ResultSetAssert assertEqualValue(Object testedObject, Object expectedObject, Supplier<String> messageBuilder)
+	private ResultSetAssert assertEqualValue(Object testedObject, Object expectedObject, Supplier<String> messageSupplier)
 	{
 		if (testedObject == null && expectedObject == null) {
 			return this;
@@ -1819,7 +2029,7 @@ public class ResultSetAssert {
 
 		if (!passed) {
 			throw new AssertException(
-				messageBuilder.get()
+				messageSupplier.get()
 			);
 		}
 

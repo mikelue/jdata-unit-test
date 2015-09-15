@@ -5,6 +5,8 @@ import guru.mikelue.jdut.jdbc.JdbcFunction;
 
 /**
  * Represents the function provider for building/clean.
+ *
+ * @see DuetConductor
  */
 public interface DuetFunctions {
 	/**

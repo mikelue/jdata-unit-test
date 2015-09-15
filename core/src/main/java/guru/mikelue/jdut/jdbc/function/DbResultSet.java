@@ -30,7 +30,7 @@ public final class DbResultSet {
 	 */
 	public static JdbcRunnable buildRunnable(
 		Connection conn, String sql,
-		JdbcVoidFunction<ResultSet> executor
+		JdbcVoidFunction<? super ResultSet> executor
 	) {
 		return JdbcTemplateFactory.buildRunnable(
 			() -> conn.createStatement(),
@@ -54,7 +54,7 @@ public final class DbResultSet {
 	 */
 	public static JdbcRunnable buildRunnable(
 		Statement statement, String sql,
-		JdbcVoidFunction<ResultSet> executor
+		JdbcVoidFunction<? super ResultSet> executor
 	) {
 		return JdbcTemplateFactory.buildRunnable(
 			() -> statement.executeQuery(sql),

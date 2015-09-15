@@ -16,24 +16,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * Represents the data of a row.
+ * Represents the data of a row.<br>
  *
- * <h2 style="color:blue">Value using {@link Supplier}</h2>
- * In following code snippet, the builder is <em style="color:red">a failure of infinite recursion</em>:
- * <pre>{@code
- *     builder -> builder
- *        .fieldOfValueSupplier("ct_1", () -> 30 + builder.getDataSupplier("ct_1").get().get())
- * }</pre>
- *
- * Since the lazy evaluation of lambda expression, the new lambda expression of "ct_1" would be
- * a self-reference of builder.<br>
- * Instead, you should keep "the old lambda expression":
- * <pre>{@code
- *    builder -> {
- *        final Supplier<Integer> oldSupplier = builder.getDataSupplier("ct_1").get();
- *        builder.fieldOfValueSupplier("ct_1", () -> 30 + oldSupplier.get());
- *    }
- * }</pre>
+ * @see DataRow.Builder for detail information to set-up a row of data
  */
 public class DataRow {
 	private SchemaTable tableSchema;
@@ -42,7 +27,26 @@ public class DataRow {
 	private boolean validated = false;
 
 	/**
-	 * Used with {@link DataRow#build}.
+	 * Used with {@link DataRow#build(Consumer) DataRow.build(Consumer&lt;DataRow.Builder&gt;)}.<br>
+ 	 *
+ 	 * <h3><em style="color:red">Infinite recursion</em> while using {@link Supplier} for value of field</h3>
+ 	 * In following code snippet, the builder will set-up <em style="color:red">a field which cause infinite recursion while getting data</em>:
+ 	 *
+ 	 * <pre>{@code
+ 	 *     builder -> builder.fieldOfValueSupplier(
+ 	 *         "ct_1", () -> 30 + builder.getDataSupplier("ct_1").get().get()
+ 	 *     )
+ 	 * }</pre>
+ 	 *
+ 	 * Since the lazy evaluation of lambda expression, the new lambda expression of <em>"ct_1"</em> would be
+ 	 * a self-reference to builder.<br>
+ 	 * Instead, you should keep "<b>the old instance of lambda expression</b>":
+ 	 * <pre>{@code
+ 	 *    builder -> {
+ 	 *        final Supplier<Integer> oldSupplier = builder.getDataSupplier("ct_1").get();
+ 	 *        builder.fieldOfValueSupplier("ct_1", () -> 30 + oldSupplier.get());
+ 	 *    }
+ 	 * }</pre>
 	 */
 	public class Builder {
 		private DataField.Factory fieldFactory = null;
@@ -188,12 +192,18 @@ public class DataRow {
 		/**
 		 * Gets supplier of data.<br>
 		 *
-		 * <em style="color:red">Note: be careful of lazy building, which may cause infinite recursion</em>
+		 * <p style="color:red">Note: be careful of lazy building, which may cause infinite recursion</p>
+		 *
+		 * <b style="color:red">Following code will cause infinite recursion</b>
+		 * <pre>{@code
+		 *   Supplier<Integer> wrappedSupplier = () -> 20 + builder.<Integer>getDataSupplier("ct_1").get().get();
+		 *   builder.fieldOfValueSupplier("col_1", wrappedSupplier);
+		 * }</pre>
+		 *
+		 * <b style="color:green">Instead, you should:</b>
 		 * <pre>{@code
 		 *   // Keep the reference of supplier in current lambda of builder
 		 *   Supplier<Integer> sourceSupplier = builder.<Integer>getDataSupplier("ct_1").get();
-		 *   // Cause infinite recursion(lazy evaluation)
-		 *   // Supplier<Integer> wrappedSupplier = () -> 20 + builder.<Integer>getDataSupplier("ct_1").get().get();
 		 *   Supplier<Integer> wrappedSupplier = () -> 20 + sourceSupplier.get();
 		 *
 		 *   builder.fieldOfValueSupplier("col_1", wrappedSupplier);

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.Validate;
@@ -15,20 +16,27 @@ import guru.mikelue.jdut.datagrain.DataRow;
 /**
  * Builds the replacement by {@link Predicate} of {@link DataField}.<br>
  *
- * By sequence of {@link #buildDataGrainDecorator}, the first matched {@link Predicate} would be used for replacement.
+ * <p>By sequence of {@link #buildDataGrainDecorator buildDataGrainDecorator(Consumer&lt;ReplaceFieldDataDecorator.Builder&gt;)}, the first matched {@link Predicate} would be used for replacement.</p>
  */
 public class ReplaceFieldDataDecorator implements DataFieldDecorator {
 	private List<Predicate<? super DataField<?>>> predicates;
 	private List<Object> replacements;
 
 	/**
-	 * Used with {@link #buildDataGrainDecorator}.
+	 * Used with {@link #buildDataGrainDecorator buildDataGrainDecorator(Consumer&lt;ReplaceFieldDataDecorator.Builder&gt;)}.<br>
+	 *
+	 * <p>
+	 * You could put multiple pair of {@link Predicate Predicate&lt;DataField&gt;} and <em>replaceingValue</em>,
+	 * the first matched predicate would be choosed for replacement.
+	 * </p>
 	 */
 	public class Builder {
 		protected Builder() {}
 
 		/**
 		 * Adds a replacement with checked value of replacing value.
+		 *
+		 * <p>The instance of <em>replacingValue</em> could be an instance of {@link Supplier}.</p>
 		 *
 		 * @param checkedObject Checked object
 		 * @param replacingValue The value replacing old value
@@ -45,7 +53,9 @@ public class ReplaceFieldDataDecorator implements DataFieldDecorator {
 			);
 		}
 		/**
-		 * Adds a replacement with {@link Predicate} of replacing value.
+		 * Adds a replacement with {@link Predicate} of replacing value.<br>
+		 *
+		 * <p>The instance of <em>replacingValue</em> could be an instance of {@link Supplier}.</p>
 		 *
 		 * @param dataFieldPredicate The instance of predication
 		 * @param replacingValue The value replacing old value

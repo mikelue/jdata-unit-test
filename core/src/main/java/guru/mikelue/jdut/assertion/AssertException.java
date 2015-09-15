@@ -21,7 +21,10 @@ public class AssertException extends RuntimeException {
 		super(message);
 	}
 	/**
-	 * {@inheritDoc}
+	 * Builds exception with {@link String#format} method.
+	 *
+	 * @param format The format of message
+	 * @param args The arguments for formatting message
 	 */
 	public AssertException(String format, Object... args)
 	{

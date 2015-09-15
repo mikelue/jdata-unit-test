@@ -36,7 +36,7 @@ public final class DbStatement {
 		Connection conn,
 		String sql, List<String> nameOfColumns,
 		DataRow dataRow,
-		JdbcVoidFunction<PreparedStatement> executor
+		JdbcVoidFunction<? super PreparedStatement> executor
 	) {
 		return JdbcTemplateFactory.buildRunnable(
 			() -> conn.prepareStatement(sql),
@@ -92,7 +92,7 @@ public final class DbStatement {
 	 */
 	public static JdbcRunnable buildRunnableForStatement(
 		Connection conn,
-		JdbcVoidFunction<Statement> executor
+		JdbcVoidFunction<? super Statement> executor
 	) {
 		return JdbcTemplateFactory.buildRunnable(
 			() -> conn.createStatement(),

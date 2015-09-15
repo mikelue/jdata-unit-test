@@ -1,5 +1,6 @@
 /**
- * This package defined
+ * This package defines the {@link guru.mikelue.jdut.vendor.DatabaseVendor Vendors},
+ * which is used to discriminate vendor-specific funcdtions.<br>
  *
  * <h2>Type enumration of vendor</h2>
  * {@link guru.mikelue.jdut.vendor.DatabaseVendor} defines the value of enumeration for pre-defined databases,

@@ -6,7 +6,16 @@ import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.datagrain.DataRow;
 
 /**
- * This interface should be used with {@link DataGrain#decorate}.
+ * This interface should be used with {@link DataGrain#decorate}.<br>
+ *
+ * <h3>Chaining</h3>
+ * You could chaining a bunch of decorators:
+ *
+ * <pre>{@code
+ * // decorator - The first decorator
+ * // nextDecorator - The next decorator
+ * decorator = decorator.chain(nextDecorator);
+ * }</pre>
  *
  * @see <a target="_blank" href="https://github.com/mikelue/jdata-unit-test/wiki/Provided-decorators-of-data-grain">Provided decorators</a>
  */

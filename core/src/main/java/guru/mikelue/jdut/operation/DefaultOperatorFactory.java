@@ -22,7 +22,9 @@ import guru.mikelue.jdut.vendor.mssql.MsSql;
  * This implementation would cache the found operator in order to improve performance for looking for
  * corresponding operators.<br>
  *
- * As with provided {@link DataSource}, this factory would use vendor-specific implementation of operations.
+ * <p>As with provided {@link DataSource}, this factory would use vendor-specific implementation of operations.</p>
+ *
+ * <b>The {@link DataGrainOperator} retrieving by this function <em style="color:red">is not thread-safe</em>.</b>
  */
 public class DefaultOperatorFactory implements OperatorFactory {
 	private DataSource dataSource;

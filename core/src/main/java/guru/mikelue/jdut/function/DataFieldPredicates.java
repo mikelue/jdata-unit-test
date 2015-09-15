@@ -10,7 +10,9 @@ import guru.mikelue.jdut.datagrain.DataField;
 /**
  * Buildings for {@link Predicate} of {@link DataField}.
  */
-public interface DataFieldPredicates {
+public final class DataFieldPredicates {
+	private DataFieldPredicates() {}
+
 	/**
 	 * Builds {@link Predicate} of null value for a column on table.
 	 *

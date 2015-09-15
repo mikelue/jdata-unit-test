@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
+import guru.mikelue.jdut.datagrain.DataRow;
 import guru.mikelue.jdut.decorate.DataGrainDecorator;
 import guru.mikelue.jdut.decorate.TableSchemaLoadingDecorator;
 import guru.mikelue.jdut.jdbc.JdbcFunction;
@@ -18,7 +19,25 @@ import guru.mikelue.jdut.operation.DataRowOperator;
 import guru.mikelue.jdut.operation.DataRowsOperator;
 
 /**
- * The main executor for testing data.
+ * The main executor of {@link DataGrainOperator} for {@link DataGrain}.<br>
+ *
+ * <h3>Main functions</h3>
+ * <p>This object is responsible for retrieving {@link Connection} from {@link DataSource},
+ * and uses the connection to execute any method of {@link #conduct(DataGrain, DataGrainOperator)}.</p>
+ *
+ * <p>Before operating the action on data grain, this conductor would load database schema by {@link TableSchemaLoadingDecorator} object, which caches loaded schema of tables.</p>
+ *
+ * <h3>Afterward decorating</h3>
+ * <p>Every method provided by this object has an overloading method with additional {@link DataGrainDecorator},
+ * the decorator is used after the loading of table schema on the data grain.</p>
+ *
+ * <p>
+ * The building/cleaning actions defined by {@link DuetConductor}, however, doesn't know the decorator has decorated
+ * the data grain or not, you should be cautious about the re-decorating behaviour.<br>
+ *
+ * {@link DataRow} object has {@link DataRow#putAttribute putAttribute} and {@link DataRow#getAttribute getAttribute} method
+ * to let you keep supplementary information of the row. These method is useful for implementing {@link DataGrainDecorator}.
+ * </p>
  */
 public class DataConductor {
 	private Logger logger = LoggerFactory.getLogger(DataConductor.class);
@@ -36,6 +55,16 @@ public class DataConductor {
 		schemaLoadingDecorator = new TableSchemaLoadingDecorator(dataSource);
 	}
 
+	/**
+	 * Builds JDBC function, which loads schema and executes <em>operator</em> on
+	 * <em>dataGrain</em> object.
+	 *
+	 * @param dataGrain The data grain object to be operated
+	 * @param operator The operator to affects database for testing
+	 * @param decorator The decorator to decorate the data grain after loading of table chema
+	 *
+	 * @return The function of JDBC
+	 */
 	public JdbcFunction<Connection, DataGrain> buildJdbcFunction(
 		DataGrain dataGrain, DataGrainOperator operator,
 		DataGrainDecorator decorator
@@ -51,6 +80,15 @@ public class DataConductor {
 				.asFunction().apply(conn);
 		};
 	}
+	/**
+	 * Builds JDBC function, which loads schema and executes <em>operator</em> on
+	 * <em>dataGrain</em> object.
+	 *
+	 * @param dataGrain The data grain object to be operated
+	 * @param operator The operator to affects database for testing
+	 *
+	 * @return The function of JDBC
+	 */
 	public JdbcFunction<Connection, DataGrain> buildJdbcFunction(
 		DataGrain dataGrain, DataGrainOperator operator
 	) {

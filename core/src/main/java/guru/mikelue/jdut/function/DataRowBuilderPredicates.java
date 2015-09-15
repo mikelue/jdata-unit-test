@@ -6,11 +6,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
 import guru.mikelue.jdut.datagrain.DataRow;
+import guru.mikelue.jdut.decorate.DataGrainDecorator;
 
 /**
- * Buildings for {@link Predicate} of {@link DataRow.Builder}.
+ * Buildings for {@link Predicate} of {@link DataRow.Builder}.<br>
+ *
+ * <p>These labmda is used with {@link DataGrainDecorator#predicate}.</p>
  */
-public interface DataRowBuilderPredicates{
+public final class DataRowBuilderPredicates {
+	private DataRowBuilderPredicates() {}
+
 	/**
 	 * Builds {@link Predicate} of a not-existing column on table.
 	 *

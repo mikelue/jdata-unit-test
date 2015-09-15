@@ -19,12 +19,37 @@ import guru.mikelue.jdut.decorate.DataGrainDecorator;
 /**
  * Represents the data of rows.<br>
  *
- * You may decorates data grain by {@link DataGrainDecorator}.
- * <pre>{@code
- *     // dataGrain - Initialized object of DataGrain
- *     // myDecorator - Your decorator
+ * <h3>Defining data grains</h3>
+ * The simplest by to build a data grain is using {@link #build} method:
  *
- *     dataGrain = dataGrain.decorate(myDecorator)
+ * <pre>{@code
+ * DataGrain dataGrain = DataGrain.build(
+ *     tableBuilder -> tableBuilder
+ *         .name("tab_name_1"),
+ *     rowsBuilder -> rowsBuilder
+ *         .implicitColumns("col_id", "col_value")
+ *         .addValues(1, "v_1")
+ *         .addValues(2, "v_2")
+ * );
+ * }</pre>
+ *
+ * <h3>Combining data grains</h3>
+ * The data grains could be combines(sequentially) by {@link #aggregate} method.
+ *
+ * <pre>{@code
+ * // dataGrain - Initialized object of DataGrain
+ * // nextDataGrain - The next data grain
+ * dataGrain = dataGrain.aggregate(nextDataGrain);
+ * }</pre>
+ *
+ * <h3>Decoration</h3>
+ * You may decorates data grain by {@link DataGrainDecorator}.
+ *
+ * <pre>{@code
+ * // dataGrain - Initialized object of DataGrain
+ * // myDecorator - Your decorator
+ *
+ * dataGrain = dataGrain.decorate(myDecorator)
  * }</pre>
  *
  * @see DataGrainDecorator

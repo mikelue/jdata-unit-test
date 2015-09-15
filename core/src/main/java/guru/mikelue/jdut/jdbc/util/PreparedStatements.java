@@ -33,6 +33,7 @@ public final class PreparedStatements {
 	 * <ol>
 	 * 	<li><b>This method chooses the corresponding <em>setXXX</em> method of {@link PreparedStatement} by the type of data.</b></li>
 	 * 	<li>If the type of data cannot be determined, the method of {@link PreparedStatement#setObject(int, Object)} would be used.</li>
+	 * 	<li>For <em>null value</em>, {@link PreparedStatement#setNull PreparedStatement.setNull} would be used</li>
 	 * </ol>
 	 *
 	 * <h3>java.util.Date</h3>
