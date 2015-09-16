@@ -10,9 +10,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>core</artifactId>
 
-	<name>core</name>
-	<description>Core module of JDUT</description>
-	<url>https://github.com/mikelue/jdata-unit-test/wiki</url>
+	<name>${project.groupId}:${project.artifactId}</name>
+	<description>Core of JDUT</description>
 
 	<build>
 		<testResources>

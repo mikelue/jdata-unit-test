@@ -16,19 +16,38 @@
 		<module>testng</module>
 	</modules>
 
-	<name>parent</name>
+	<!--
+	  - Misc information
+	  -->
+	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Parent POM of JDUT</description>
-	<url>https://github.com/mikelue/jdata-unit-test/wiki</url>
+	<url>http://jdut.gh.mikelue.guru/</url>
 	<distributionManagement>
 		<site>
-			<id>site</id>
-			<url>https://github.com/mikelue/jdata-unit-test/wiki</url>
+			<id>Maven Report</id>
+			<url>http://jdut.gh.mikelue.guru/</url>
 		</site>
 	</distributionManagement>
 	<scm>
 		<url>https://github.com/mikelue/jdata-unit-test</url>
+		<developerConnection>scm:git:git@github.com:mikelue/jdata-unit-test.git</developerConnection>
 		<connection>scm:git:git@github.com:mikelue/jdata-unit-test.git</connection>
 	</scm>
+	<licenses>
+		<license>
+			<name>GNU General Lesser Public License (LGPL) version 3.0</name>
+			<url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Mike Lue</name>
+			<email>mikelue@ms10.url.com.tw</email>
+			<organization>Mike Lue</organization>
+			<organizationUrl>http://hg.mikelue.guru/</organizationUrl>
+		</developer>
+	</developers>
+	<!-- :~) -->
 
     <properties>
 		<version.apache.commons.langs>3.4</version.apache.commons.langs>
@@ -95,6 +114,12 @@
             <artifactId>logback-classic</artifactId>
             <version>${version.logback}</version>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
         </dependency>
         <!-- :~) -->
 
@@ -106,6 +131,12 @@
 			<artifactId>dbpool</artifactId>
 			<version>${version.dbpool}</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- :~) -->
 
@@ -188,6 +219,12 @@
 				<groupId>com.mattbertolini</groupId>
 				<artifactId>liquibase-slf4j</artifactId>
 				<version>${version.liquibase.slf4j}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<!--
@@ -240,6 +277,20 @@
 
     <build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>

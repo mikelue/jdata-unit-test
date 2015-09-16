@@ -10,9 +10,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>testng</artifactId>
 
-	<name>testng</name>
+	<name>${project.groupId}:${project.artifactId}</name>
 	<description>TestNG module of JDUT</description>
-	<url>https://github.com/mikelue/jdata-unit-test/wiki</url>
 
 	<build>
 		<testResources>
