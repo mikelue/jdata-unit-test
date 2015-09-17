@@ -1,3 +1,7 @@
+<!--
+  - For deployment of reporting:
+  - mvn -Dscmpublish.dryRun=true clean post-site scm-publish:publish-scm
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -21,11 +25,12 @@
 	  -->
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Parent POM of JDUT</description>
-	<url>http://jdut.gh.mikelue.guru/</url>
+	<url>https://github.com/mikelue/jdata-unit-test</url>
 	<distributionManagement>
 		<site>
-			<id>Maven Report</id>
-			<url>http://jdut.gh.mikelue.guru/</url>
+			<id>github</id>
+			<name>Maven Report on GitHub pages</name>
+			<url>scm:git:git@github.com:mikelue/jdata-unit-test.git</url>
 		</site>
 	</distributionManagement>
 	<scm>
@@ -50,6 +55,9 @@
 	<!-- :~) -->
 
     <properties>
+		<!--
+		  - Versions of dependencies
+		  -->
 		<version.apache.commons.langs>3.4</version.apache.commons.langs>
 		<version.dbpool>7.0-jdk7</version.dbpool>
 		<version.springframework>4.2.1.RELEASE</version.springframework>
@@ -61,6 +69,7 @@
         <version.slf4j>1.7.12</version.slf4j>
         <version.snakeyaml>1.16</version.snakeyaml>
         <version.testng>6.9.6</version.testng>
+        <!-- :~) -->
 
         <!--
           - Versions of database
@@ -76,7 +85,7 @@
         <!-- :~) -->
 
 		<!--
-		  - Default setting for other database
+		  - Default setting of database for testing
 		  -->
 		<db.server.name>vm-win-server</db.server.name>
 		<db.schema.name>jdut</db.schema.name>
@@ -93,6 +102,7 @@
 		<!-- :~) -->
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!--
           - Setting for maven-compiler-plugin
@@ -299,7 +309,7 @@
 					<execution>
 						<id>attach-sources</id>
 						<goals>
-							<goal>jar</goal>
+							<goal>jar-no-fork</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -340,6 +350,29 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>stage-for-scm-publish</id>
+						<phase>post-site</phase>
+						<goals>
+							<goal>stage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-scm-publish-plugin</artifactId>
+				<version>1.1</version>
+				<configuration>
+					<checkinComment>Update report for ${project.version}</checkinComment>
+					<tryUpdate>true</tryUpdate>
+					<scmBranch>gh-pages</scmBranch>
+				</configuration>
+			</plugin>
 		</plugins>
 
         <pluginManagement>
@@ -371,6 +404,9 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>3.4</version>
+					<configuration>
+						<skipDeploy>true</skipDeploy>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -413,6 +449,33 @@
 	</reporting>
 
 	<profiles>
+		<profile>
+			<id>oss-deploy</id>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>ossrh</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+				</snapshotRepository>
+			</distributionManagement>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.6</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<!--
+		  - mvn -P github-pages clean site-post scm-publish:publish-scm
+		  -->
 		<profile>
 			<id>postgresql</id>
 			<properties>
