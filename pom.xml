@@ -27,6 +27,20 @@
 	<description>Parent POM of JDUT</description>
 	<url>https://github.com/mikelue/jdata-unit-test</url>
 	<distributionManagement>
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>ossrh</id>
+			<name>Open Source Project Repository Hosting</name>
+			<url>https://oss.sonatype.org/content/groups/public</url>
+			<layout>default</layout>
+		</repository>
+		<snapshotRepository>
+			<uniqueVersion>true</uniqueVersion>
+			<id>ossrh</id>
+			<name>Open Source Project Repository Hosting(SNAPSHOT)</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<layout>default</layout>
+		</snapshotRepository>
 		<site>
 			<id>github</id>
 			<name>Maven Report on GitHub pages</name>
@@ -34,7 +48,7 @@
 		</site>
 	</distributionManagement>
 	<scm>
-		<url>https://github.com/mikelue/jdata-unit-test</url>
+		<url>https://github.com/mikelue/jdata-unit-test/tree/master</url>
 		<developerConnection>scm:git:git@github.com:mikelue/jdata-unit-test.git</developerConnection>
 		<connection>scm:git:git@github.com:mikelue/jdata-unit-test.git</connection>
 	</scm>
@@ -303,32 +317,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.4</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.3</version>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
 				<version>1.4.1</version>
 				<executions>
@@ -351,6 +339,20 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.tinyjee.dim</groupId>
+				<artifactId>doxia-include-macro</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>initialize-doxia-include-macro</id>
+						<phase>pre-site</phase>
+						<goals>
+							<goal>initialize</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 				<executions>
@@ -359,6 +361,32 @@
 						<phase>post-site</phase>
 						<goals>
 							<goal>stage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -407,6 +435,13 @@
 					<configuration>
 						<skipDeploy>true</skipDeploy>
 					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.tinyjee.dim</groupId>
+							<artifactId>doxia-include-macro</artifactId>
+							<version>1.1</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -473,9 +508,6 @@
 				</plugins>
 			</build>
 		</profile>
-		<!--
-		  - mvn -P github-pages clean site-post scm-publish:publish-scm
-		  -->
 		<profile>
 			<id>postgresql</id>
 			<properties>

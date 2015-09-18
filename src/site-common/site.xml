@@ -2,7 +2,7 @@
 	xmlns="http://maven.apache.org/DECORATION/1.6.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.6.0 http://maven.apache.org/xsd/decoration-1.6.0.xsd"
 >
-	<body>
+    <body>
 		<menu ref="parent" />
 		<menu ref="modules" />
 		<menu name="Main">
@@ -15,9 +15,7 @@
 			<item name="Source of Testing(XRef)" href="xref-test/index.html" />
 		</menu>
 		<menu ref="reports" />
-
-		<footer>The licence of this library is not determined</footer>
-	</body>
+    </body>
 
 	<skin>
 		<groupId>org.apache.maven.skins</groupId>
