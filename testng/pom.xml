@@ -10,8 +10,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>testng</artifactId>
 
-	<name>${project.groupId}:${project.artifactId}</name>
+	<name>JDUT:${project.artifactId}</name>
 	<description>TestNG module of JDUT</description>
+
+	<scm>
+		<url>https://github.com/mikelue/jdata-unit-test/tree/master/${project.artifactId}</url>
+	</scm>
 
 	<build>
 		<testResources>
@@ -35,11 +39,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<links>
-						<link>http://testng.org/javadocs/</link>
-					</links>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -10,7 +10,8 @@ import org.testng.ITestResult;
 import guru.mikelue.jdut.DuetConductor;
 
 /**
- * This class uses naming(by convention) of test's name to figure out file name of tests.
+ * This listener uses file name(<code style="color:blue">{@literal <test_name>.yaml}</code>) for resource({@link ClassLoader} of current thread)
+ * of conducting data.
  *
  * <p>It is recommended that client implements {@link #needConductData} to trigger data conduction.</p>
  */

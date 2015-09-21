@@ -16,10 +16,10 @@ import guru.mikelue.jdut.annotation.JdutResource;
 import guru.mikelue.jdut.yaml.YamlConductorFactory;
 
 /**
- * <p>This listener uses naming(<code style="color:blue">{@literal <class_name>-<method_name>}</code>) of class and method to figure out
- * file name in package of testing class as YAML source of data conduction.</p>
+ * This listener uses file name(<code style="color:blue">{@literal <class_name>-<method_name>.yaml}</code>) for resource({@link Class#getResource Class.getResource})
+ * of conducting data.
  *
- * <p>Only <b>testing method</b> which is annotated {@link JdutResource} would be prepared for data conduction.</p>
+ * <p>Only <b>testing method</b> which is annotated {@link JdutResource @JdutResource} would be prepared for data conduction.</p>
  *
  * <p>By value of {@link TestNGConfig#oneTimeOnly}, this listener would executes only one time or multiple times
  * for testing method with data provider.</p>

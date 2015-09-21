@@ -10,8 +10,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>core</artifactId>
 
-	<name>${project.groupId}:${project.artifactId}</name>
+	<name>JDUT:${project.artifactId}</name>
 	<description>Core of JDUT</description>
+
+	<scm>
+		<url>https://github.com/mikelue/jdata-unit-test/tree/master/${project.artifactId}</url>
+	</scm>
 
 	<build>
 		<testResources>

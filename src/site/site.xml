@@ -15,8 +15,6 @@
 			<item name="Source of Testing(XRef)" href="xref-test/index.html" />
 		</menu>
 		<menu ref="reports" />
-
-		<footer>The licence of this library is not determined</footer>
 	</body>
 
 	<skin>

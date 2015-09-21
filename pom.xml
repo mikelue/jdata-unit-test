@@ -23,7 +23,7 @@
 	<!--
 	  - Misc information
 	  -->
-	<name>${project.groupId}:${project.artifactId}</name>
+	<name>JDUT:${project.artifactId}</name>
 	<description>Parent POM of JDUT</description>
 	<url>https://github.com/mikelue/jdata-unit-test</url>
 	<distributionManagement>
@@ -61,7 +61,11 @@
 	<developers>
 		<developer>
 			<name>Mike Lue</name>
+            <timezone>Asia/Taipei</timezone>
 			<email>mikelue@ms10.url.com.tw</email>
+            <properties>
+                <picUrl>http://www.gravatar.com/avatar/fc7c50957bc60f457744c8a0acfcb442?s=64</picUrl>
+            </properties>
 			<organization>Mike Lue</organization>
 			<organizationUrl>http://hg.mikelue.guru/</organizationUrl>
 		</developer>
@@ -367,32 +371,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.4</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.3</version>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-scm-publish-plugin</artifactId>
 				<version>1.1</version>
 				<configuration>
@@ -427,6 +405,9 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jxr-plugin</artifactId>
 					<version>2.5</version>
+                    <configuration>
+                        <stylesheet>${basedir}/../src/site-common/jxr.css</stylesheet>
+                    </configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -448,6 +429,38 @@
 					<artifactId>maven-project-info-reports-plugin</artifactId>
 					<version>2.8.1</version>
 				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.4</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.10.3</version>
+                    <configuration>
+                        <links>
+                            <link>http://testng.org/javadocs/</link>
+                            <link>http://jdut.gh.mikelue.guru/apidocs/</link>
+                        </links>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 			</plugins>
         </pluginManagement>
     </build>
@@ -467,18 +480,36 @@
 							<report>javadoc</report>
 						</reports>
 					</reportSet>
-					<reportSet>
-						<id>aggregate</id>
-						<inherited>false</inherited>
-						<reports>
-							<report>aggregate</report>
-						</reports>
-					</reportSet>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <inherited>false</inherited>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
 				</reportSets>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>jxr</report>
+						</reports>
+					</reportSet>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <inherited>false</inherited>
+                        <reports>
+                            <report>aggregate</report>
+                            <report>test-aggregate</report>
+                        </reports>
+                        <configuration>
+                            <stylesheet>${basedir}/src/site-common/jxr.css</stylesheet>
+                        </configuration>
+                    </reportSet>
+				</reportSets>
 			</plugin>
 		</plugins>
 	</reporting>

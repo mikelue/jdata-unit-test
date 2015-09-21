@@ -9,8 +9,8 @@ import org.testng.ISuiteListener;
 import guru.mikelue.jdut.DuetConductor;
 
 /**
- * This listener uses the convention of {@link ISuite#getName}.yaml to figure out the file name by {@link ClassLoader}
- * on current thread.
+ * This listener uses file name(<code style="color:blue">{@literal <suite_name>.yaml}</code> for resource({@link ClassLoader} of current thread)
+ * of conducting data.
  *
  * <p>It is recommended that client implements {@link #needConductData} to trigger data conduction.</p>
  */

@@ -22,5 +22,5 @@ public @interface JdutResource {
 	 *
 	 * @return The array of resources as classes
 	 */
-	public Class<JdutResourceConfig>[] resourcesConfig() default {};
+	public Class<? extends JdutResourceConfig>[] resourcesConfig() default {};
 }
