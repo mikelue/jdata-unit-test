@@ -12,6 +12,7 @@ import guru.mikelue.jdut.operation.DefaultOperatorFactory;
  *
  * <p>Example:</p>
  * <pre>{@code
+ * // hljs:java
  * // dataSource - Initialized instance of data source
  * // your_map_of_operators - The map of operators by String key
  * OperatorFactory yourFactory = DefaultOperatorFactory.build(

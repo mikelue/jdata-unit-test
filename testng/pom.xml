@@ -10,7 +10,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>testng</artifactId>
 
-	<name>JDUT:${project.artifactId}</name>
+	<name>JDUT-${project.artifactId}</name>
 	<description>TestNG module of JDUT</description>
 
 	<scm>
@@ -38,14 +38,61 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<links>
+						<link>http://testng.org/javadocs/</link>
+						<link>http://jdut.gh.mikelue.guru/apidocs/</link>
+					</links>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<configuration>
-					<siteDirectory>${basedir}/../src/site-common</siteDirectory>
-				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<!--
+					  - Copy the files from common-site
+					  -->
+					<execution>
+						<id>copy-common-site</id>
+						<phase>pre-site</phase>
+					</execution>
+					<!-- :~) -->
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<executions>
+					<!--
+					  - Remove the files copied from common-site
+					  -->
+					<execution>
+						<id>clean-common-site</id>
+						<phase>post-site</phase>
+					</execution>
+					<!-- :~) -->
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

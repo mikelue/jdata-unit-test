@@ -24,6 +24,7 @@ import guru.mikelue.jdut.jdbc.SQLExceptionConvert;
  * A stateful object to assert data of result set by cascading way.
  *
  * <pre>{@code
+ * // hljs:java
  * JdbcTemplateFactory.buildRunnable(
  *     () -> getDataSource().getConnection(),
  *     conn -> DbResultSet.buildRunnable(

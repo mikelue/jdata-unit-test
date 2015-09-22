@@ -10,7 +10,8 @@ import guru.mikelue.jdut.jdbc.JdbcFunction;
  *
  * You may use {@code DbRelease::autoClose} to surrounding your {@link JdbcFunction}.
  * <pre>{@code
- *     yourJdbcFunction = yourJdbcFunction.surroundedBy(DbRelease::autoClose);
+ * // hljs:java
+ * yourJdbcFunction = yourJdbcFunction.surroundedBy(DbRelease::autoClose);
  * }</pre>
  *
  * @see JdbcFunction.SurroundOperator

@@ -37,7 +37,7 @@ import guru.mikelue.jdut.operation.OperatorFactory;
  */
 public class ConductorConfig {
 	/**
-	 * Used with {@link ConductorConfig#build}.
+	 * This object is fed by {@link ConductorConfig#build ConductorConfig.build} through {@link Consumer}.
 	 */
 	public class Builder {
 		private Builder() {};

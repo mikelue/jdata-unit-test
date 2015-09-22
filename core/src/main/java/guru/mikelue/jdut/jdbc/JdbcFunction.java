@@ -24,6 +24,7 @@ public interface JdbcFunction<T, R> {
 	 *
 	 * For example:
 	 * <pre>{@code
+     * // hljs:java
 	 * static <T, R> JdbcFunction.SurroundOperator<T, R> buildLogging(Logger logger)
 	 * {
 	 *     return surroundedFunc -> v -> {

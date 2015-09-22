@@ -13,6 +13,7 @@ import guru.mikelue.jdut.operation.DataGrainOperator;
  *
  * <h3>Make your {@link DataGrainOperator} transactional:</h3>
  * <pre>{@code
+ * // hjls:java
  * // operator_1 - An operator to be transactional
  * operator_1 = yourOperator.surroundedBy(DatabaseTransactional::simple);
  *

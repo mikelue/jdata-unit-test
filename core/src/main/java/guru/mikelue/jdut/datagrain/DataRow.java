@@ -33,19 +33,21 @@ public class DataRow {
  	 * In following code snippet, the builder will set-up <em style="color:red">a field which cause infinite recursion while getting data</em>:
  	 *
  	 * <pre>{@code
- 	 *     builder -> builder.fieldOfValueSupplier(
- 	 *         "ct_1", () -> 30 + builder.getDataSupplier("ct_1").get().get()
- 	 *     )
+     * // hljs:java
+ 	 * builder -> builder.fieldOfValueSupplier(
+ 	 *     "ct_1", () -> 30 + builder.getDataSupplier("ct_1").get().get()
+ 	 * )
  	 * }</pre>
  	 *
  	 * Since the lazy evaluation of lambda expression, the new lambda expression of <em>"ct_1"</em> would be
  	 * a self-reference to builder.<br>
  	 * Instead, you should keep "<b>the old instance of lambda expression</b>":
  	 * <pre>{@code
- 	 *    builder -> {
- 	 *        final Supplier<Integer> oldSupplier = builder.getDataSupplier("ct_1").get();
- 	 *        builder.fieldOfValueSupplier("ct_1", () -> 30 + oldSupplier.get());
- 	 *    }
+     * // hljs:java
+ 	 * builder -> {
+ 	 *     final Supplier<Integer> oldSupplier = builder.getDataSupplier("ct_1").get();
+ 	 *     builder.fieldOfValueSupplier("ct_1", () -> 30 + oldSupplier.get());
+ 	 * }
  	 * }</pre>
 	 */
 	public class Builder {
@@ -196,17 +198,19 @@ public class DataRow {
 		 *
 		 * <b style="color:red">Following code will cause infinite recursion</b>
 		 * <pre>{@code
-		 *   Supplier<Integer> wrappedSupplier = () -> 20 + builder.<Integer>getDataSupplier("ct_1").get().get();
-		 *   builder.fieldOfValueSupplier("col_1", wrappedSupplier);
+         * // hljs:java
+		 * Supplier<Integer> wrappedSupplier = () -> 20 + builder.<Integer>getDataSupplier("ct_1").get().get();
+		 * builder.fieldOfValueSupplier("col_1", wrappedSupplier);
 		 * }</pre>
 		 *
 		 * <b style="color:green">Instead, you should:</b>
 		 * <pre>{@code
-		 *   // Keep the reference of supplier in current lambda of builder
-		 *   Supplier<Integer> sourceSupplier = builder.<Integer>getDataSupplier("ct_1").get();
-		 *   Supplier<Integer> wrappedSupplier = () -> 20 + sourceSupplier.get();
+         * // hljs:java
+		 * // Keep the reference of supplier in current lambda of builder
+		 * Supplier<Integer> sourceSupplier = builder.<Integer>getDataSupplier("ct_1").get();
+		 * Supplier<Integer> wrappedSupplier = () -> 20 + sourceSupplier.get();
 		 *
-		 *   builder.fieldOfValueSupplier("col_1", wrappedSupplier);
+		 * builder.fieldOfValueSupplier("col_1", wrappedSupplier);
 		 * }</pre>
 		 *
 		 * @param <T> The type of data for the supplier

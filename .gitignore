@@ -1,8 +1,8 @@
 build
 target
 
+*/src/site
+
 **/.settings
 **/.classpath
 **/.project
-shCoreDefault.css
-shCoreDefault.css.gz

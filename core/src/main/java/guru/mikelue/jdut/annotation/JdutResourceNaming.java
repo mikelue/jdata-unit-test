@@ -8,6 +8,7 @@ import java.text.MessageFormat;
  *
  * For example:<br>
  * <pre>{@code
+ * // hljs:java
  * // objMethod - The object of java.lang.reflect.Method
  * String fileName = JdutResourceNaming.naming("{1}-{4}", objMethod, ".yaml");
  * }</pre>

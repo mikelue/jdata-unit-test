@@ -32,6 +32,7 @@ public class DataConductorTest extends AbstractDataSourceTestBase {
 
 		DataConductor testedConductor = new DataConductor(getDataSource());
 		if (hasDecorator) {
+            // START SNIPPET: myid
 			testedConductor.conduct(
 				DataGrain.build(
 					builder -> builder.name("tab_1"),
@@ -45,6 +46,7 @@ public class DataConductorTest extends AbstractDataSourceTestBase {
 				},
 				rowBuilder -> decorated.setTrue()
 			);
+            // END SNIPPET: myid
 		} else {
 			testedConductor.conduct(
 				DataGrain.build(

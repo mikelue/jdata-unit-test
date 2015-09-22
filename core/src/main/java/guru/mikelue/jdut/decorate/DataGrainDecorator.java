@@ -12,6 +12,7 @@ import guru.mikelue.jdut.datagrain.DataRow;
  * You could chaining a bunch of decorators:
  *
  * <pre>{@code
+ * // hljs:java
  * // decorator - The first decorator
  * // nextDecorator - The next decorator
  * decorator = decorator.chain(nextDecorator);

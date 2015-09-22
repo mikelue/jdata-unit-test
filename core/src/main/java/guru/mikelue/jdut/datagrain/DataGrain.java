@@ -23,6 +23,7 @@ import guru.mikelue.jdut.decorate.DataGrainDecorator;
  * The simplest by to build a data grain is using {@link #build} method:
  *
  * <pre>{@code
+ * // hljs:java
  * DataGrain dataGrain = DataGrain.build(
  *     tableBuilder -> tableBuilder
  *         .name("tab_name_1"),
@@ -37,6 +38,7 @@ import guru.mikelue.jdut.decorate.DataGrainDecorator;
  * The data grains could be combines(sequentially) by {@link #aggregate} method.
  *
  * <pre>{@code
+ * // hljs:java
  * // dataGrain - Initialized object of DataGrain
  * // nextDataGrain - The next data grain
  * dataGrain = dataGrain.aggregate(nextDataGrain);
@@ -46,6 +48,7 @@ import guru.mikelue.jdut.decorate.DataGrainDecorator;
  * You may decorates data grain by {@link DataGrainDecorator}.
  *
  * <pre>{@code
+ * // hljs:java
  * // dataGrain - Initialized object of DataGrain
  * // myDecorator - Your decorator
  *

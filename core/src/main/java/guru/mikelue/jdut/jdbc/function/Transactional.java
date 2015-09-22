@@ -13,6 +13,7 @@ import guru.mikelue.jdut.jdbc.JdbcFunction;
  *
  * <p>For example:</p>
  * <pre>{@code
+ * // hljs:java
  * // function_1 - An instance of JdbcFunction
  * function_1 = function_1.surroundedBy(Transactional::simple);
  *

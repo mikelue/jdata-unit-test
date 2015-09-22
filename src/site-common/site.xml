@@ -3,23 +3,19 @@
 	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.6.0 http://maven.apache.org/xsd/decoration-1.6.0.xsd"
 >
     <body>
-		<menu ref="parent" />
-		<menu ref="modules" />
-		<menu name="Main">
-			<item name="Source(GitHub)" href="http://github.com/mikelue/jdata-unit-test" />
-			<item name="Wiki(GitHub)" href="http://github.com/mikelue/jdata-unit-test/wiki" />
-		</menu>
-		<menu name="References">
-			<item name="API Reference" href="apidocs/index.html" />
-			<item name="Source(XRef)" href="xref/index.html" />
-			<item name="Source of Testing(XRef)" href="xref-test/index.html" />
-		</menu>
-		<menu ref="reports" />
-    </body>
+		<breadcrumbs>
+			<item name="Parent" href="../index.html" />
+		</breadcrumbs>
 
-	<skin>
-		<groupId>org.apache.maven.skins</groupId>
-		<artifactId>maven-stylus-skin</artifactId>
-		<version>1.5</version>
-	</skin>
+		<menu name="Maven Report">
+            <item name="Information" href="project-info.html" />
+			<item name="Reports" href="project-reports.html" />
+		</menu>
+
+		<menu name="References">
+			<item name="API Reference" ref="apidocs/index" />
+			<item name="XRef Source" ref="xref/index" />
+			<item name="XRef-Test Source" ref="xref-test/index" />
+		</menu>
+    </body>
 </project>
