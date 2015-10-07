@@ -1,6 +1,7 @@
 <!--
-  - For deployment of reporting:
-  - mvn -Dscmpublish.dryRun=true clean post-site scm-publish:publish-scm
+  - For deployment of reporting(push to branch "gh-pages" on GitHub):
+  -
+  - mvn -Dscmpublish.dryRun=false clean post-site scm-publish:publish-scm
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -346,23 +347,12 @@
 				<artifactId>maven-scm-publish-plugin</artifactId>
 				<version>1.1</version>
 				<configuration>
+                    <pubScmUrl>${project.scm.developerConnection}</pubScmUrl>
 					<checkinComment>Update report for ${project.version}</checkinComment>
 					<tryUpdate>true</tryUpdate>
 					<scmBranch>gh-pages</scmBranch>
+					<dryRun>true</dryRun>
 				</configuration>
-				<executions>
-					<execution>
-						<id>scm-publish-dry-run</id>
-						<phase>site-deploy</phase>
-						<inherited>false</inherited>
-						<goals>
-							<goal>stage</goal>
-						</goals>
-						<configuration>
-							<dryRun>true</dryRun>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -494,6 +484,9 @@
 					<artifactId>maven-site-plugin</artifactId>
 					<!--<version>3.4</version>-->
 					<version>3.4.1-SNAPSHOT</version>
+                    <configuration>
+                        <skipDeploy>true</skipDeploy>
+                    </configuration>
 					<dependencies>
                         <!-- additional dependencies required by "source-class" implementations are added here -->
 						<dependency>
@@ -554,7 +547,7 @@
 							<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/zenburn.min.css">
 							<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/highlight.min.js"></script>
                             <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-                            <script src="http://jdut.gh.mikelue.guru/js/markdown-highlight.js"></script>
+                            <script src="/js/markdown-highlight.js"></script>
 						]]></footer>
 					</configuration>
 					<executions>
