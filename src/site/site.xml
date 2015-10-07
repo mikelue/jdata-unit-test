@@ -15,9 +15,9 @@
 		<head>
 			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/zenburn.min.css" />
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/highlight.min.js"></script>
-			<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-			<script src="js/markdown-highlight.js"></script>
-            <link rel="stylesheet" href="css/jdut-doc.css" />
+            <script src="https://code.jquery.com/jquery-${version.jquery}.min.js"></script>
+            <script src="/js/markdown-highlight.js"></script>
+            <link rel="stylesheet" href="/css/jdut-doc.css" />
 		</head>
 
 		<breadcrumbs>

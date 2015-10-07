@@ -214,7 +214,7 @@ private void cleanData(Method method)
 
 The file [TestNgExampleTest.java] contains runnable code for examples of using JDUT by YAML and build-in listeners of [TestNG].
 
-You can find [YAML files](https://github.com/mikelue/jdata-unit-test/tree/master/core/src/test/resources/guru/mikelue/jdut/testng/example/) in GitHub
+You can find [YAML files](https://github.com/mikelue/jdata-unit-test/tree/master/testng/src/test/resources/guru/mikelue/jdut/testng/example/) in GitHub
 
 ---
 

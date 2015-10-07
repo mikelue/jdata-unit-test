@@ -546,7 +546,7 @@
 						<footer><![CDATA[
 							<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/zenburn.min.css">
 							<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/highlight.min.js"></script>
-                            <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+							<script src="https://code.jquery.com/jquery-${version.jquery}.min.js"></script>
                             <script src="/js/markdown-highlight.js"></script>
 						]]></footer>
 					</configuration>
@@ -596,6 +596,9 @@
 							<report>jxr</report>
 							<report>test-jxr</report>
 						</reports>
+						<configuration>
+							<stylesheet>${project.parent.basedir}/src/main/resources/jxr.css</stylesheet>
+						</configuration>
 					</reportSet>
 					<reportSet>
 						<id>aggregate</id>
