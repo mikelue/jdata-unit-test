@@ -6,6 +6,8 @@ $h1 jdata-unit-test(JDUT)
 
 A framework for testing relational databases.
 
+This framework is mainly inspired by [DbUnit](http://dbunit.sourceforge.net/).
+
 $h2 Introduction
 
 JDUT currently contains two modules:
