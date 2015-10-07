@@ -132,7 +132,7 @@ public class ConductorConfigTest {
 		ConductorConfig parent = ConductorConfig.build(
 			builder -> builder
 				.namedDecorator("p-existing-1", new SampleDecorator(2))
-				.namedDecorator("existing-1", new SampleDecorator(3)) // Overrided
+				.namedDecorator("existing-1", new SampleDecorator(3)) // Overrode
 		);
 
 		return new Object[][] {
@@ -173,7 +173,7 @@ public class ConductorConfigTest {
 		ConductorConfig parent = ConductorConfig.build(
 			builder -> builder
 				.namedJdbcFunction("f-existing-1", new SampleJdbcFunction(2))
-				.namedJdbcFunction("existing-1", new SampleJdbcFunction(3)) // Overrided
+				.namedJdbcFunction("existing-1", new SampleJdbcFunction(3)) // Overrode
 		);
 
 		return new Object[][] {
@@ -217,7 +217,7 @@ public class ConductorConfigTest {
 			builder -> builder
 				.namedOperator("p-existing-1", new SampleOperator(2))
 				.namedOperator("of-existing-1", new SampleOperator(3))
-				.namedOperator("existing-1", new SampleOperator(3)) // Overrided
+				.namedOperator("existing-1", new SampleOperator(3)) // Overrode
 		);
 
 		OperatorFactory sampleOperatorFactory =
@@ -275,7 +275,7 @@ public class ConductorConfigTest {
 		ConductorConfig parent = ConductorConfig.build(
 			builder -> builder
 				.namedSupplier("p-existing-1", new SampleSupplier(2))
-				.namedSupplier("existing-1", new SampleSupplier(3)) // Overrided
+				.namedSupplier("existing-1", new SampleSupplier(3)) // Overrode
 		);
 
 		return new Object[][] {

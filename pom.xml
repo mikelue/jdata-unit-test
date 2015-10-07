@@ -1,7 +1,7 @@
 <!--
   - For deployment of reporting(push to branch "gh-pages" on GitHub):
   -
-  - mvn -Dscmpublish.dryRun=false clean post-site scm-publish:publish-scm
+  - mvn -Dscmpublish.dryRun=true clean post-site scm-publish:publish-scm
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -351,7 +351,6 @@
 					<checkinComment>Update report for ${project.version}</checkinComment>
 					<tryUpdate>true</tryUpdate>
 					<scmBranch>gh-pages</scmBranch>
-					<dryRun>true</dryRun>
 				</configuration>
 			</plugin>
 			<plugin>
