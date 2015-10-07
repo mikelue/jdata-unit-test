@@ -101,6 +101,15 @@
 
 				<examples>
                     <sections>
+						<body />
+						<body />
+                        <columns>2</columns>
+						<body />
+                        <columns>2</columns>
+						<body />
+						<body />
+                        <columns>2</columns>
+						<body />
                     </sections>
 
 					<toc>top</toc>

@@ -1,0 +1,17 @@
+%TAG !jdut! tag:jdut.mikelue.guru:1.0/
+%TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
+%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
+
+---
+
+- !sql!table ex_artist : {
+    config: {
+        build_operation: "NONE", # Do not build data
+        clean_operation: "DELETE" # Just remove inserted data
+    },
+    keys: [ "at_name" ],
+
+    data: [
+        { "at_name": "Miles Davis" }
+    ]
+}

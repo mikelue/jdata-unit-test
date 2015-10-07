@@ -1,0 +1,88 @@
+#set($h1='#')
+#set($h2='##')
+#set($h3='###')
+
+$h1 jdata-unit-test(JDUT)
+
+A framework for testing relational databases.
+
+$h2 Introduction
+
+JDUT currently contains two modules:
+
+* [Core](core/index.html) module - Using JDUT by Java API(including YAML loading)
+* [TestNG](testng/index.html) module - Using JDUT by [listeners](apidocs/guru/mikelue/jdut/testng/package-summary.html) of [TestNG][testng]
+
+---
+
+$h2 Install
+
+Currently, this framework is on [SNAPSHOT of oss.sonatype.org](https://oss.sonatype.org/content/repositories/snapshots/guru/mikelue/jdut/).
+
+You should put following setting of repository:
+
+```xml
+<project>
+    <!-- Other configurations... -->
+
+    <repositories>
+        <repository>
+            <id>oss.sonatype.org</id>
+            <name>oss.sonatype.org</name>
+            <snapshots>
+                <enabled>true</enabled>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+
+    <!-- Other configurations... -->
+</project>
+```
+
+$h3 Dependency setting
+
+```xml
+<dependency>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>core</artifactId>
+    <version>${project.version}</version>
+    <scope>test</scope>
+</dependency>
+```
+
+```xml
+<dependency>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>testng</artifactId>
+    <version>${project.version}</version>
+    <scope>test</scope>
+</dependency>
+```
+
+---
+
+$h3 For other building tool
+
+* [Core module](core/dependency-info.html)
+* [TestNG module](testng/dependency-info.html)
+
+---
+
+$h2 Documents
+
+* [Guidelines](guidelines.html) - Guidelines, Concepts of JDUT
+* [Examples](examples.html) - Examples of JDUT
+
+$h2 Misc
+
+* [Java 8](http://www.oracle.com/technetwork/java/javase/overview/)
+* [Maven](https://maven.apache.org/)
+* [YAML 1.1](http://yaml.org/)
+
+[testng]: http://testng.org/doc/index.html

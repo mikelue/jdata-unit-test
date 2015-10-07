@@ -1,0 +1,16 @@
+%TAG !jdut! tag:jdut.mikelue.guru:1.0/
+%TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
+%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
+
+---
+
+- !sql!table ex_artist : {
+    config: {
+        build_operation: "REFRESH", # Refresh tested data
+        clean_operation: "DELETE" # Remove tested data
+    },
+
+    data: [
+        { "at_id": 1001, "at_name": "Cool Man" }
+    ]
+}
