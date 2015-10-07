@@ -1,10 +1,12 @@
 package guru.mikelue.jdut.jdbc.function;
 
 import java.sql.Connection;
+import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.function.Function;
 
 import guru.mikelue.jdut.datagrain.DataRow;
 import guru.mikelue.jdut.jdbc.JdbcFunction;
@@ -42,11 +44,76 @@ public final class DbStatement {
 			() -> conn.prepareStatement(sql),
 			stat -> {
 				nameOfColumns.forEach(
-					new IndexedParameterSetter(stat, dataRow)
+					new DataRowParameterSetter(stat, dataRow)
 						.asConsumer()
 				);
 
 				executor.applyJdbc(stat);
+			}
+		);
+	}
+
+	/**
+	 * Builds runnable to set-up {@link PreparedStatement} and fed it to void function.
+	 *
+	 * @param conn The connection of database(won't be closed in the lambda)
+	 * @param sql The SQL for executing statement
+	 * @param values The sequence of values used to call setXXX() of statement
+	 * @param jdbcTypeMapping The type of JDBC mapping by type of data
+	 * @param executor The executor for built statement
+	 *
+	 * @return The instance of lambda
+	 *
+	 * @see PreparedStatements#setParameter(PreparedStatement, Object, JDBCType, int)
+	 */
+	public static JdbcRunnable buildRunnableForPreparedStatement(
+		Connection conn,
+		String sql,
+		List<Object> values, Function<Object, JDBCType> jdbcTypeMapping,
+		JdbcVoidFunction<? super PreparedStatement> executor
+	) {
+		return JdbcTemplateFactory.buildRunnable(
+			() -> conn.prepareStatement(sql),
+			stat -> {
+				values.forEach(
+					new ValueParameterSetter(stat, jdbcTypeMapping)
+						.asConsumer()
+				);
+
+				executor.applyJdbc(stat);
+			}
+		);
+	}
+
+	/**
+	 * Builds supplier to set-up {@link PreparedStatement} and fed it to function.
+	 *
+	 * @param <T> The type of returned value
+	 * @param conn The connection of database(won't be closed in the lambda)
+	 * @param sql The SQL for executing statement
+	 * @param values The sequence of values used to call setXXX() of statement
+	 * @param jdbcTypeMapping The type of JDBC mapping by type of data
+	 * @param supplier The supplier for built statement
+	 *
+	 * @return The instance of lambda
+	 *
+	 * @see PreparedStatements#setParameter(PreparedStatement, Object, JDBCType, int)
+	 */
+	public static <T> JdbcSupplier<T> buildSupplierForPreparedStatement(
+		Connection conn,
+		String sql,
+		List<Object> values, Function<Object, JDBCType> jdbcTypeMapping,
+		JdbcFunction<? super PreparedStatement, ? extends T> supplier
+	) {
+		return JdbcTemplateFactory.buildSupplier(
+			() -> conn.prepareStatement(sql),
+			stat -> {
+				values.forEach(
+					new ValueParameterSetter(stat, jdbcTypeMapping)
+						.asConsumer()
+				);
+
+				return supplier.applyJdbc(stat);
 			}
 		);
 	}
@@ -73,7 +140,7 @@ public final class DbStatement {
 			() -> conn.prepareStatement(sql),
 			stat -> {
 				nameOfColumns.forEach(
-					new IndexedParameterSetter(stat, dataRow)
+					new DataRowParameterSetter(stat, dataRow)
 						.asConsumer()
 				);
 
@@ -119,12 +186,12 @@ public final class DbStatement {
 		);
 	}
 
-	private static class IndexedParameterSetter implements JdbcVoidFunction<String> {
+	private static class DataRowParameterSetter implements JdbcVoidFunction<String> {
 		private PreparedStatement statement;
 		private DataRow dataRow;
 		private int paramIndex = 1;
 
-		private IndexedParameterSetter(
+		private DataRowParameterSetter(
 			PreparedStatement newStatement, DataRow newDataRow
 		) {
 			statement = newStatement;
@@ -137,6 +204,28 @@ public final class DbStatement {
 			PreparedStatements.setParameter(
 				statement, dataRow, columnName,
 				paramIndex++
+			);
+		}
+	}
+
+	private static class ValueParameterSetter implements JdbcVoidFunction<Object> {
+		private PreparedStatement statement;
+		private Function<Object, JDBCType> jdbcTypeMapping;
+		private int paramIndex = 1;
+
+		private ValueParameterSetter(
+			PreparedStatement newStatement,
+			Function<Object, JDBCType> newJdbcTypeMapping
+		) {
+			statement = newStatement;
+			jdbcTypeMapping = newJdbcTypeMapping;
+		}
+
+		@Override
+		public void applyJdbc(Object data) throws SQLException
+		{
+			PreparedStatements.setParameter(
+				statement, data, jdbcTypeMapping.apply(data), paramIndex++
 			);
 		}
 	}

@@ -99,6 +99,18 @@ public class DefaultOperatorFactory implements OperatorFactory {
 		return newFactory.clone();
 	}
 
+	/**
+	 * Builds with data source of this object.
+	 *
+	 * @param newDataSource The data source
+	 *
+	 * @return The initialized factory
+	 */
+	public static OperatorFactory build(DataSource newDataSource)
+	{
+		return build(newDataSource, builder -> {});
+	}
+
 	private final static Map<String, DataGrainOperator> DEFINED;
 
 	static {

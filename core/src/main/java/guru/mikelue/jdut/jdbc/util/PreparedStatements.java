@@ -30,21 +30,14 @@ public final class PreparedStatements {
 	/**
 	 * Sets a parameter over <em>statement</em> by {@link DataRow}.
 	 *
-	 * <ol>
-	 * 	<li><b>This method chooses the corresponding <em>setXXX</em> method of {@link PreparedStatement} by the type of data.</b></li>
-	 * 	<li>If the type of data cannot be determined, the method of {@link PreparedStatement#setObject(int, Object)} would be used.</li>
-	 * 	<li>For <em>null value</em>, {@link PreparedStatement#setNull PreparedStatement.setNull} would be used</li>
-	 * </ol>
-	 *
-	 * <h3>java.util.Date</h3>
-	 * The object of {@link java.util.Date} would use {@link PreparedStatement#setTimestamp} to set parameter.
-	 *
 	 * @param statement The statement to be set
 	 * @param dataRow The data row to be used over statement
 	 * @param columnName The name of column to be set
 	 * @param paramIndex The index of parameter
 	 *
 	 * @throws SQLException The exception of SQL
+	 *
+	 * @see #setParameter(PreparedStatement, Object, JDBCType, int)
 	 */
 	public static void setParameter(
 		PreparedStatement statement,
@@ -55,8 +48,43 @@ public final class PreparedStatements {
 		JDBCType jdbcType = dataRow.getTable().getColumn(columnName).getJdbcType().get();
 
 		logger.debug(
-			"Sets parameter[\"{}\"({})] data: [{}]. Type: \"{}\"",
-			columnName, paramIndex, data, jdbcType
+			"Sets data of field[\"{}\"] from data row", columnName
+		);
+
+		setParameter(
+			statement,
+			data, jdbcType,
+			paramIndex
+		);
+	}
+
+	/**
+	 * Sets a parameter over <em>statement</em> by data.
+	 *
+	 * <ol>
+	 * 	<li><b>This method chooses the corresponding <em>setXXX</em> method of {@link PreparedStatement} by the type of data.</b></li>
+	 * 	<li>If the type of data cannot be determined, the method of {@link PreparedStatement#setObject(int, Object)} would be used.</li>
+	 * 	<li>For <em>null value</em>, {@link PreparedStatement#setNull PreparedStatement.setNull} would be used</li>
+	 * </ol>
+	 *
+	 * <h3>java.util.Date</h3>
+	 * The object of {@link java.util.Date} would use {@link PreparedStatement#setTimestamp} to set parameter.
+	 *
+	 * @param statement The statement to be set
+	 * @param jdbcType The type of JDBC, currently this parameter is used to determine setXXX for {@link String} value
+	 * @param data The data
+	 * @param paramIndex The index of parameter
+	 *
+	 * @throws SQLException The exception of SQL
+	 */
+	public static void setParameter(
+		PreparedStatement statement,
+		Object data, JDBCType jdbcType,
+		int paramIndex
+	) throws SQLException {
+		logger.debug(
+			"Sets parameter[{}] data: [{}]. Type: \"{}\"",
+			paramIndex, data, jdbcType
 		);
 
 		if (data == null) {
