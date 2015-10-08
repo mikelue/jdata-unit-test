@@ -17,7 +17,7 @@ import guru.mikelue.jdut.testng.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.testng.test.DataSourceContext;
 
 @Test(suiteName="ISuiteYamlFactoryListenerTestSuite")
-@Listeners({ISuiteYamlFactoryListenerTest.DataSourceISuiteListener.class})
+@Listeners({ISuiteYamlFactoryListenerTest.DedicatedListener.class})
 public class ISuiteYamlFactoryListenerTest extends AbstractDataSourceTestBase {
 	@Injectable
 	private ISuite mockSuite;
@@ -26,7 +26,7 @@ public class ISuiteYamlFactoryListenerTest extends AbstractDataSourceTestBase {
 
 	public ISuiteYamlFactoryListenerTest() {}
 
-	public static class DataSourceISuiteListener extends ISuiteYamlFactoryListener {
+	public static class DedicatedListener extends ISuiteYamlFactoryListener {
 		private AnnotationConfigApplicationContext ctx;
 
 		@Override

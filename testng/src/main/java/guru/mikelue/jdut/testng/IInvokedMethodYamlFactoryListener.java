@@ -2,6 +2,7 @@ package guru.mikelue.jdut.testng;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
+import javax.sql.DataSource;
 
 import org.testng.IAttributes;
 import org.testng.IInvokedMethod;
@@ -21,8 +22,12 @@ import guru.mikelue.jdut.yaml.YamlConductorFactory;
  *
  * <p>Only <b>testing method</b> which is annotated {@link JdutResource @JdutResource} would be prepared for data conduction.</p>
  *
+ * <p>By default, the {@link DataSource} would be retrieved from {@link ITestContext} object(which type of {@link IAttributes}).</p>
+ *
  * <p>By value of {@link TestNGConfig#oneTimeOnly}, this listener would executes only one time or multiple times
  * for testing method with data provider.</p>
+ *
+ * <p>It is recommended that client implements {@link #needConductData} to trigger data conduction.</p>
  *
  * @see TestNGConfig
  * @see AnnotationUtil#buildConductorByConvention(YamlConductorFactory, Method)
@@ -39,6 +44,13 @@ public class IInvokedMethodYamlFactoryListener extends YamlFactoryListenerBase i
 	@Override
 	public void beforeInvocation(IInvokedMethod method, ITestResult testResult)
 	{
+		if (!needConductData(method, testResult)) {
+			getLogger().trace("[Build Data] Not matched context of method: [{}]",
+				method
+			);
+			return;
+		}
+
 		ITestNGMethod testNgMethod = method.getTestMethod();
 
 		if (!method.isTestMethod() ||
@@ -67,6 +79,13 @@ public class IInvokedMethodYamlFactoryListener extends YamlFactoryListenerBase i
 	@Override
 	public void afterInvocation(IInvokedMethod method, ITestResult testResult)
 	{
+		if (!needConductData(method, testResult)) {
+			getLogger().trace("[Clean Data] Not matched context of method: [{}]",
+				method
+			);
+			return;
+		}
+
 		ITestNGMethod testNgMethod = method.getTestMethod();
 
 		if (!method.isTestMethod() ||
@@ -115,5 +134,20 @@ public class IInvokedMethodYamlFactoryListener extends YamlFactoryListenerBase i
 		}
 
 		return AnnotationUtil.buildConductorByConvention(buildYamlConductorFactory(result.getTestContext()), method);
+	}
+
+	/**
+	 * Checks whether or not the context should make.<br>
+	 *
+	 * By default, this method always returns true.
+	 *
+	 * @param method The method provided by TestNG framework
+	 * @param testResult The result object provided byh TestNG framework
+	 *
+	 * @return true if this context should apply data conduction
+	 */
+	protected boolean needConductData(IInvokedMethod method, ITestResult testResult)
+	{
+		return true;
 	}
 }

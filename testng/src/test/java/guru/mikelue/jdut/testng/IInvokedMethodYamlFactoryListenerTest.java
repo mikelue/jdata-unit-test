@@ -24,8 +24,18 @@ import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
 import guru.mikelue.jdut.jdbc.function.DbResultSet;
 import guru.mikelue.jdut.testng.test.AbstractDataSourceTestBase;
 
-@Listeners(IInvokedMethodYamlFactoryListener.class)
+@Test(testName="IInvokedMethodYamlFactoryListenerTest")
+@Listeners(IInvokedMethodYamlFactoryListenerTest.DedicatedListener.class)
 public class IInvokedMethodYamlFactoryListenerTest extends AbstractDataSourceTestBase {
+	public static class DedicatedListener extends IInvokedMethodYamlFactoryListener {
+		@Override
+		protected boolean needConductData(IInvokedMethod method, ITestResult testResult)
+		{
+			return IInvokedMethodYamlFactoryListenerTest.class.isAssignableFrom(
+				method.getTestMethod().getTestClass().getRealClass()
+			);
+		}
+	}
 
 	@BeforeTest
 	protected static void putDataSourceTest(ITestContext testContext)

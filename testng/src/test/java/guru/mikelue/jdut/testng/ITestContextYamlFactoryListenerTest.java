@@ -15,9 +15,9 @@ import guru.mikelue.jdut.jdbc.function.DbResultSet;
 import guru.mikelue.jdut.testng.test.AbstractDataSourceTestBase;
 
 @Test(testName="ITestContextYamlFactoryListenerTest")
-@Listeners(ITestContextYamlFactoryListenerTest.SampleItestContextListener.class)
+@Listeners(ITestContextYamlFactoryListenerTest.DedicatedListener.class)
 public class ITestContextYamlFactoryListenerTest extends AbstractDataSourceTestBase {
-	public static class SampleItestContextListener extends ITestContextYamlFactoryListener {
+	public static class DedicatedListener extends ITestContextYamlFactoryListener {
 		private AnnotationConfigApplicationContext ctx;
 
 		@Override

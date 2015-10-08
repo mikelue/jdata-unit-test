@@ -1,6 +1,7 @@
 package guru.mikelue.jdut.testng;
 
 import java.util.Optional;
+import javax.sql.DataSource;
 
 import org.testng.IAttributes;
 import org.testng.ITestContext;
@@ -12,6 +13,8 @@ import guru.mikelue.jdut.DuetConductor;
 /**
  * This listener uses file name(<code style="color:blue">{@literal <test_name>.yaml}</code>) for resource({@link ClassLoader} of current thread)
  * of conducting data.
+ *
+ * <p>By default, the {@link DataSource} would be retrieved from {@link ITestContext} object(which type of {@link IAttributes}).</p>
  *
  * <p>It is recommended that client implements {@link #needConductData} to trigger data conduction.</p>
  */
@@ -27,10 +30,12 @@ public class ITestContextYamlFactoryListener extends YamlFactoryListenerBase imp
 	public void onFinish(ITestContext context)
 	{
 		if (!needConductData(context)) {
-			getLogger().trace("[Build Data] Not matched context: [{} - {}]",
-				context.getSuite().getName(),
-				context.getName()
-			);
+			if (getLogger().isTraceEnabled()) {
+				getLogger().trace("[Build Data] Not matched context: [{} - {}]",
+					context.getSuite().getName(),
+					context.getName()
+				);
+			}
 			return;
 		}
 
@@ -45,10 +50,12 @@ public class ITestContextYamlFactoryListener extends YamlFactoryListenerBase imp
 	public void onStart(ITestContext context)
 	{
 		if (!needConductData(context)) {
-			getLogger().trace("[Clean Data] Not matched context: [{} - {}]",
-				context.getSuite().getName(),
-				context.getName()
-			);
+			if (getLogger().isTraceEnabled()) {
+				getLogger().trace("[Clean Data] Not matched context: [{} - {}]",
+					context.getSuite().getName(),
+					context.getName()
+				);
+			}
 			return;
 		}
 

@@ -9,7 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.IAttributes;
+import org.testng.IInvokedMethod;
 import org.testng.ITestContext;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeTest;
@@ -76,6 +78,14 @@ public class TestNgExampleTest extends AbstractDataSourceTestBase {
 
             return yamlFactory;
         }
+
+		@Override
+		protected boolean needConductData(IInvokedMethod method, ITestResult testResult)
+		{
+			return TestNgExampleTest.class.isAssignableFrom(
+				method.getTestMethod().getTestClass().getRealClass()
+			);
+		}
     }
 
 	private static ExampleDao testedDao;

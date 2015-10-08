@@ -574,6 +574,14 @@ There are three main listeners to be used with
 
 You may extend the listeners to customize usage of YAML API
 
+### Multiple listeners
+
+If you would use multiple listeners for different tests, the [TestNG] engine **would  
+executes all of the listeners even if you don't annotate the class**.
+
+Every listener provided by JDUT has `needConductData` method to let you write your own logic that is  
+whether or not to use the listener in certain context.
+
 [IInvokedMethodYamlFactoryListener]: apidocs/guru/mikelue/jdut/testng/IInvokedMethodYamlFactoryListener.html
 [ISuiteYamlFactoryListener]: apidocs/guru/mikelue/jdut/testng/ISuiteYamlFactoryListener.html
 [ITestContextYamlFactoryListener]: apidocs/guru/mikelue/jdut/testng/ITestContextYamlFactoryListener.html

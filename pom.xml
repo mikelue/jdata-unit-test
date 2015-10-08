@@ -548,6 +548,10 @@
 							<script src="https://code.jquery.com/jquery-${version.jquery}.min.js"></script>
                             <script src="/js/markdown-highlight.js"></script>
 						]]></footer>
+						<links>
+							<link>http://testng.org/javadocs/</link>
+							<link>http://jdut.gh.mikelue.guru/apidocs/</link>
+						</links>
 					</configuration>
 					<executions>
 						<execution>

@@ -1,6 +1,7 @@
 package guru.mikelue.jdut.testng;
 
 import java.util.Optional;
+import javax.sql.DataSource;
 
 import org.testng.IAttributes;
 import org.testng.ISuite;
@@ -11,6 +12,8 @@ import guru.mikelue.jdut.DuetConductor;
 /**
  * This listener uses file name(<code style="color:blue">{@literal <suite_name>.yaml}</code> for resource({@link ClassLoader} of current thread)
  * of conducting data.
+ *
+ * <p>By default, the {@link DataSource} would be retrieved from {@link ISuite} object(which type of {@link IAttributes}).</p>
  *
  * <p>It is recommended that client implements {@link #needConductData} to trigger data conduction.</p>
  */
