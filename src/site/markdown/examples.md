@@ -9,19 +9,19 @@ This page demonstrates example from real testing code of JDUT.
 /* lhjs:sql */
 
 CREATE TABLE IF NOT EXISTS ex_artist(
-	at_id IDENTITY PRIMARY KEY,
-	at_name VARCHAR(512) NOT NULL,
-	at_gender TINYINT NOT NULL DEFAULT 3,
-	at_birthday DATE
+    at_id IDENTITY PRIMARY KEY,
+    at_name VARCHAR(512) NOT NULL,
+    at_gender TINYINT NOT NULL DEFAULT 3,
+    at_birthday DATE
 );
 
 CREATE TABLE IF NOT EXISTS ex_album(
-	ab_id IDENTITY PRIMARY KEY,
-	ab_name VARCHAR(512) NOT NULL,
-	ab_release_date DATE NOT NULL,
-	ab_duration_seconds SMALLINT NOT NULL,
-	ab_type TINYINT NOT NULL DEFAULT 1,
-	ab_at_id INTEGER NOT NULL
+    ab_id IDENTITY PRIMARY KEY,
+    ab_name VARCHAR(512) NOT NULL,
+    ab_release_date DATE NOT NULL,
+    ab_duration_seconds SMALLINT NOT NULL,
+    ab_type TINYINT NOT NULL DEFAULT 1,
+    ab_at_id INTEGER NOT NULL
 );
 ```
 
@@ -118,13 +118,16 @@ dataConductor.conduct(
 break;
 ```
 
+[JdbcExampleTest.java]: xref-test/guru/mikelue/jdut/example/JdbcExampleTest.html
+[YamlExampleTest.java]: xref-test/guru/mikelue/jdut/example/YamlExampleTest.html
+
 ---
 
 ## YAML API
 
 The file [YamlExampleTest.java] contains runnable code for examples of using JDUT by YAML.
 
-You can find [YAML files](https://github.com/mikelue/jdata-unit-test/tree/master/core/src/test/resources/guru/mikelue/jdut/example/) in GitHub
+You can find [YAML files](https://github.com/mikelue/jdata-unit-test/tree/master/core/src/test/resources/guru/mikelue/jdut/example/) in GitHub.
 
 ---
 
@@ -214,7 +217,7 @@ private void cleanData(Method method)
 
 The file [TestNgExampleTest.java] contains runnable code for examples of using JDUT by YAML and build-in listeners of [TestNG].
 
-You can find [YAML files](https://github.com/mikelue/jdata-unit-test/tree/master/testng/src/test/resources/guru/mikelue/jdut/testng/example/) in GitHub
+You can find [YAML files](https://github.com/mikelue/jdata-unit-test/tree/master/testng/src/test/resources/guru/mikelue/jdut/testng/example/) in GitHub.
 
 ---
 
@@ -305,8 +308,92 @@ public static class ExampleMethodListener extends IInvokedMethodYamlFactoryListe
 }
 ```
 
-[JdbcExampleTest.java]: xref-test/guru/mikelue/jdut/example/JdbcExampleTest.html
-[YamlExampleTest.java]: xref-test/guru/mikelue/jdut/example/YamlExampleTest.html
-[TestNgExampleTest.java]: xref-test/guru/mikelue/jdut/testng/example/TestNgExampleTest.html
-[DuetConductor]: apidocs/guru/mikelue/jdut/DuetConductor.html
 [TestNG]: http://testng.org/doc/
+[TestNgExampleTest.java]: xref-test/guru/mikelue/jdut/testng/example/TestNgExampleTest.html
+
+---
+
+## JUnit 4
+
+The module supports JUnit since version of **4.9**.
+
+You can find [YAML files](https://github.com/mikelue/jdata-unit-test/tree/master/junit4/src/test/resources/guru/mikelue/jdut/junit4/) in GitHub.
+
+---
+
+### @Rule
+
+You may use [@Rule](http://junit.org/javadoc/latest/org/junit/Rule.html) to use the conduction of data from YAML file.
+
+See full example from [JdutYamlFactoryTest.java].
+
+```java
+// hljs:java
+
+import org.junit.Rule;
+import org.junit.Test;
+
+import guru.mikelue.jdut.junit4.JdutYamlFactoryTest;
+import guru.mikelue.jdut.annotation.JdutResource;
+
+public class JdutYamlFactoryTest extends AbstractDataSourceTestBase {
+    @Rule
+    public JdutYamlFactory jdutYamlFactoryForMethodLevel = new JdutYamlFactory(conductorFactory);
+    
+    @Test @JdutResource
+    public void sampleTest()
+    {
+        /* Your tests... */
+    }
+}
+```
+
+[JdutYamlFactoryTest.java]: xref-test/guru/mikelue/jdut/junit4/JdutYamlFactoryTest.html
+
+### @ClassRule
+
+You may use [@ClassRule](http://junit.org/javadoc/latest/org/junit/ClassRule.html) to use the conduction of data from YAML file.
+
+See full example from [JdutYamlFactoryForClassRuleTest.java].
+
+```java
+// hljs:java
+
+import org.junit.Rule;
+import org.junit.Test;
+
+import guru.mikelue.jdut.junit4.JdutYamlFactoryTest;
+import guru.mikelue.jdut.annotation.JdutResource;
+
+@JdutResource
+public class JdutYamlFactoryForClassRuleTest extends AbstractDataSourceTestBase {
+    @ClassRule
+    public static TestRule rule = new TestRule() {
+        @Override
+        public Statement apply(Statement base, Description description)
+        {
+            return new Statement() {
+                @Override
+                public void evaluate() throws Throwable
+                {
+                    new JdutYamlFactory(getDataSource())
+                        .apply(base, description)
+                        .evaluate();
+                }
+            };
+        }
+    };
+
+    public JdutYamlFactoryForClassRuleTest() {}
+
+    @Test
+    public void sampleTest()
+    {
+        /* Your tests... */
+    }
+}
+```
+
+[JdutYamlFactoryForClassRuleTest.java]: xref-test/guru/mikelue/jdut/junit4/JdutYamlFactoryForClassRuleTest.html
+
+[DuetConductor]: apidocs/guru/mikelue/jdut/DuetConductor.html

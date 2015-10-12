@@ -67,6 +67,14 @@ $h3 Dependency setting
 </dependency>
 ```
 
+```xml
+<dependency>
+    <groupId>${project.groupId}</groupId>
+    <artifactId>junit4</artifactId>
+    <version>${project.version}</version>
+    <scope>test</scope>
+</dependency>
+```
 ---
 
 $h3 For other building tool

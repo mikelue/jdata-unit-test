@@ -634,9 +634,45 @@ public class YourTest {
 }
 ```
 
+## 5. JUnit 4
+
+You should add dependency of `guru.mikelue.jdut:junit4` before using this module.
+
+This module supports JUnit4 since version of **4.9**.
+
 ---
 
-## 5. Database Vendor
+### Rule
+
+The only rule provided by this module is [JdutYamlFactory].  
+You may override `buildDuetConductor` method to load your own YAML file.
+
+[JdutYamlFactory]: apidocs/guru/mikelue/jdut/junit4/JdutYamlFactory.html
+
+```java
+// hljs:java
+
+import org.junit.Rule;
+import org.junit.Test;
+
+import guru.mikelue.jdut.junit4.JdutYamlFactoryTest;
+import guru.mikelue.jdut.annotation.JdutResource;
+
+public class YourSomethingTest {
+    @Rule
+    public JdutYamlFactory jdutYamlFactoryForMethodLevel = new JdutYamlFactory(conductorFactory);
+
+    @Test @JdutResource
+    public void sampleTest()
+    {
+        /* Your tests... */
+    }
+} 
+```
+
+---
+
+## 6. Database Vendor
 
 ---
 

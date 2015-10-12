@@ -50,6 +50,7 @@
 		<menu name="Modules" inherit="bottom">
 			<item name="JDUT-Core" href="core/index.html" />
 			<item name="JDUT-TestNG" href="testng/index.html" />
+			<item name="JDUT-JUnit4" href="junit4/index.html" />
 		</menu>
 
 		<menu name="Maven Report">
