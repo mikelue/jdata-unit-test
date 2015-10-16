@@ -237,7 +237,7 @@ Uses [namedOperator(...)](apidocs/guru/mikelue/jdut/ConductorConfig.Builder.html
 Also, following methods can override the configurations of factory:
 
 * [YamlConductorFactory.conductResource(String, Consumer<ConductorConfig.Builder>)](apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html#conductResource-java.lang.String-java.util.function.Consumer-)
-* [YamlConductorFactory.conductYaml(String, Consumer<ConductorConfig.Builder>)](file:///D:/Code/jdata-unit-test/target/site/apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html#conductYaml-java.io.Reader-java.util.function.Consumer-)
+* [YamlConductorFactory.conductYaml(String, Consumer<ConductorConfig.Builder>)](apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html#conductYaml-java.io.Reader-java.util.function.Consumer-)
 
 
 ```yaml
@@ -283,7 +283,7 @@ You could use [namedDecorator(...)](apidocs/guru/mikelue/jdut/ConductorConfig.Bu
 Also, following methods can override the configurations of factory:
 
 * [YamlConductorFactory.conductResource(String, Consumer<ConductorConfig.Builder>)](apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html#conductResource-java.lang.String-java.util.function.Consumer-)
-* [YamlConductorFactory.conductYaml(String, Consumer<ConductorConfig.Builder>)](file:///D:/Code/jdata-unit-test/target/site/apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html#conductYaml-java.io.Reader-java.util.function.Consumer-)
+* [YamlConductorFactory.conductYaml(String, Consumer<ConductorConfig.Builder>)](apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html#conductYaml-java.io.Reader-java.util.function.Consumer-)
 
 ```yaml
 # hljs:yaml
