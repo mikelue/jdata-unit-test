@@ -10,7 +10,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import mockit.Injectable;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 
 public class SchemaTableTest {
 	public SchemaTableTest() {}
@@ -84,7 +84,7 @@ public class SchemaTableTest {
 		/**
 		 * Mocks the value from meta data
 		 */
-		new NonStrictExpectations() {{
+		new Expectations() {{
 			mockMetaData.storesUpperCaseIdentifiers();
 			result = storesUpperCaseIdentifiers;
 			mockMetaData.storesLowerCaseIdentifiers();

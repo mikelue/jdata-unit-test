@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 import mockit.Injectable;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import mockit.Verifications;
 import org.testng.IAttributes;
 import org.testng.IInvokedMethod;
@@ -91,7 +91,7 @@ public class IInvokedMethodYamlFactoryListenerTest extends AbstractDataSourceTes
 		String methodName, int currentInvocationCount,
 		boolean hasBuilding, boolean hasCleaning
 	) throws NoSuchMethodException {
-		new NonStrictExpectations(testedListener) {{
+		new Expectations(testedListener) {{
 			testedListener.buildDuetConductor((IAttributes)any);
 			result = Optional.of(mockDuetConductor);
 

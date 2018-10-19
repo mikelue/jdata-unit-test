@@ -728,15 +728,15 @@ OperatorFactory yourFactory = DefaultOperatorFactory.build(
 ### Notes
 Following list states the databases and JDBC drivers which have been tested:
 
-| Database Vendor | Database Version        | JDBC Version           | Misc |
-| :------------- |:-------------|:-------------|:-------------|
-| [PostgreSql][postgresql]|9.4|jdbc41| |
-| [MySql][mysql]|5.6|5.1| |
-| [Oracle][oracle]|11g express|11.2.0(thin)| |
-| [MS SQL Server][mssql]|2013 express|4.2| |
-| [H2][h2]|1.4|1.4| |
-| [HsqlDb][hsqldb]|2.3|2.3| |
-| [Derby][derby]|10.11|10.11| |
+| Database Vendor          | Database Version | JDBC Version   | Misc           |
+| :-------------           | :-------------   | :------------- | :------------- |
+| [PostgreSql][postgresql] | 9.4              | jdbc41         |                |
+| [MySql][mysql]           | 5.6              | 5.1            |                |
+| [Oracle][oracle]         | 11g express      | 11.2.0(thin)   |                |
+| [MS SQL Server][mssql]   | 2013 express     | 4.2            |                |
+| [H2][h2]                 | 1.4              | 1.4            |                |
+| [HsqlDb][hsqldb]         | 2.3              | 2.3            |                |
+| [Derby][derby]           | 10.11            | 10.11          |                |
 
 [postgresql]: http://www.postgresql.org/
 [mysql]: http://www.mysql.com/

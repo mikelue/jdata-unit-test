@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 
 import mockit.Injectable;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -35,7 +35,7 @@ public class DefaultOperatorFactoryTest {
 		String sampleProductName, String sampleOperatorName,
 		Consumer<CallingTracer> assertion
 	) throws SQLException {
-		new NonStrictExpectations() {{
+		new Expectations() {{
 			mockDataSource.getConnection().getMetaData();
 			result = mockMetaData;
 

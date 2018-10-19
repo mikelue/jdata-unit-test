@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import mockit.Injectable;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import mockit.Verifications;
 
 import org.testng.annotations.Test;
@@ -23,7 +23,7 @@ public class DatabaseTransactionalTest {
 	@Test
 	public void transactional() throws SQLException
 	{
-		new NonStrictExpectations() {{
+		new Expectations() {{
 			mockConn.getAutoCommit();
 			result = true;
 		}};

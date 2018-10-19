@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.NonStrictExpectations;
 import mockit.Verifications;
 
 import org.testng.Assert;
@@ -37,7 +36,7 @@ public class TransactionalTest {
 	) throws SQLException {
 		final int sampleValue = 20;
 
-		new NonStrictExpectations() {{
+		new Expectations() {{
 			mockedConn.getAutoCommit();
 			result = oldValueAutoCommit;
 
@@ -50,7 +49,7 @@ public class TransactionalTest {
 		};
 		sampleFunc = sampleFunc.surroundedBy(surroundingFunc);
 
-		Assert.assertEquals(sampleFunc.applyJdbc(mockedConn), new Integer(sampleValue));
+		Assert.assertEquals(sampleFunc.applyJdbc(mockedConn), Integer.valueOf(sampleValue));
 
 		new Verifications() {{
 			mockedConn.commit();
@@ -88,23 +87,24 @@ public class TransactionalTest {
 			}};
 		}
 	}
+
 	@DataProvider(name="OperateTransactional")
 	private Object[][] getOperateTransactional()
 	{
 		return new Object[][] {
 			{ // Set has effect
 				true, Connection.TRANSACTION_SERIALIZABLE,
-				new Transactional<Connection, Integer>(Connection.TRANSACTION_READ_COMMITTED),
-				true, Connection.TRANSACTION_READ_COMMITTED
+				(JdbcFunction.SurroundOperator<Connection, Integer>)new Transactional<Connection, Integer>(Connection.TRANSACTION_READ_COMMITTED),
+				true, Optional.of(Connection.TRANSACTION_READ_COMMITTED)
 			},
 			{ // Doesn't have to set
 				false, Connection.TRANSACTION_READ_COMMITTED,
-				new Transactional<Connection, Integer>(Connection.TRANSACTION_READ_COMMITTED),
+				(JdbcFunction.SurroundOperator<Connection, Integer>)new Transactional<Connection, Integer>(Connection.TRANSACTION_READ_COMMITTED),
 				true, Optional.empty()
 			},
 			{ // Simple transaction
 				false, Connection.TRANSACTION_READ_COMMITTED,
-				(JdbcFunction.SurroundOperator<Connection, Integer>)Transactional::simple,
+				(JdbcFunction.SurroundOperator<Connection, Integer>)(JdbcFunction.SurroundOperator<Connection, Integer>)Transactional::simple,
 				true, Optional.empty()
 			},
 		};

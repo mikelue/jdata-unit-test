@@ -1,7 +1,7 @@
 package guru.mikelue.jdut.testng;
 
 import mockit.Injectable;
-import mockit.NonStrictExpectations;
+import mockit.Expectations;
 import org.testng.Assert;
 import org.testng.ISuite;
 import org.testng.ITestContext;
@@ -28,7 +28,7 @@ public class TestNgResourceNamingTest {
 		String sampleName, String sampleHost, String sampleSuiteName,
 		String expectedResult
 	) {
-		new NonStrictExpectations() {{
+		new Expectations() {{
 			mockTestContext.getName();
 			result = sampleName;
 			mockTestContext.getHost();
@@ -62,7 +62,7 @@ public class TestNgResourceNamingTest {
 	public void namingByITestNGMethod(
 		String sampleFormat, String expectedResult
 	) throws NoSuchMethodException {
-		new NonStrictExpectations() {{
+		new Expectations() {{
 			mockTestMethod.getConstructorOrMethod().getMethod();
 			result = TestNgResourceNamingTest.class.getMethod("sampleMethod");
 		}};
@@ -98,7 +98,7 @@ public class TestNgResourceNamingTest {
 		String sampleHost, String sampleName,
 		String expectedResult
 	) {
-		new NonStrictExpectations() {{
+		new Expectations() {{
 			mockSuite.getHost();
 			result = sampleHost;
 
