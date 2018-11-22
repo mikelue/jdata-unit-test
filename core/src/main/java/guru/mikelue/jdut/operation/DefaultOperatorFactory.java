@@ -135,46 +135,48 @@ public class DefaultOperatorFactory implements OperatorFactory {
 	@Override
 	public DataGrainOperator get(String name)
 	{
-		if (!cachedOperator.containsKey(name)) {
-			/**
-			 * Finds first matched predicates by meta data of database
-			 */
-			OptionalInt matchedIndex = JdbcTemplateFactory.buildSupplier(
-				() -> dataSource.getConnection(),
-				conn -> {
-					final DatabaseMetaData metaData = conn.getMetaData();
-
-					return IntStream.range(0, predicates.size())
-						.filter(
-							i -> ((JdbcSupplier<Boolean>) () ->
-								predicates.get(i).testMetaData(metaData)
-							)
-								.asSupplier().get()
-						)
-						.findFirst();
-				}
-			).asSupplier().get();
-			// :~)
-
-			/**
-			 * Adds operator to cache if the there is matched operator.
-			 *
-			 * 1) The defined operators may not be matched
-			 * 2) The customized ones may not be matched, try to find one from defined operators
-			 */
-			DataGrainOperator operator = null;
-			if (matchedIndex.isPresent()) {
-				operator = operators.get(matchedIndex.getAsInt()).get(name);
-			}
-			if (operator == null) {
-				operator = DEFINED.get(name);
-			}
-
-			cachedOperator.put(name, operator);
-			// :~)
+		if (cachedOperator.containsKey(name)) {
+			return cachedOperator.get(name);
 		}
 
-		return cachedOperator.get(name);
+		/**
+		 * Finds first matched predicates by meta data of database
+		 */
+		OptionalInt matchedIndex = JdbcTemplateFactory.buildSupplier(
+			() -> dataSource.getConnection(),
+			conn -> {
+				final DatabaseMetaData metaData = conn.getMetaData();
+
+				return IntStream.range(0, predicates.size())
+					.filter(
+						i -> ((JdbcSupplier<Boolean>) () ->
+							predicates.get(i).testMetaData(metaData)
+						)
+							.asSupplier().get()
+					)
+					.findFirst();
+			}
+		).asSupplier().get();
+		// :~)
+
+		/**
+		 * Adds operator to cache if the there is matched operator.
+		 *
+		 * 1) The defined operators may not be matched
+		 * 2) The customized ones may not be matched, try to find one from defined operators
+		 */
+		DataGrainOperator operator = null;
+		if (matchedIndex.isPresent()) {
+			operator = operators.get(matchedIndex.getAsInt()).get(name);
+		}
+		if (operator == null) {
+			operator = DEFINED.get(name);
+		}
+
+		cachedOperator.put(name, operator);
+		// :~)
+
+		return operator;
 	}
 
 	@Override

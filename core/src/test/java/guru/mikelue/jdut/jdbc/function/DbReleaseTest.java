@@ -1,6 +1,6 @@
 package guru.mikelue.jdut.jdbc.function;
 
-import mockit.Injectable;
+import mockit.Mocked;
 import mockit.Verifications;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 import guru.mikelue.jdut.jdbc.JdbcFunction;
 
 public class DbReleaseTest {
-	@Injectable
+	@Mocked
 	private AutoCloseable mockedCloseable;
 
 	public DbReleaseTest() {}

@@ -13,7 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import javax.xml.bind.DatatypeConverter;
+import java.util.Base64;
 
 import org.testng.Assert;
 import org.testng.SkipException;
@@ -451,7 +451,7 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 					/**
 					 * Asserts the binary data
 					 */
-					byte[] expectedBytes = DatatypeConverter.parseBase64Binary("VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=");
+					byte[] expectedBytes = Base64.getDecoder().decode("VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=");
 
 					new ResultSetAssert(rs)
 					.assertNextTrue()
@@ -521,7 +521,7 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 	@DataProvider(name="ConductResourceWithDbTypeOfSpecificVendors")
 	private Object[][] getConductResourceWithDbTypeOfSpecificVendors()
 	{
-		byte[] expectedBytes = DatatypeConverter.parseBase64Binary("VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=");
+		byte[] expectedBytes = Base64.getDecoder().decode("VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=");
 
 		return new Object[][] {
 			{ // CLOB

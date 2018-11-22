@@ -9,7 +9,7 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import mockit.Injectable;
+import mockit.Mocked;
 import mockit.Expectations;
 
 public class SchemaTableTest {
@@ -66,7 +66,7 @@ public class SchemaTableTest {
 		};
 	}
 
-	@Injectable
+	@Mocked
 	private DatabaseMetaData mockMetaData;
 
 	/**

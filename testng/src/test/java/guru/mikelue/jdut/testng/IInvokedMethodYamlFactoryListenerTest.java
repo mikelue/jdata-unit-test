@@ -3,7 +3,7 @@ package guru.mikelue.jdut.testng;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import mockit.Injectable;
+import mockit.Mocked;
 import mockit.Expectations;
 import mockit.Verifications;
 import org.testng.IAttributes;
@@ -73,13 +73,13 @@ public class IInvokedMethodYamlFactoryListenerTest extends AbstractDataSourceTes
 		).runJdbc();
 	}
 
-	@Injectable
+	@Mocked
 	private ITestResult mockTestResult;
-	@Injectable
+	@Mocked
 	private IInvokedMethod mockInvokedMethod;
-	@Injectable
+	@Mocked
 	private ITestNGMethod mockTestNGMethod;
-	@Injectable
+	@Mocked
 	private DuetConductor mockDuetConductor;
 
 	/**
@@ -94,6 +94,7 @@ public class IInvokedMethodYamlFactoryListenerTest extends AbstractDataSourceTes
 		new Expectations(testedListener) {{
 			testedListener.buildDuetConductor((IAttributes)any);
 			result = Optional.of(mockDuetConductor);
+			times = hasBuilding ? 1 : 0;
 
 			mockInvokedMethod.isTestMethod();
 			result = true;
@@ -102,26 +103,30 @@ public class IInvokedMethodYamlFactoryListenerTest extends AbstractDataSourceTes
 			result = mockTestNGMethod;
 
 			mockTestNGMethod.getCurrentInvocationCount();
-			result = currentInvocationCount;
+			result = currentInvocationCount; minTimes = 0;
 
 			mockTestNGMethod.getParameterInvocationCount();
-			result = 3;
+			result = 3; minTimes = 0;
 
 			mockTestNGMethod.getConstructorOrMethod().getMethod();
 			result = IInvokedMethodYamlFactoryListenerTest.class.getMethod(methodName);
+			minTimes = 0;
 		}};
 
 		testedListener.beforeInvocation(
-			mockInvokedMethod, mockTestResult
-		);
-		testedListener.afterInvocation(
 			mockInvokedMethod, mockTestResult
 		);
 
 		new Verifications() {{
 			mockDuetConductor.build();
 			times = hasBuilding ? 1 : 0;
+		}};
 
+		testedListener.afterInvocation(
+			mockInvokedMethod, mockTestResult
+		);
+
+		new Verifications() {{
 			mockDuetConductor.clean();
 			times = hasCleaning ? 1 : 0;
 		}};

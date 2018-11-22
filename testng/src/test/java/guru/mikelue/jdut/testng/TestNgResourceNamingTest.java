@@ -1,6 +1,6 @@
 package guru.mikelue.jdut.testng;
 
-import mockit.Injectable;
+import mockit.Mocked;
 import mockit.Expectations;
 import org.testng.Assert;
 import org.testng.ISuite;
@@ -10,11 +10,11 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class TestNgResourceNamingTest {
-	@Injectable
+	@Mocked
 	private ITestContext mockTestContext;
-	@Injectable
+	@Mocked
 	private ITestNGMethod mockTestMethod;
-	@Injectable
+	@Mocked
 	private ISuite mockSuite;
 
 	public TestNgResourceNamingTest() {}

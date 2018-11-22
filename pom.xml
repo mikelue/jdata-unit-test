@@ -110,7 +110,7 @@
 		<!--
 		  - Default setting of database for testing
 		  -->
-		<db.server.name>vm-win-server</db.server.name>
+		<db.server.name>localhost</db.server.name>
 		<db.schema.name>jdut</db.schema.name>
 
 		<db.username>jdut</db.username>
@@ -293,7 +293,7 @@
 				<version>${version.mssql}</version>
 			</dependency>
 			<!--
-			 - mvn install:install-file -Dfile=ojdbc6.jar -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0 -Dpackaging=jar
+			 - mvn install:install-file -Dfile=ojdbc8.jar -DgroupId=com.oracle -DartifactId=ojdbc8 -Dversion=18.3 -Dpackaging=jar
 			 -->
 			<dependency>
 				<groupId>com.oracle</groupId>
@@ -471,6 +471,12 @@
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.22.0</version>
+					<configuration>
+						<argLine>
+							-javaagent:${settings.localRepository}/org/jmockit/jmockit/${version.jmockit}/jmockit-${version.jmockit}.jar
+						</argLine>
+						<disableXmlReport>true</disableXmlReport>
+					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-jxr-plugin</artifactId>
@@ -662,7 +668,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.microsoft.sqlserver</groupId>
-					<artifactId>sqljdbc4</artifactId>
+					<artifactId>mssql-jdbc</artifactId>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -685,12 +691,12 @@
 			<id>oracle</id>
 			<properties>
 				<db.driverClassName>oracle.jdbc.OracleDriver</db.driverClassName>
-				<db.url>jdbc:oracle:thin:@${db.server.name}:1521/xe</db.url>
+				<db.url>jdbc:oracle:thin:@${db.server.name}:1521/orclpdb1</db.url>
 			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>com.oracle</groupId>
-					<artifactId>ojdbc6</artifactId>
+					<artifactId>ojdbc8</artifactId>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>

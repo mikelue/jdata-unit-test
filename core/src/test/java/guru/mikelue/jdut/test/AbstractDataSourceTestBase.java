@@ -14,17 +14,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.testng.IConfigurable;
+import org.testng.IConfigureCallBack;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
+import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import org.testng.internal.ConstructorOrMethod;
+import org.testng.internal.TestNGMethod;
 
 import guru.mikelue.jdut.annotation.AnnotationUtil;
 import guru.mikelue.jdut.annotation.IfDatabaseVendor;
@@ -34,13 +39,33 @@ import guru.mikelue.jdut.jdbc.JdbcRunnable;
 import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
 import guru.mikelue.jdut.vendor.DatabaseVendor;
 
-@Listeners(AbstractDataSourceTestBase.IfDatabaseVendorListener.class)
+@Listeners({AbstractDataSourceTestBase.IfDatabaseVendorConfigurableListener.class, AbstractDataSourceTestBase.IfDatabaseVendorTestListener.class})
 @Test(testName="DataSourceTest", groups="DataSourceGroup")
 public abstract class AbstractDataSourceTestBase {
-	public static class IfDatabaseVendorListener implements IInvokedMethodListener {
-		private Logger logger = LoggerFactory.getLogger(IfDatabaseVendorListener.class);
+	/**
+	 * Used to skip configurations
+	 */
+	public static class IfDatabaseVendorConfigurableListener implements IConfigurable {
+		private Logger logger = LoggerFactory.getLogger(IfDatabaseVendorConfigurableListener.class);
 
-		public IfDatabaseVendorListener() {}
+		@Override
+		public void run(IConfigureCallBack callBack, ITestResult testResult)
+		{
+			ITestNGMethod targetMethod = testResult.getMethod();
+			if (!needSkip(targetMethod)) {
+				callBack.runConfigurationMethod(testResult);
+			}
+
+			logger.debug("Skip configuration [{}].", targetMethod.getMethodName());
+		}
+	}
+	/**
+	 * Used to skip tests
+	 */
+	public static class IfDatabaseVendorTestListener implements IInvokedMethodListener {
+		private Logger logger = LoggerFactory.getLogger(IfDatabaseVendorTestListener.class);
+
+		public IfDatabaseVendorTestListener() {}
 
 		@Override
 		public void beforeInvocation(IInvokedMethod method, ITestResult testResult)
@@ -49,19 +74,10 @@ public abstract class AbstractDataSourceTestBase {
 				return;
 			}
 
-			if (!"DataSourceTest".equals(testResult.getTestContext().getName())) {
-				return;
-			}
-
-			IfDatabaseVendor vendorCondition = method.getTestMethod().getConstructorOrMethod()
-					.getMethod()
-					.getAnnotation(IfDatabaseVendor.class);
-			DatabaseVendor currentVendor = ctx.getBean(DatabaseVendor.class);
-
-			if (!AnnotationUtil.matchDatabaseVendor(currentVendor, vendorCondition)) {
-				logger.debug("Skip test because of current vendor: [{}]", currentVendor);
-
-				throw new SkipException("Skip test because not matched needed database");
+			ITestNGMethod targetMethod = method.getTestMethod();
+			if (needSkip(targetMethod)) {
+				logger.debug("Skip test [{}].", targetMethod.getMethodName());
+				throw new SkipException("Skip test because the vendor of database is not matched.");
 			}
 		}
 
@@ -69,32 +85,27 @@ public abstract class AbstractDataSourceTestBase {
 		public void afterInvocation(IInvokedMethod method, ITestResult testResult) {}
 	}
 
-	private Logger mainLogger = LoggerFactory.getLogger(AbstractDataSourceTestBase.class);
+	private static Logger mainLogger = LoggerFactory.getLogger(AbstractDataSourceTestBase.class);
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	private static AnnotationConfigApplicationContext ctx;
-
-	private DataGrainDecorator schemaLoading;
+	private static DataGrainDecorator schemaLoading;
 
 	protected AbstractDataSourceTestBase() {}
 
 	@BeforeTest
-	public static void initDataSourceTest()
+	public static void initContext()
 	{
 		ctx = new AnnotationConfigApplicationContext();
 		ctx.register(DataSourceContext.class);
 		ctx.refresh();
+
+		schemaLoading = new TableSchemaLoadingDecorator(getDataSource());
 	}
 	@AfterTest
-	public static void closeDataSourceTest()
+	public static void releaseContext(ITestContext testContext)
 	{
 		ctx.close();
-	}
-
-	@BeforeClass
-	protected void initDataSourceClass()
-	{
-		schemaLoading = new TableSchemaLoadingDecorator(getDataSource());
 	}
 
 	@BeforeMethod(firstTimeOnly=true)
@@ -207,6 +218,38 @@ public abstract class AbstractDataSourceTestBase {
 	private String getFileNameOfChangeSet()
 	{
 		return String.format("%s.xml", getClass().getName().replace(".", "/"));
+	}
+
+	private static boolean needSkip(ITestNGMethod method)
+	{
+		/**
+		 * Checks:
+		 * 1) IfDatabaseVendor annotation on class declaration
+		 * 2) IfDatabaseVendor annotation on method declaration
+		 */
+		ConstructorOrMethod targetMethod = method.getConstructorOrMethod();
+		IfDatabaseVendor vendorCondition = targetMethod
+				.getDeclaringClass()
+				.getAnnotation(IfDatabaseVendor.class);
+
+		if (vendorCondition == null) {
+			vendorCondition = targetMethod
+				.getMethod()
+				.getAnnotation(IfDatabaseVendor.class);
+
+			if (vendorCondition == null) {
+				return false;
+			}
+		}
+		// :~)
+
+		DatabaseVendor currentVendor = ctx.getBean(DatabaseVendor.class);
+		boolean matchDatabaseVendor = AnnotationUtil.matchDatabaseVendor(currentVendor, vendorCondition);
+		if (!matchDatabaseVendor) {
+			mainLogger.debug("The needed vendor of database [{}] is not matched. Current vendor: [{}]", vendorCondition.match(), currentVendor.name());
+		}
+
+		return !matchDatabaseVendor;
 	}
 }
 

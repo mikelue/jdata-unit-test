@@ -7,20 +7,17 @@ import java.util.List;
 import java.util.Optional;
 
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Verifications;
+import mockit.Mocked;
 
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 import guru.mikelue.jdut.jdbc.JdbcFunction;
-import guru.mikelue.jdut.test.OptionalParameterListener;
 
-@Listeners(OptionalParameterListener.class)
 public class TransactionalTest {
-	@Injectable
+	@Mocked
 	private Connection mockedConn;
 
 	public TransactionalTest() {}

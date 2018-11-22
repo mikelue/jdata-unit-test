@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import javax.sql.DataSource;
 
-import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Expectations;
 import org.testng.Assert;
@@ -18,7 +17,7 @@ import org.testng.annotations.Test;
 import guru.mikelue.jdut.datagrain.DataGrain;
 
 public class DefaultOperatorFactoryTest {
-	@Injectable
+	@Mocked
 	private DatabaseMetaData mockMetaData;
 	@Mocked
 	private DataSource mockDataSource;
@@ -38,9 +37,6 @@ public class DefaultOperatorFactoryTest {
 		new Expectations() {{
 			mockDataSource.getConnection().getMetaData();
 			result = mockMetaData;
-
-			mockMetaData.getDriverName();
-			result = "";
 
 			mockMetaData.getDatabaseProductName();
 			result = sampleProductName;

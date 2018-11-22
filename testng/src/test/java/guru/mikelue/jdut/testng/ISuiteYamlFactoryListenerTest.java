@@ -3,7 +3,7 @@ package guru.mikelue.jdut.testng;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
-import mockit.Injectable;
+import mockit.Mocked;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testng.ISuite;
 import org.testng.annotations.Listeners;
@@ -19,9 +19,9 @@ import guru.mikelue.jdut.testng.test.DataSourceContext;
 @Test(suiteName="ISuiteYamlFactoryListenerTestSuite")
 @Listeners({ISuiteYamlFactoryListenerTest.DedicatedListener.class})
 public class ISuiteYamlFactoryListenerTest extends AbstractDataSourceTestBase {
-	@Injectable
+	@Mocked
 	private ISuite mockSuite;
-	@Injectable
+	@Mocked
 	private DuetConductor mockDuetConductor;
 
 	public ISuiteYamlFactoryListenerTest() {}

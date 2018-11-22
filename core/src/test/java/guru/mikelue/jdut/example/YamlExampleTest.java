@@ -11,10 +11,10 @@ import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import guru.mikelue.jdut.DuetConductor;
@@ -28,6 +28,7 @@ import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.vendor.DatabaseVendor;
 import guru.mikelue.jdut.yaml.YamlConductorFactory;
 
+@IfDatabaseVendor(match=DatabaseVendor.H2)
 public class YamlExampleTest extends AbstractDataSourceTestBase {
 	private static ExampleDao testedDao;
 
@@ -56,13 +57,13 @@ public class YamlExampleTest extends AbstractDataSourceTestBase {
     @AfterMethod
     private void cleanData(Method method)
     {
-        duetConductors.get(method.getName()).clean();
+		duetConductors.get(method.getName()).clean();
     }
 
 	/**
 	 * Tests the insertion of data for artist.
 	 */
-	@Test @IfDatabaseVendor(match=DatabaseVendor.H2)
+	@Test
 	public void addArtist() throws SQLException
 	{
 		testedDao.addArtist(INSERT_ARTIST_NAME);
@@ -82,7 +83,7 @@ public class YamlExampleTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the updating of data for artist.
 	 */
-	@Test @IfDatabaseVendor(match=DatabaseVendor.H2)
+	@Test
 	public void updateArtistName() throws SQLException
 	{
 		testedDao.updateArtistName(1001, UPDATE_ARTIST_NAME);
@@ -102,7 +103,7 @@ public class YamlExampleTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the removal of data for artist.
 	 */
-	@Test @IfDatabaseVendor(match=DatabaseVendor.H2)
+	@Test
 	public void removeArtistByName() throws SQLException
 	{
         testedDao.removeArtistByName(REMOVE_ARTIST_NAME);
@@ -119,7 +120,7 @@ public class YamlExampleTest extends AbstractDataSourceTestBase {
 		).runJdbc();
 	}
 
-	@Test @IfDatabaseVendor(match=DatabaseVendor.H2)
+	@Test
 	public void countAlbumsByType() throws SQLException
 	{
 		Assert.assertEquals(
@@ -129,7 +130,7 @@ public class YamlExampleTest extends AbstractDataSourceTestBase {
 	}
 
 	@BeforeClass
-	protected static void setupDatabaseSchema()
+	private static void setupDatabaseSchema()
 	{
 		SchemaSetup.buildSchema(getDataSource());
 
@@ -170,7 +171,7 @@ public class YamlExampleTest extends AbstractDataSourceTestBase {
         );
 	}
     @AfterClass
-    protected static void releaseResources()
+    private static void releaseResources()
     {
         duetConductors = null;
     }

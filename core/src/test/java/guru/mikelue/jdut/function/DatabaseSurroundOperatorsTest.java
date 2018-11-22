@@ -3,14 +3,14 @@ package guru.mikelue.jdut.function;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import mockit.Injectable;
+import mockit.Mocked;
 import mockit.Verifications;
 import org.testng.annotations.Test;
 
 import guru.mikelue.jdut.operation.DataGrainOperator;
 
 public class DatabaseSurroundOperatorsTest {
-	@Injectable
+	@Mocked
 	private Connection mockConn;
 
 	public DatabaseSurroundOperatorsTest() {}

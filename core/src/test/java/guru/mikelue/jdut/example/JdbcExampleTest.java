@@ -8,8 +8,9 @@ import java.util.function.Supplier;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.testng.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -28,6 +29,7 @@ import guru.mikelue.jdut.vendor.DatabaseVendor;
 /**
  * This example demonstrates the usage of JDUT by pure JDBC.
  */
+@IfDatabaseVendor(match=DatabaseVendor.H2)
 public class JdbcExampleTest extends AbstractDataSourceTestBase {
 	private static ExampleDao testedDao;
 	private static DataConductor dataConductor;
@@ -148,6 +150,17 @@ public class JdbcExampleTest extends AbstractDataSourceTestBase {
 			// :~)
 		}
 	}
+	@BeforeMethod(firstTimeOnly=true)
+	void setupDatabaseSchema()
+	{
+		SchemaSetup.buildSchema(getDataSource());
+
+		testedDao = new ExampleDao(getDataSource());
+
+		dataConductor = new DataConductor(getDataSource());
+		operatorFactory = DefaultOperatorFactory.build(getDataSource());
+	}
+
 	@AfterMethod
 	void cleanData(Method method)
 	{
@@ -213,7 +226,7 @@ public class JdbcExampleTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the insertion of data for artist.
 	 */
-	@Test @IfDatabaseVendor(match=DatabaseVendor.H2)
+	@Test
 	public void addArtist() throws SQLException
 	{
 		testedDao.addArtist(INSERT_ARTIST_NAME);
@@ -233,7 +246,7 @@ public class JdbcExampleTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the updating of data for artist.
 	 */
-	@Test @IfDatabaseVendor(match=DatabaseVendor.H2)
+	@Test
 	public void updateArtistName() throws SQLException
 	{
 		testedDao.updateArtistName(1001, UPDATE_ARTIST_NAME);
@@ -253,7 +266,7 @@ public class JdbcExampleTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the removal of data for artist.
 	 */
-	@Test @IfDatabaseVendor(match=DatabaseVendor.H2)
+	@Test
 	public void removeArtistByName() throws SQLException
 	{
 		testedDao.removeArtistByName(REMOVE_ARTIST_NAME);
@@ -270,23 +283,12 @@ public class JdbcExampleTest extends AbstractDataSourceTestBase {
 		).runJdbc();
 	}
 
-	@Test @IfDatabaseVendor(match=DatabaseVendor.H2)
+	@Test
 	public void countAlbumsByType() throws SQLException
 	{
 		Assert.assertEquals(
 			testedDao.countAlbumsByType(1),
 			2
 		);
-	}
-
-	@BeforeClass
-	protected static void setupDatabaseSchema()
-	{
-		SchemaSetup.buildSchema(getDataSource());
-
-		testedDao = new ExampleDao(getDataSource());
-
-		dataConductor = new DataConductor(getDataSource());
-		operatorFactory = DefaultOperatorFactory.build(getDataSource());
 	}
 }
