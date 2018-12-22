@@ -11,8 +11,7 @@ import guru.mikelue.jdut.operation.DefaultOperatorFactory;
  * Used with {@link DefaultOperatorFactory.Builder} to check the matching condition for operators of vendor.<br>
  *
  * <p>Example:</p>
- * <pre>{@code
- * // hljs:java
+ * <pre class="java">{@code
  * // dataSource - Initialized instance of data source
  * // your_map_of_operators - The map of operators by String key
  * OperatorFactory yourFactory = DefaultOperatorFactory.build(

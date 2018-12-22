@@ -14,6 +14,7 @@ JDUT currently contains two modules:
 
 * [Core](core/index.html) module - Using JDUT by Java API(including YAML loading)
 * [TestNG](testng/index.html) module - Using JDUT by [listeners](apidocs/guru/mikelue/jdut/testng/package-summary.html) of [TestNG][testng]
+* [JUnit4](junit4/index.html) module - Using JDUT by [listeners](apidocs/guru/mikelue/jdut/junit4/package-summary.html) of [JUnit4][junit4]
 
 ---
 
@@ -91,8 +92,9 @@ $h2 Documents
 
 $h2 Misc
 
-* [Java 8](http://www.oracle.com/technetwork/java/javase/overview/)
+* [Java 8](https://docs.oracle.com/javase/8/)
 * [Maven](https://maven.apache.org/)
-* [YAML 1.1](http://yaml.org/)
+* [YAML 1.1](https://yaml.org/spec/1.1/)
 
-[testng]: http://testng.org/doc/index.html
+[testng]: https://testng.org/
+[junit4]: https://junit.org/junit4/

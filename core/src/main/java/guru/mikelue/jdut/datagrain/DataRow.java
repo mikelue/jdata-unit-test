@@ -32,8 +32,7 @@ public class DataRow {
  	 * <h3><em style="color:red">Infinite recursion</em> while using {@link Supplier} for value of field</h3>
  	 * In following code snippet, the builder will set-up <em style="color:red">a field which cause infinite recursion while getting data</em>:
  	 *
- 	 * <pre>{@code
-     * // hljs:java
+ 	 * <pre class="java">{@code
  	 * builder -> builder.fieldOfValueSupplier(
  	 *     "ct_1", () -> 30 + builder.getDataSupplier("ct_1").get().get()
  	 * )
@@ -42,8 +41,7 @@ public class DataRow {
  	 * Since the lazy evaluation of lambda expression, the new lambda expression of <em>"ct_1"</em> would be
  	 * a self-reference to builder.<br>
  	 * Instead, you should keep "<b>the old instance of lambda expression</b>":
- 	 * <pre>{@code
-     * // hljs:java
+ 	 * <pre class="java">{@code
  	 * builder -> {
  	 *     final Supplier<Integer> oldSupplier = builder.getDataSupplier("ct_1").get();
  	 *     builder.fieldOfValueSupplier("ct_1", () -> 30 + oldSupplier.get());
@@ -197,15 +195,13 @@ public class DataRow {
 		 * <p style="color:red">Note: be careful of lazy building, which may cause infinite recursion</p>
 		 *
 		 * <b style="color:red">Following code will cause infinite recursion</b>
-		 * <pre>{@code
-         * // hljs:java
+		 * <pre class="java">{@code
 		 * Supplier<Integer> wrappedSupplier = () -> 20 + builder.<Integer>getDataSupplier("ct_1").get().get();
 		 * builder.fieldOfValueSupplier("col_1", wrappedSupplier);
 		 * }</pre>
 		 *
 		 * <b style="color:green">Instead, you should:</b>
-		 * <pre>{@code
-         * // hljs:java
+		 * <pre class="java">{@code
 		 * // Keep the reference of supplier in current lambda of builder
 		 * Supplier<Integer> sourceSupplier = builder.<Integer>getDataSupplier("ct_1").get();
 		 * Supplier<Integer> wrappedSupplier = () -> 20 + sourceSupplier.get();

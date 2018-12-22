@@ -7,8 +7,7 @@ import java.text.MessageFormat;
  * <p>Provides generating of resource name by format string({@link MessageFormat}) and properties of class/method.</p>
  *
  * For example:<br>
- * <pre>{@code
- * // hljs:java
+ * <pre class="java">{@code
  * // objMethod - The object of java.lang.reflect.Method
  * String fileName = JdutResourceNaming.naming("{1}-{4}", objMethod, ".yaml");
  * }</pre>

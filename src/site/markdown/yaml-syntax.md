@@ -4,7 +4,7 @@
 
 1. The format could be edit by any of your favor editors.
 1. The format could be maintained in [VCS](https://en.wikipedia.org/wiki/Version_control).
-1. The [alias](http://yaml.org/spec/1.1/#alias/information%20model) of YAML, which benefits editing data of PK and FK on relational-database.
+1. The [alias](https://yaml.org/spec/1.1/#alias/information%20model) of YAML, which benefits editing data of PK and FK on relational-database.
 
 You may reference the [sample YAML](https://github.com/mikelue/jdata-unit-test/tree/master/core/src/test/resources/guru/mikelue/jdut/yaml) used in testing code of this framework
 
@@ -15,8 +15,6 @@ You may reference the [sample YAML](https://github.com/mikelue/jdata-unit-test/t
 Every document should define namespace(tag) of YAML:
 
 ```yaml
-# hljs:yaml
-
 %TAG !jdut! tag:jdut.mikelue.guru:1.0/
 %TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
 %TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
@@ -28,7 +26,7 @@ Every document should define namespace(tag) of YAML:
 # 2nd document
 ```
 
-By the implementation of [YamlConductorFactory](xref/guru/mikelue/jdut/yaml/YamlConductorFactory.html),  
+By the implementation of [YamlConductorFactory](xref/guru/mikelue/jdut/yaml/YamlConductorFactory.html),
 **every document in YAML would be an instance of [DuetConductor]**.
 
 [DuetConductor]: apidocs/guru/mikelue/jdut/DuetConductor.html
@@ -57,8 +55,6 @@ A document is defined by:
 In this node, there is nothing to be processed, you may use this node to define alias.
 
 ```yaml
-# hljs:yaml
-
 - defines : [
     &id_1 1,
     &id_2 2
@@ -88,8 +84,6 @@ The configuration for data processing.
     * *default value*: as default value of JDBC driver
 
 ```yaml
-# hljs:yaml
-
 - config : {
     build_operation: "REFRESH",
     clean_operation: "DELETE",
@@ -125,8 +119,6 @@ This node represents the data to be update into database.
 :   The data section for this table, as **`!!seq`** of YAML, see simple definition
 
 ```yaml
-# hljs:yaml
-
 - !sql!table tab_2 {
   # build/clean name of operation
   config : {
@@ -156,8 +148,6 @@ The engine supports the value of column from lambda expression([Supplier]).
 [Supplier]: https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html
 
 ```yaml
-# hljs:yaml
-
 %TAG !jdut! tag:jdut.mikelue.guru:1.0/
 %TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
 %TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
@@ -171,8 +161,6 @@ The engine supports the value of column from lambda expression([Supplier]).
 ```
 
 ```java
-// hljs:java
-
 YamlConductor.build(
     builder -> builder
         .namedSupplier("value_1", () -> 30);
@@ -200,8 +188,6 @@ YamlConductor.build(
 [JdbcFunction]: apidocs/guru/mikelue/jdut/jdbc/JdbcFunction.html
 
 ```yaml
-# hljs:yaml
-
 - !sql!code
   build_operation: !sql!statement
     INSERT INTO tab_1(col_1, col_2, col_3)
@@ -215,8 +201,6 @@ YamlConductor.build(
 ```
 
 ```java
-// hljs:java
-
 YamlConductor.build(
     builder -> builder
         .namedJdbcFunction(
@@ -241,8 +225,6 @@ Also, following methods can override the configurations of factory:
 
 
 ```yaml
-# hljs:yaml
-
 # Document level configuration
 - config : {
     build_operation: "insert_and_check"
@@ -260,8 +242,6 @@ Also, following methods can override the configurations of factory:
 ```
 
 ```java
-// hljs:java
-
 YamlConductorFactory.build(
     dataSource,
     builder -> builder
@@ -286,16 +266,12 @@ Also, following methods can override the configurations of factory:
 * [YamlConductorFactory.conductYaml(String, Consumer<ConductorConfig.Builder>)](apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html#conductYaml-java.io.Reader-java.util.function.Consumer-)
 
 ```yaml
-# hljs:yaml
-
 - config : {
     decorator: "coffee_decorate",
 }
 ```
 
 ```java
-// hljs:java
-
 YamlConductorFactory.build(
     dataSource,
     builder -> builder
@@ -320,8 +296,6 @@ See [Guidelines](guidelines.haml)
 ## Quick example
 
 ```yaml
-# hljs:yaml
-
 %TAG !jdut! tag:jdut.mikelue.guru:1.0/
 %TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
 %TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
@@ -367,6 +341,6 @@ See [Guidelines](guidelines.haml)
 ---
 
 ## References
-* [YAML 1.1](http://yaml.org/spec/1.1/)
+* [YAML 1.1](https://yaml.org/spec/1.1/)
 * [SnakeYaml](https://bitbucket.org/asomov/snakeyaml)
-* [YAML Tag Repository](http://yaml.org/type/index.html)
+* [YAML Tag Repository](https://yaml.org/type/index.html)

@@ -29,16 +29,14 @@ import guru.mikelue.jdut.yaml.YamlConductorFactory;
  *
  * While using with {@link ClassRule}, you should wrap the initialization of this object in {@link Statement}:
  *
- * <pre><code>
- * // hljs:java
- *
- *{@literal @}ClassRule
+ * <pre class="java">{@code
+ * {@literal @}ClassRule
  * public static TestRule dataConductor = new TestRule() {
- *    {@literal @}Override
+ *     {@literal @}Override
  *     public Statement apply(Statement base, Description description)
  *     {
  *         return new Statement() {
- *            {@literal @}Override
+ *             {@literal @}Override
  *             public void evaluate() throws Throwable
  *             {
  *                 new JdutYamlFactory(getDataSource())
@@ -46,9 +44,9 @@ import guru.mikelue.jdut.yaml.YamlConductorFactory;
  *                     .evaluate();
  *             }
  *         };
- *     }
+ *    }
  * };
- * </code></pre>
+ * }</pre>
  *
  * @see #buildDuetConductor
  */

@@ -6,8 +6,6 @@ This page demonstrates example from real testing code of JDUT.
 [Database Schema](xref-test/guru/mikelue/jdut/example/SchemaSetup.html)
 
 ```sql
-/* lhjs:sql */
-
 CREATE TABLE IF NOT EXISTS ex_artist(
     at_id IDENTITY PRIMARY KEY,
     at_name VARCHAR(512) NOT NULL,
@@ -38,8 +36,6 @@ The file [JdbcExampleTest.java] contains runnable code for examples of using JDU
 Following code shows how to build data for method of `countAlbumsByType` in [JdbcExampleTest.java]
 
 ```java
-// hljs:java
-
 private DataGrain dataGrain_1ForListing;
 private DataGrain dataGrain_2ForListing;
 
@@ -106,7 +102,6 @@ dataConductor.conduct(
 Following code shows how to clean data for method of `countAlbumsByType` in [JdbcExampleTest.java]
 
 ```java
-// hljs:java
 dataConductor.conduct(
     dataGrain_2ForListing,
     operatorFactory.get(DefaultOperators.DELETE)
@@ -135,7 +130,6 @@ You can find [YAML files](https://github.com/mikelue/jdata-unit-test/tree/master
 Following code snippet demonstrates using of [DuetConductor]`.build` with YAML.
 
 ```java
-// hljs:java
 private static Map<String, DuetConductor> duetConductors = new HashMap<>(6);
 
 @BeforeMethod
@@ -156,7 +150,6 @@ private void buildData(Method method)
 Following code snippet demonstrates using of [DuetConductor]`.clean` with YAML.
 
 ```java
-// hljs:java
 @AfterMethod
 private void cleanData(Method method)
 {
@@ -169,8 +162,6 @@ private void cleanData(Method method)
 ### Data definitions
 
 ```yaml
-# hljs:yaml
-
 %TAG !jdut! tag:jdut.mikelue.guru:1.0/
 %TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
 %TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
@@ -225,8 +216,6 @@ You can find [YAML files](https://github.com/mikelue/jdata-unit-test/tree/master
 Following code snippet shows the registering listener to [TestNG].
 
 ```java
-// hljs:java
-
 @Listeners(TestNgExampleTest.ExampleMethodListener.class)
 public class TestNgExampleTest extends AbstractDataSourceTestBase {
     /* ... */
@@ -238,8 +227,6 @@ public class TestNgExampleTest extends AbstractDataSourceTestBase {
 Following code snippet demonstrates the usage of `@JdutResource` on your test methods.
 
 ```java
-// hljs:java
-
 @Test @JdutResource
 public void countAlbumsByType() throws SQLException
 {
@@ -308,7 +295,7 @@ public static class ExampleMethodListener extends IInvokedMethodYamlFactoryListe
 }
 ```
 
-[TestNG]: http://testng.org/doc/
+[TestNG]: https://testng.org/
 [TestNgExampleTest.java]: xref-test/guru/mikelue/jdut/testng/example/TestNgExampleTest.html
 
 ---
@@ -323,13 +310,11 @@ You can find [YAML files](https://github.com/mikelue/jdata-unit-test/tree/master
 
 ### @Rule
 
-You may use [@Rule](http://junit.org/javadoc/latest/org/junit/Rule.html) to use the conduction of data from YAML file.
+You may use [@Rule](https://junit.org/junit4/javadoc/latest/org/junit/Rule.html) to use the conduction of data from YAML file.
 
 See full example from [JdutYamlFactoryTest.java].
 
 ```java
-// hljs:java
-
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -339,7 +324,7 @@ import guru.mikelue.jdut.annotation.JdutResource;
 public class JdutYamlFactoryTest extends AbstractDataSourceTestBase {
     @Rule
     public JdutYamlFactory jdutYamlFactoryForMethodLevel = new JdutYamlFactory(conductorFactory);
-    
+
     @Test @JdutResource
     public void sampleTest()
     {
@@ -352,13 +337,11 @@ public class JdutYamlFactoryTest extends AbstractDataSourceTestBase {
 
 ### @ClassRule
 
-You may use [@ClassRule](http://junit.org/javadoc/latest/org/junit/ClassRule.html) to use the conduction of data from YAML file.
+You may use [@ClassRule](https://junit.org/junit4/javadoc/latest/org/junit/ClassRule.html) to use the conduction of data from YAML file.
 
 See full example from [JdutYamlFactoryForClassRuleTest.java].
 
 ```java
-// hljs:java
-
 import org.junit.Rule;
 import org.junit.Test;
 

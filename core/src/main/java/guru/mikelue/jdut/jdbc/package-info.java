@@ -12,8 +12,7 @@
  * <h2>Quick example</h2>
  * Following example shows the basic usage of JDBC coding.
  *
- * <pre>{@code
- * // hljs:java
+ * <pre class="java">{@code
  * // dataSource - The initialized object of javax.sql.DataSource
  *
  * JdbcVoidFunction<Connection> jdbcFunc = JdbcTemplateFactory.buildRunnable(
@@ -49,8 +48,7 @@
  * Using either {@link guru.mikelue.jdut.jdbc.JdbcFunction#surroundedBy JdbcFunction.surroundedBy()} or {@link guru.mikelue.jdut.jdbc.JdbcTemplateFactory#surround JdbcExecuteFactory.surround()},
  * you can surround your code by lambda expression.
  *
- * <pre>{@code
- * // hljs:java
+ * <pre class="java">{@code
  * JdbcFunction<Connection, Integer> funcGetCount = conn -> { 20 };
  * funcGetCount.surroundedBy(
  *     func -> conn -> {
@@ -68,8 +66,7 @@
  *
  * Reference {@link guru.mikelue.jdut.jdbc.function.Transactional}.
  *
- * <pre>{@code
- * // hljs:java
+ * <pre class="java">{@code
  * JdbcVoidFunction<Connection> jdbcFunc = JdbcTemplateFactory.buildRunnable(
  *     () -> dataSource.getConnection(), // The supplier provides connection object
  *     connection -> {

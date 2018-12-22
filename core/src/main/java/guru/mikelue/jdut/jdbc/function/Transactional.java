@@ -12,8 +12,7 @@ import guru.mikelue.jdut.jdbc.JdbcFunction;
  * As surrounding of JDBC function for transactional wrapping.<br>
  *
  * <p>For example:</p>
- * <pre>{@code
- * // hljs:java
+ * <pre class="java">{@code
  * // function_1 - An instance of JdbcFunction
  * function_1 = function_1.surroundedBy(Transactional::simple);
  *

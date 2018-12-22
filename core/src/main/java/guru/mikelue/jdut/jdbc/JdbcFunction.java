@@ -23,8 +23,7 @@ public interface JdbcFunction<T, R> {
 	 * This operator is used to surround fed {@link JdbcFunction} by the implementation of surrounding.<p>
 	 *
 	 * For example:
-	 * <pre>{@code
-     * // hljs:java
+	 * <pre class="java">{@code
 	 * static <T, R> JdbcFunction.SurroundOperator<T, R> buildLogging(Logger logger)
 	 * {
 	 *     return surroundedFunc -> v -> {

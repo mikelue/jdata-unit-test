@@ -2,20 +2,30 @@
 	xmlns="http://maven.apache.org/DECORATION/1.6.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.6.0 http://maven.apache.org/xsd/decoration-1.6.0.xsd"
 >
+	<publishDate position="right" />
+	<version position="rigth" />
+
+	<skin>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-fluido-skin</artifactId>
+		<version>1.7</version>
+	</skin>
+
     <body>
+		<links>
+			<item name="Source Repository" title="Source at GitHub" href="https://github.com/mikelue/jdata-unit-test" />
+		</links>
+
 		<breadcrumbs>
-			<item name="Parent" href="../index.html" />
+			<item name="Root" href="../index.html"/>
 		</breadcrumbs>
 
-		<menu name="Maven Report">
-            <item name="Information" href="project-info.html" />
-			<item name="Reports" href="project-reports.html" />
+		<menu name="Documents">
+			<item name="Guidelines" href="../guidelines.html" />
+			<item name="Examples" href="../examples.html" />
+			<item name="YAML Syntax" href="../yaml-syntax.html" />
 		</menu>
 
-		<menu name="References">
-			<item name="API Reference" ref="apidocs/index" />
-			<item name="XRef Source" ref="xref/index" />
-			<item name="XRef-Test Source" ref="xref-test/index" />
-		</menu>
+		<menu ref="reports" inherit="bottom" />
     </body>
 </project>

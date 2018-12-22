@@ -1,7 +1,7 @@
 <!--
   - For deployment of reporting(push to branch "gh-pages" on GitHub):
   -
-  - mvn -Dscmpublish.dryRun=true clean post-site scm-publish:publish-scm
+  - mvn -Dscmpublish.dryRun=true site-deploy
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -42,7 +42,7 @@
 		<site>
 			<id>github</id>
 			<name>Maven Report on GitHub pages</name>
-			<url>http://jdut.gh.mikelue.guru/</url>
+			<url>https://jdut.gh.mikelue.guru/</url>
 		</site>
 	</distributionManagement>
 	<scm>
@@ -53,7 +53,7 @@
 	<licenses>
 		<license>
 			<name>GNU General Lesser Public License (LGPL) version 3.0</name>
-			<url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
+			<url>https://www.gnu.org/licenses/lgpl-3.0.html</url>
 		</license>
 	</licenses>
 	<developers>
@@ -62,10 +62,10 @@
 			<timezone>Asia/Taipei</timezone>
 			<email>mikelue@ms10.url.com.tw</email>
 			<properties>
-				<picUrl>http://www.gravatar.com/avatar/fc7c50957bc60f457744c8a0acfcb442?s=64</picUrl>
+				<picUrl>https://www.gravatar.com/avatar/fc7c50957bc60f457744c8a0acfcb442?s=64</picUrl>
 			</properties>
 			<organization>Mike Lue</organization>
-			<organizationUrl>http://hg.mikelue.guru/</organizationUrl>
+			<organizationUrl>https://gh.mikelue.guru/</organizationUrl>
 		</developer>
 	</developers>
 	<!-- :~) -->
@@ -90,8 +90,8 @@
 		<!--
 		  - Versions used in reporting
 		  -->
-		<version.highlight.js>8.8.0</version.highlight.js>
-		<version.jquery>2.1.4</version.jquery>
+		<version.highlight.js>9.13.1</version.highlight.js>
+		<version.jquery.js>3.3.1</version.jquery.js>
 		<!-- :~) -->
 
 		<!--
@@ -345,6 +345,15 @@
 					<tryUpdate>true</tryUpdate>
 					<scmBranch>gh-pages</scmBranch>
 				</configuration>
+				<executions>
+					<execution>
+						<id>scm-publish</id>
+						<phase>site-deploy</phase>
+						<goals>
+							<goal>publish-scm</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -369,57 +378,10 @@
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>3.1.0</version>
-					<executions>
-						<!--
-						  - Copy the files from common-site
-						  -->
-						<execution>
-							<id>copy-common-site</id>
-							<goals>
-								<goal>copy-resources</goal>
-							</goals>
-							<configuration>
-								<resources>
-									<resource>
-										<directory>${project.parent.basedir}/src/site-common</directory>
-										<excludes>
-											<exclude>**/.*</exclude>
-										</excludes>
-									</resource>
-								</resources>
-								<outputDirectory>${project.basedir}/src/site</outputDirectory>
-							</configuration>
-						</execution>
-						<!-- :~) -->
-					</executions>
 				</plugin>
 				<plugin>
 					<artifactId>maven-clean-plugin</artifactId>
 					<version>3.1.0</version>
-					<executions>
-						<!--
-						  - Removes the files copied from common-site
-						-->
-						<execution>
-							<id>clean-common-site</id>
-							<goals>
-								<goal>clean</goal>
-							</goals>
-							<configuration>
-								<excludeDefaultDirectories>true</excludeDefaultDirectories>
-								<filesets>
-									<fileset>
-										<directory>src/site</directory>
-										<useDefaultExcludes>true</useDefaultExcludes>
-										<includes>
-											<include>**/*</include>
-										</includes>
-									</fileset>
-								</filesets>
-							</configuration>
-						</execution>
-						<!-- :~) -->
-					</executions>
 				</plugin>
 				<plugin>
 					<artifactId>maven-enforcer-plugin</artifactId>
@@ -484,25 +446,10 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
-					<!--<version>3.4</version>-->
 					<version>3.7.1</version>
                     <configuration>
                         <skipDeploy>true</skipDeploy>
                     </configuration>
-					<dependencies>
-                        <!-- additional dependencies required by "source-class" implementations are added here -->
-						<dependency>
-							<groupId>lt.velykis.maven.skins</groupId>
-							<artifactId>reflow-velocity-tools</artifactId>
-							<version>1.1.2-SNAPSHOT</version>
-						</dependency>
-						<!-- Reflow skin requires Velocity >= 1.7  -->
-						<dependency>
-							<groupId>org.apache.velocity</groupId>
-							<artifactId>velocity</artifactId>
-							<version>1.7</version>
-						</dependency>
-					</dependencies>
 				</plugin>
 				<plugin>
 					<artifactId>maven-project-info-reports-plugin</artifactId>
@@ -532,6 +479,7 @@
 					<executions>
 						<execution>
 							<id>attach-sources</id>
+							<phase>verify</phase>
 							<goals>
 								<goal>jar-no-fork</goal>
 							</goals>
@@ -543,25 +491,17 @@
 					<version>3.0.1</version>
 					<configuration>
 						<footer><![CDATA[
-							<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/zenburn.min.css">
+							<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/zenburn.min.css" />
 							<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/highlight.min.js"></script>
-							<script src="https://code.jquery.com/jquery-${version.jquery}.min.js"></script>
-                            <script src="/js/markdown-highlight.js"></script>
+							<script>hljs.initHighlightingOnLoad();</script>
 						]]></footer>
 						<links>
-							<link>http://testng.org/javadocs/</link>
-							<link>http://jdut.gh.mikelue.guru/apidocs/</link>
-							<link>http://junit.org/javadoc/latest/</link>
+							<link>https://jitpack.io/com/github/cbeust/testng/master/javadoc/</link>
+							<link>https://jdut.gh.mikelue.guru/apidocs/</link>
+							<link>https://junit.org/junit4/javadoc/latest/</link>
 						</links>
+						<additionalOptions>--allow-script-in-comments</additionalOptions>
 					</configuration>
-					<executions>
-						<execution>
-							<id>attach-javadocs</id>
-							<goals>
-								<goal>jar</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -600,9 +540,6 @@
 							<report>jxr</report>
 							<report>test-jxr</report>
 						</reports>
-						<configuration>
-							<stylesheet>${project.parent.basedir}/src/main/resources/jxr.css</stylesheet>
-						</configuration>
 					</reportSet>
 					<reportSet>
 						<id>aggregate</id>
@@ -611,9 +548,6 @@
 							<report>aggregate</report>
 							<report>test-aggregate</report>
 						</reports>
-						<configuration>
-							<stylesheet>${project.basedir}/src/main/resources/jxr.css</stylesheet>
-						</configuration>
 					</reportSet>
 				</reportSets>
 			</plugin>
@@ -786,7 +720,7 @@
 		<pluginRepository>
 			<id>apache-snapshot</id>
 			<name>Aapche Snapshot</name>
-			<url>http://repository.apache.org/snapshots/</url>
+			<url>https://repository.apache.org/snapshots/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>

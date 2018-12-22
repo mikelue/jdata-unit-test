@@ -9,8 +9,7 @@ import guru.mikelue.jdut.jdbc.JdbcFunction;
  * Functions for {@link AutoCloseable}, which are used to wrap existing {@link JdbcFunction} for closing feature.
  *
  * You may use {@code DbRelease::autoClose} to surrounding your {@link JdbcFunction}.
- * <pre>{@code
- * // hljs:java
+ * <pre class="java">{@code
  * yourJdbcFunction = yourJdbcFunction.surroundedBy(DbRelease::autoClose);
  * }</pre>
  *

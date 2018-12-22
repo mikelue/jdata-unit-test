@@ -1,31 +1,19 @@
 <project
-	xmlns="http://maven.apache.org/DECORATION/1.6.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.6.0 http://maven.apache.org/xsd/decoration-1.6.0.xsd"
+	xmlns="http://maven.apache.org/DECORATION/1.8.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 http://maven.apache.org/xsd/decoration-1.8.0.xsd"
 >
-	<publishDate position="bottom" />
-	<version position="bottom" />
+	<publishDate position="right" />
+	<version position="rigth" />
 
 	<skin>
-		<groupId>lt.velykis.maven.skins</groupId>
-		<artifactId>reflow-maven-skin</artifactId>
-		<version>1.1.2-SNAPSHOT</version>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-fluido-skin</artifactId>
+		<version>1.7</version>
 	</skin>
 
 	<body>
-		<head>
-			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/zenburn.min.css" />
-			<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/highlight.min.js"></script>
-            <script src="https://code.jquery.com/jquery-${version.jquery}.min.js"></script>
-            <script src="/js/markdown-highlight.js"></script>
-            <link rel="stylesheet" href="/css/jdut-doc.css" />
-		</head>
-
-		<breadcrumbs>
-			<item name="Home" href="/index.html" />
-		</breadcrumbs>
-
 		<links>
-			<item name="Source Repository" title="Source at GitHub" href="http://github.com/mikelue/jdata-unit-test" />
+			<item name="Source Repository" title="Source at GitHub" href="https://github.com/mikelue/jdata-unit-test" />
 		</links>
 
 		<menu name="Documents" inherit="top">
@@ -34,88 +22,7 @@
 			<item name="YAML Syntax" href="yaml-syntax.html" />
 		</menu>
 
-		<menu name="Info" inherit="bottom">
-			<item name="Dependencies" ref="dependencies" />
-			<item name="SCM" ref="source-repository" />
-			<item name="Summary" ref="project-summary" />
-			<item name="License(LGPLv3)" ref="license" />
-		</menu>
-
-		<menu name="References">
-			<item name="API Reference" href="apidocs/index.html" />
-			<item name="XRef Source" href="xref/index.html" />
-			<item name="XRef-Test Source" href="xref-test/index.html" />
-		</menu>
-
-		<menu name="Modules" inherit="bottom">
-			<item name="JDUT-Core" href="core/index.html" />
-			<item name="JDUT-TestNG" href="testng/index.html" />
-			<item name="JDUT-JUnit4" href="junit4/index.html" />
-		</menu>
-
-		<menu name="Maven Report">
-			<item name="Information" href="project-info.html" />
-			<item name="Reports" href="project-reports.html" />
-		</menu>
+		<menu ref="reports" inherit="bottom" />
+		<menu ref="modules" inherit="bottom" />
 	</body>
-
-	<custom>
-		<reflowSkin>
-			<toc>sidebar</toc>
-			<titleTemplate>JDUT - %2$s</titleTemplate>
-			<theme>bootswatch-flatly</theme>
-
-			<topNav>(Documents|Info|References|Modules)</topNav>
-
-			<bottomNav>
-				<column>(Modules|References)</column>
-				<column>Info</column>
-				<column>Maven Report</column>
-			</bottomNav>
-
-			<pages>
-				<index>
-					<sections>
-						<body />
-						<columns>2</columns>
-						<body />
-						<columns>2</columns>
-					</sections>
-
-					<toc />
-				</index>
-
-				<guidelines>
-                    <sections>
-                    </sections>
-
-					<toc>top</toc>
-				</guidelines>
-
-				<yaml-syntax>
-                    <sections>
-                    </sections>
-
-					<toc>top</toc>
-                    <tocTopMax>6</tocTopMax>
-				</yaml-syntax>
-
-				<examples>
-                    <sections>
-						<body />
-						<body />
-                        <columns>2</columns>
-						<body />
-                        <columns>2</columns>
-						<body />
-						<body />
-                        <columns>2</columns>
-						<body />
-                    </sections>
-
-					<toc>top</toc>
-				</examples>
-			</pages>
-		</reflowSkin>
-	</custom>
 </project>

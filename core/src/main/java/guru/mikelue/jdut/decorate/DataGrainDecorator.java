@@ -11,8 +11,7 @@ import guru.mikelue.jdut.datagrain.DataRow;
  * <h3>Chaining</h3>
  * You could chaining a bunch of decorators:
  *
- * <pre>{@code
- * // hljs:java
+ * <pre class="java">{@code
  * // decorator - The first decorator
  * // nextDecorator - The next decorator
  * decorator = decorator.chain(nextDecorator);

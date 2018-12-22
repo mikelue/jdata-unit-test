@@ -25,7 +25,7 @@ import guru.mikelue.jdut.jdbc.function.DbStatement;
  * <p>This class defines two sets for default operators, {@link DataGrainOperator} and {@link DataRowOperator}.<br>
  * In case you want to customize operation per {@link DataRow}, the ones are what you want.</p>
  *
- * @see <a href="http://jdut.gh.mikelue.guru/xref/guru/mikelue/jdut/vendor/mssql/IdentityInsertOperator.html">example for insertion of identity table on MS SQL server</a>
+ * @see <a href="https://jdut.gh.mikelue.guru/xref/guru/mikelue/jdut/vendor/mssql/IdentityInsertOperator.html">example for insertion of identity table on MS SQL server</a>
  */
 public final class DefaultOperators {
 	/**

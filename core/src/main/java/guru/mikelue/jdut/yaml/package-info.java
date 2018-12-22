@@ -1,5 +1,5 @@
 /**
- * Main objects to convert <a href="http://yaml.org/spec/current.html">YAML</a> format of data grain to {@link guru.mikelue.jdut.DuetConductor DuetConductor} for testing.<br>
+ * Main objects to convert <a href="https://yaml.org/spec/current.html">YAML</a> format of data grain to {@link guru.mikelue.jdut.DuetConductor DuetConductor} for testing.<br>
  *
  * <h3>{@link guru.mikelue.jdut.yaml.YamlConductorFactory YamlConductorFactory}</h3>
  * This factory is the most important object to load YAML and convert the content to {@link guru.mikelue.jdut.DuetConductor DuetConductor}.<br>

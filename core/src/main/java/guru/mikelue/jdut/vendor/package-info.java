@@ -16,12 +16,12 @@
  * Naming for databases:
  * <ul>
  * 	<li>oracle - <a href="https://www.oracle.com/database/" target="_blank">Oracle DBMS</a></li>
- * 	<li>massql - <a href="http://www.microsoft.com/en-us/server-cloud/products/sql-server/" target="_blank">MS SQL Server DBMS</a></li>
- * 	<li>mysql - <a href="http://www.mysql.com/" target="_blank">MySql DBMS</a></li>
- * 	<li>postgresql - <a href="http://www.postgresql.org/" target="_blank">PostgreSql DBMS</a></li>
+ * 	<li>massql - <a href="https://www.microsoft.com/en-us/sql-server/sql-server-2017" target="_blank">MS SQL Server DBMS</a></li>
+ * 	<li>mysql - <a href="https://www.mysql.com/" target="_blank">MySql DBMS</a></li>
+ * 	<li>postgresql - <a href="https://www.postgresql.org/" target="_blank">PostgreSql DBMS</a></li>
  * 	<li>derby - <a href="https://db.apache.org/derby/" target="_blank">Derby Database</a></li>
- * 	<li>h2 - <a href="http://www.h2database.com/html/main.html" target="_blank">H2 Database</a></li>
- * 	<li>hsqldb - <a href="http://hsqldb.org/" target="_blank">HSQLDB Database</a></li>
+ * 	<li>h2 - <a href="https://www.h2database.com/" target="_blank">H2 Database</a></li>
+ * 	<li>hsqldb - <a href="https://hsqldb.org/" target="_blank">HSQLDB Database</a></li>
  * 	<li>sqlite - <a href="https://www.sqlite.org/" target="_blank">Sqlite Database</a></li>
  * </ul>
  */

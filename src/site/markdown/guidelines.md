@@ -8,7 +8,7 @@ For quick example, see [Examples](examples.html).
 
 ## 1. Java API
 
-This section describes the usage of pure-Java API for building/cleaning data 
+This section describes the usage of pure-Java API for building/cleaning data
 
 ---
 
@@ -24,7 +24,6 @@ See [DataGrainTest](xref-test/guru/mikelue/jdut/datagrain/DataGrainTest.html) fo
 Quick example:
 
 ```java
-// hljs:java
 import idv.mikelue.jdut.datagrain.DataGrain;
 
 DataGrain dataGrainByDefine = DataGrain.build(
@@ -80,7 +79,6 @@ DataGrain dataGrainByDefine = DataGrain.build(
 :   The factory for fetching operator(may be [vendor-specific](apidocs/guru/mikelue/jdut/vendor/package-summary.html)) by name.
 
 ```java
-// hljs:java
 import guru.mikelue.jdut.DataConductor;
 import guru.mikelue.jdut.operation.DefaultOperators;
 
@@ -105,7 +103,6 @@ dataConductor.conduct(dataGrainByDefine, operatorFactory.get(DefaultOperators.IN
 See detail sample of [DataGrainTest.aggregate](xref-test/guru/mikelue/jdut/datagrain/DataGrainTest.html)
 
 ```java
-// hljs:java
 import guru.mikelue.jdut.datagrain.DataGrain;
 
 // dg_1 - The object of DataGrain
@@ -125,7 +122,6 @@ A decorator is a lambda to modify a [DataRow], which is the internal data of a [
 You could implement functional interface of [DataGrainDecorator](apidocs/guru/mikelue/jdut/decorate/DataGrainDecorator.html) to decorate an instance of [DataGrain].
 
 ```java
-// hljs:java
 import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.decorate.DataGrainDecorator;
 
@@ -141,7 +137,6 @@ DataGrain decoratedDataGrain = dataGrain.decorate(dataGrainDecorate);
 You could use method of [DataGrainDecoration.chain()](apidocs/guru/mikelue/jdut/decorate/DataGrainDecorator.html#chain-guru.mikelue.jdut.decorate.DataGrainDecorator-) to chain multiple decorations.
 
 ```java
-// hljs:java
 import guru.mikelue.jdut.decorate.DataGrainDecorator;
 
 DataGrainDecorator dataGrainDecorate_1 = (rowBuilder) -> {
@@ -172,7 +167,6 @@ You could composite operations for interception of data operation.
 A [SurroundOperator](apidocs/guru/mikelue/jdut/operation/DataGrainOperator.SurroundOperator.html) is a lambda to surround a [DataGrainOperator]. The returned object is another [DataGrainOperator] with same signature.
 
 ```java
-// hljs:java
 import guru.mikelue.jdut.operation.DefaultOperators;
 import guru.mikelue.jdut.operation.DataGrainOperator;
 
@@ -192,7 +186,6 @@ See [DatabaseTransactional](apidocs/guru/mikelue/jdut/function/DatabaseTransacti
 [DatabaseSurroundOperators](apidocs/guru/mikelue/jdut/function/DatabaseSurroundOperators.html)
 
 ```java
-// hljs:java
 /**
  * By DataSourceConsumer
  */
@@ -216,7 +209,7 @@ dataConductor.conduct(
 
 #### For Java API
 
-The build-in operators of JDUT would use the type of value  
+The build-in operators of JDUT would use the type of value
 to decide which method of `setXXX` in [PreparedStatement](https://docs.oracle.com/javase/8/docs/api/java/sql/PreparedStatement.html)
 to be called for setting parameter of SQL.
 
@@ -227,12 +220,11 @@ to be called for setting parameter of SQL.
 :   the engine would use [PreparedStatement.setObject()](https://docs.oracle.com/javase/8/docs/api/java/sql/PreparedStatement.html#setObject-int-java.lang.Object-)
 
 #### For YAML
-1. The engine for loading of YAML would build the data into [DataGrain],  
+1. The engine for loading of YAML would build the data into [DataGrain],
     so the target type is the decided by how the YAML engine converts value to Java object.
 1. You may assign desired type of data in YAML tagging
 
 ```yaml
-# hljs:yaml
 
 %TAG !jdut! tag:jdut.mikelue.guru:1.0/
 %TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
@@ -266,7 +258,7 @@ to be called for setting parameter of SQL.
 :   the value would be converted into [BigDecimal](https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html).
 
 #### Complex Value
-For type of complex value, you could use [Supplier<?>](https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html) to create data of these types:  
+For type of complex value, you could use [Supplier<?>](https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html) to create data of these types:
 **ARRAY**, **DISTINCT**, **JAVA_OBJECT**, **OTHER**, **REF**, **REF_CURSOR**, **ROWID**, **STRUCT**
 
 #### References
@@ -280,8 +272,8 @@ For type of complex value, you could use [Supplier<?>](https://docs.oracle.com/j
 The configuration of YAML condcutor:
 
 [ConductorConfig]
-:   Bean as facade of configuration for conducting data.  
-    The practices of the config are defined by implementation of engine.  
+:   Bean as facade of configuration for conducting data.
+    The practices of the config are defined by implementation of engine.
     The
     [YamlConductorFactory.build()](apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html#build-javax.sql.DataSource-java.util.function.Consumer-)
     or
@@ -296,12 +288,12 @@ The configuration of YAML condcutor:
 ### Set-up YamlConductorFactory
 
 [YamlConductorFactory]
-:   The most important service to build an instance of [DuetConductor].  
-    This factory depends on [DataSource] given to [build()](apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html#build-javax.sql.DataSource-) method.  
+:   The most important service to build an instance of [DuetConductor].
+    This factory depends on [DataSource] given to [build()](apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html#build-javax.sql.DataSource-) method.
     You can define [ConductorConfig] to customize [DataGrainDecorator] or [JdbcFunction], etc,.
 
 [DefaultOperatorFactory]
-:   The default factory used by [YamlConductorFactory].  
+:   The default factory used by [YamlConductorFactory].
     You may customize the factory by using [ConductorConfig.Builder.operatorFactory()](apidocs/guru/mikelue/jdut/ConductorConfig.Builder.html#operatorFactory-guru.mikelue.jdut.operation.OperatorFactory-) to set the instance.
 
 [DefaultOperatorFactory]: apidocs/guru/mikelue/jdut/operation/DefaultOperatorFactory.html
@@ -313,7 +305,6 @@ The configuration of YAML condcutor:
 [YamlConductorFactory]: apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html
 
 ```java
-// hljs:java
 // dataSource - The initialized data source
 
 YamlConductorFactory yamlConductor = YamlConductorFactory.build(
@@ -343,10 +334,9 @@ YamlConductorFactory yamlConductor = YamlConductorFactory.build(
 ### Build DuetConductor
 
 [DuetConductor]
-:   This interface defines build/clean data for [unit test](https://en.wikipedia.org/wiki/Unit_testing).  
+:   This interface defines build/clean data for [unit test](https://en.wikipedia.org/wiki/Unit_testing).
 
 ```java
-// hljs:java
 import guru.mikelue.jdut.DuetConductor;
 
 DuetConductor testConductor_1 = yamlFactory.conductNamedResource(
@@ -373,7 +363,7 @@ DuetConductor testConductor_2 = yamlConductor.conduct(
 
 #### Resource loading
 
-While using [YamlConductorFactory.conductResource(String, Consuemr<ConductorConfig.Builder>)](apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html#conductResource-java.lang.String-java.util.function.Consumer-) to load YAML file,  
+While using [YamlConductorFactory.conductResource(String, Consuemr<ConductorConfig.Builder>)](apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html#conductResource-java.lang.String-java.util.function.Consumer-) to load YAML file,
 you could configure how to convert a String to a [Reader] by [ConductorConfig.Builder.resourceLoader()](apidocs/guru/mikelue/jdut/ConductorConfig.Builder.html#resourceLoader-java.util.function.Function-).
 
 
@@ -385,17 +375,16 @@ See [ReaderFunctions](apidocs/guru/mikelue/jdut/yaml/ReaderFunctions.html) for b
 The [DuetConductor] should be used in proper event defined by [testing framework](https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#Java).
 
 For [JUnit]
-:   * [build()](apidocs/guru/mikelue/jdut/DuetConductor.html#build--) - Could be used in [@Before](http://junit.org/javadoc/latest/org/junit/Before.html) annotated method.
-    * [clean()](apidocs/guru/mikelue/jdut/DuetConductor.html#clean--) - Could be used in [@After](http://junit.org/javadoc/latest/org/junit/After.html) annotated method.
+:   * [build()](apidocs/guru/mikelue/jdut/DuetConductor.html#build--) - Could be used in [@Before](https://junit.org/junit4/javadoc/latest/org/junit/Before.html) annotated method.
+    * [clean()](apidocs/guru/mikelue/jdut/DuetConductor.html#clean--) - Could be used in [@After](https://junit.org/junit4/javadoc/latest/org/junit/After.html) annotated method.
 
 For [TestNG]
-:   * [build()](apidocs/guru/mikelue/jdut/DuetConductor.html#build--) - Could be used in [@BeforeMethod](http://testng.org/javadocs/org/testng/annotations/BeforeMethod.html) annotated method.
-    * [clean()](apidocs/guru/mikelue/jdut/DuetConductor.html#clean--) - Could be used in [@AfterMethod](http://testng.org/javadocs/org/testng/annotations/AfterMethod.html) annotated method.
+:   * [build()](apidocs/guru/mikelue/jdut/DuetConductor.html#build--) - Could be used in [@BeforeMethod](https://jitpack.io/com/github/cbeust/testng/master/javadoc/org/testng/annotations/BeforeMethod.html) annotated method.
+    * [clean()](apidocs/guru/mikelue/jdut/DuetConductor.html#clean--) - Could be used in [@AfterMethod](https://jitpack.io/com/github/cbeust/testng/master/javadoc/org/testng/annotations/AfterMethod.html) annotated method.
 
 Following example to execute the two methods when testing:
 
 ```java
-// hljs:java
 testConductor_1.build();
 testConductor_2.build();
 
@@ -447,7 +436,6 @@ The [DefaultOperators] constructs operator-inspection of vendor-specific, uses i
     * This operation has no effect to database.
 
 ```java
-// hljs:java
 
 import guru.mikelue.jdut.operation.DefaultOperatorFactory;
 import guru.mikelue.jdut.operation.DefaultOperators;
@@ -471,7 +459,6 @@ dataConductor.conduct(
 #### Value replacement
 
 ```java
-// hljs:java
 
 import guru.mikelue.jdut.decorate.ReplaceFieldDataDecorator;
 import guru.mikelue.jdut.decorate.DataGrainDecorator;
@@ -495,7 +482,6 @@ You can replace value with null-value checking
   * This is used if you don't want to load data before the processing of operator
 
 ```java
-// hljs:java
 // builder - builder of ReplaceFieldDataDecorator.build()
 
 builder -> builder
@@ -505,11 +491,10 @@ builder -> builder
 ---
 
 #### Not defined column
-You may use [DataRowBuilderPredicates::notExistingColumn](apidocs/guru/mikelue/jdut/function/DataRowBuilderPredicates.html#notExistingColumn-java.lang.String-java.lang.String-) to predicate  
+You may use [DataRowBuilderPredicates::notExistingColumn](apidocs/guru/mikelue/jdut/function/DataRowBuilderPredicates.html#notExistingColumn-java.lang.String-java.lang.String-) to predicate
 a decorator [a row][DataRow] with not-defined column.
 
 ```java
-// hljs:java
 
 import guru.mikelue.jdut.function.DataRowBuilderPredicates;
 import guru.mikelue.jdut.decorate.DataGrainDecorator;
@@ -529,7 +514,7 @@ While the [DataConductor] is executing, you may access its current working objec
 A good example to use conductor context is **value function**, you may access current session of database while generating data of a field.
 
 Lazy loading of value function
-:   Since conductor context is available only when it is executing,  
+:   Since conductor context is available only when it is executing,
     you should keep in mind that [DataGrainDecorator] shouldn't access [DataRow.Builder.getData(`<field_name>`)](apidocs/guru/mikelue/jdut/datagrain/DataRow.Builder.html#getData-java.lang.String-) to trigger the value function.
 
     Instead, using [DataRow.Builder.getDataSupplier(`<field_name>`)](apidocs/guru/mikelue/jdut/datagrain/DataRow.Builder.html#getDataSupplier-java.lang.String-).isPresent() to check whether or not the value comes from a value function.
@@ -537,7 +522,6 @@ Lazy loading of value function
 **You must not close the object of [Connection] from the context**.
 
 ```java
-// hljs:java
 
 Connection conn = ConductorContext.getCurrentConnection()
     .orElseThrow(() -> new Exception("NoContext"));
@@ -576,10 +560,10 @@ You may extend the listeners to customize usage of YAML API
 
 ### Multiple listeners
 
-If you would use multiple listeners for different tests, the [TestNG] engine **would  
+If you would use multiple listeners for different tests, the [TestNG] engine **would
 executes all of the listeners even if you don't annotate the class**.
 
-Every listener provided by JDUT has `needConductData` method to let you write your own logic that is  
+Every listener provided by JDUT has `needConductData` method to let you write your own logic that is
 whether or not to use the listener in certain context.
 
 [IInvokedMethodYamlFactoryListener]: apidocs/guru/mikelue/jdut/testng/IInvokedMethodYamlFactoryListener.html
@@ -598,7 +582,6 @@ Following example demonstrates the integration with [TestNG].
 :   defines behaviour of TestNG.
 
 ```java
-// hljs:java
 import guru.mikelue.jdut.annotation.JdutResource;
 import guru.mikelue.jdut.testng.IInvokedMethodYamlFactoryListener;
 import guru.mikelue.jdut.testng.TestNGConfig;
@@ -644,14 +627,12 @@ This module supports JUnit4 since version of **4.9**.
 
 ### Rule
 
-The only rule provided by this module is [JdutYamlFactory].  
+The only rule provided by this module is [JdutYamlFactory].
 You may override `buildDuetConductor` method to load your own YAML file.
 
 [JdutYamlFactory]: apidocs/guru/mikelue/jdut/junit4/JdutYamlFactory.html
 
 ```java
-// hljs:java
-
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -667,7 +648,7 @@ public class YourSomethingTest {
     {
         /* Your tests... */
     }
-} 
+}
 ```
 
 ---
@@ -685,7 +666,7 @@ You can override the operators implemented by JDUT.
 The method of [DefaultOperatorFactory.Builder.add](apidocs/guru/mikelue/jdut/operation/DefaultOperatorFactory.Builder.html) accepts two arguments:
 
 [OperatorPredicate]
-:   The method of [testMetaData(DatabaseMetaData)](apidocs/guru/mikelue/jdut/function/OperatorPredicate.html#testMetaData-java.sql.DatabaseMetaData-) is used to check  
+:   The method of [testMetaData(DatabaseMetaData)](apidocs/guru/mikelue/jdut/function/OperatorPredicate.html#testMetaData-java.sql.DatabaseMetaData-) is used to check
     the meta data of current connection to database.
 
     This predicate returning **true value** means to use your mapping of operators.
@@ -694,7 +675,7 @@ The method of [DefaultOperatorFactory.Builder.add](apidocs/guru/mikelue/jdut/ope
 :   The mapping is used to fetch operator by name for
     for fisrt matched [OperatorPredicate].
 
-You don't have to define all of the names defined in [DefaultOperators] in the [Map] of operators.  
+You don't have to define all of the names defined in [DefaultOperators] in the [Map] of operators.
 [DefaultOperatorFactory] would fetch a default one if your mapping doesn't contain the name.
 
 See [DatabaseMetaData](https://docs.oracle.com/javase/8/docs/api/java/sql/DatabaseMetaData.html).
@@ -705,8 +686,6 @@ See [DatabaseMetaData](https://docs.oracle.com/javase/8/docs/api/java/sql/Databa
 **The first matched predicte would be selected for the vendor-specific operation**
 
 ```java
-// hljs:java
-
 import guru.mikelue.jdut.operation.DefaultOperatorFactory;
 import guru.mikelue.jdut.operation.OperatorFactory;
 
@@ -738,12 +717,12 @@ Following list states the databases and JDBC drivers which have been tested:
 | [HsqlDb][hsqldb]         | 2.3              | 2.3            |                |
 | [Derby][derby]           | 10.11            | 10.11          |                |
 
-[postgresql]: http://www.postgresql.org/
-[mysql]: http://www.mysql.com/
+[postgresql]: https://www.postgresql.org/
+[mysql]: https://www.mysql.com/
 [oracle]: https://www.oracle.com/database/index.html
-[mssql]: http://www.microsoft.com/en-us/server-cloud/products/sql-server/default.aspx
-[h2]: http://www.h2database.com
-[hsqldb]: http://hsqldb.org/
+[mssql]: https://www.microsoft.com/en-cy/sql-server/sql-server-downloads
+[h2]: https://www.h2database.com/
+[hsqldb]: https://hsqldb.org/
 [derby]: https://db.apache.org/derby/
 
 [DataGrainOperator]: apidocs/guru/mikelue/jdut/operation/DataGrainOperator.html
@@ -754,8 +733,8 @@ Following list states the databases and JDBC drivers which have been tested:
 [Reader]: https://docs.oracle.com/javase/8/docs/api/java/io/Reader.html
 [Map]: https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
 
-[JUnit]: http://junit.org/
-[TestNG]: http://testng.org/doc/
+[JUnit4]: https://junit.org/junit4/
+[TestNG]: https://testng.org/
 
 #### Keys of row
 In order to execute `DELETE` or `UPDATE` more precisely, following priority for looking up one or multiple columns in a table is applied to build `WHERE` statement:
