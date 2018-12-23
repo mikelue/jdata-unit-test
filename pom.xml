@@ -443,6 +443,9 @@
 				<plugin>
 					<artifactId>maven-jxr-plugin</artifactId>
 					<version>3.0.0</version>
+					<configuration>
+						<stylesheet>${project.parent.basedir}/src/site/resources/jxr.css</stylesheet>
+					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
