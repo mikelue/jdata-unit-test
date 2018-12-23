@@ -448,8 +448,23 @@
 					<artifactId>maven-site-plugin</artifactId>
 					<version>3.7.1</version>
                     <configuration>
+						<asciidoc>
+							<requires>
+								<require>asciidoctor-diagram</require>
+							</requires>
+							<attributes>
+								<source-highlighter>highlight.js</source-highlighter>
+							</attributes>
+						</asciidoc>
                         <skipDeploy>true</skipDeploy>
                     </configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.asciidoctor</groupId>
+							<artifactId>asciidoctor-maven-plugin</artifactId>
+							<version>1.5.7.1</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 				<plugin>
 					<artifactId>maven-project-info-reports-plugin</artifactId>
@@ -491,7 +506,7 @@
 					<version>3.0.1</version>
 					<configuration>
 						<footer><![CDATA[
-							<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/zenburn.min.css" />
+							<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/rainbow.min.css" />
 							<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/highlight.min.js"></script>
 							<script>hljs.initHighlightingOnLoad();</script>
 						]]></footer>

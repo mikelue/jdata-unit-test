@@ -12,6 +12,12 @@
 	</skin>
 
 	<body>
+		<head><![CDATA[
+			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/atom-one-dark.min.css" />
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/highlight.min.js"></script>
+			<script>hljs.initHighlightingOnLoad();</script>
+		]]></head>
+
 		<links>
 			<item name="Source Repository" title="Source at GitHub" href="https://github.com/mikelue/jdata-unit-test" />
 		</links>
