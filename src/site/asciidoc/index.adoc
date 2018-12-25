@@ -1,0 +1,90 @@
+= jdata-unit-test(JDUT)
+
+:link_testng: https://testng.org/[TestNG]
+:link_junit4: https://junit.org/junit4/[JUnit 4]
+
+A framework for testing relational databases.
+
+This framework is mainly inspired by link:http://dbunit.sourceforge.net/[DbUnit].
+
+'''
+
+== Introduction
+
+JDUT currently contains two modules:
+
+* link:core/index.html[Core] module - Using JDUT by Java API(including YAML loading)
+* link:testng/index.html[TestNG] module - Using JDUT by link:apidocs/guru/mikelue/jdut/testng/package-summary.html[listeners] of {link_testng}
+* link:junit4/index.html[JUnit4] module - Using JDUT by link:apidocs/guru/mikelue/jdut/junit4/package-summary.html[listeners] of {link_junit4}
+
+'''
+
+== Install
+
+Currently, this framework is on link:https://oss.sonatype.org/content/repositories/snapshots/guru/mikelue/jdut/[SNAPSHOT of oss.sonatype.org].
+
+You should put following setting of repository:
+
+[source,xml]
+----
+<project>
+	<!-- ... Maven POM ... -->
+
+	<repositories>
+		<repository>
+			<id>oss.sonatype.org</id>
+			<name>oss.sonatype.org</name>
+			<snapshots>
+				<enabled>true</enabled>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
+</project>
+----
+
+=== Dependency setting
+
+.Core Module
+[source,xml,subs="+attributes,+quotes"]
+----
+<dependency>
+	<groupId>{project-groupId}</groupId>
+	<artifactId>**core**</artifactId>
+	<version>{project-version}</version>
+	<scope>test</scope>
+</dependency>
+----
+
+.TestNG Module
+[source,xml,subs="+attributes,+quotes"]
+----
+<dependency>
+	<groupId>{project-groupId}</groupId>
+	<artifactId>**testng**</artifactId>
+	<version>{project-version}</version>
+	<scope>test</scope>
+</dependency>
+----
+
+.JUnit 4 Module
+[source,xml,subs="+attributes,+quotes"]
+----
+<dependency>
+	<groupId>{project-groupId}</groupId>
+	<artifactId>**junit4**</artifactId>
+	<version>{project-version}</version>
+	<scope>test</scope>
+</dependency>
+----
+
+'''
+
+== References
+
+https://docs.oracle.com/javase/8/[Java 8], https://maven.apache.org/[Maven], https://yaml.org/spec/1.1/[YAML 1.1]

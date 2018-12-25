@@ -2,8 +2,8 @@
 	xmlns="http://maven.apache.org/DECORATION/1.8.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 http://maven.apache.org/xsd/decoration-1.8.0.xsd"
 >
+	<version position="left" />
 	<publishDate position="right" />
-	<version position="rigth" />
 
 	<skin>
 		<groupId>org.apache.maven.skins</groupId>
@@ -13,19 +13,30 @@
 
 	<body>
 		<head><![CDATA[
-			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/atom-one-dark.min.css" />
+			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/atelier-seaside-light.min.css" />
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/highlight.min.js"></script>
 			<script>hljs.initHighlightingOnLoad();</script>
 		]]></head>
 
+		<breadcrumbs>
+			<item name="Home" href="index.html" />
+		</breadcrumbs>
+
 		<links>
-			<item name="Source Repository" title="Source at GitHub" href="https://github.com/mikelue/jdata-unit-test" />
+			<item name="Source Repository" href="scm.html" />
+			<item name="Site Map" href="sitemap.html" />
 		</links>
 
 		<menu name="Documents" inherit="top">
+			<item name="About" ref="index" />
 			<item name="Guidelines" href="guidelines.html" />
 			<item name="Examples" href="examples.html" />
 			<item name="YAML Syntax" href="yaml-syntax.html" />
+		</menu>
+
+		<menu name="API References" inherit="top">
+			<item name="Javadoc" href="apidocs/index.html" />
+			<item name="Source Xref" href="xref/index.html" />
 		</menu>
 
 		<menu ref="reports" inherit="bottom" />

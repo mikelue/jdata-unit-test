@@ -1,7 +1,10 @@
 <!--
   - For deployment of reporting(push to branch "gh-pages" on GitHub):
   -
-  - mvn -Dscmpublish.dryRun=true site-deploy
+  - mvn -P gh-pages clean site-deploy
+  -
+  - Properties:
+  - 	-Dscmpublish.dryRun=true (Make the job dry run)
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -46,9 +49,9 @@
 		</site>
 	</distributionManagement>
 	<scm>
-		<url>https://github.com/mikelue/jdata-unit-test/tree/master</url>
+		<url>https://github.com/mikelue/jdata-unit-test</url>
+		<connection>scm:git:https://github.com/mikelue/jdata-unit-test.git</connection>
 		<developerConnection>scm:git:git@github.com:mikelue/jdata-unit-test.git</developerConnection>
-		<connection>scm:git:git@github.com:mikelue/jdata-unit-test.git</connection>
 	</scm>
 	<licenses>
 		<license>
@@ -146,12 +149,6 @@
 			<artifactId>logback-classic</artifactId>
 			<version>${version.logback}</version>
 			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<!-- :~) -->
 
@@ -163,12 +160,6 @@
 			<artifactId>dbpool</artifactId>
 			<version>${version.dbpool}</version>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<!-- :~) -->
 
@@ -320,40 +311,7 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>stage-report</id>
-						<phase>post-site</phase>
-						<goals>
-							<goal>stage</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-scm-publish-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-                    <pubScmUrl>${project.scm.developerConnection}</pubScmUrl>
-					<checkinComment>Update report for ${project.version}</checkinComment>
-					<tryUpdate>true</tryUpdate>
-					<scmBranch>gh-pages</scmBranch>
-				</configuration>
-				<executions>
-					<execution>
-						<id>scm-publish</id>
-						<phase>site-deploy</phase>
-						<goals>
-							<goal>publish-scm</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -444,20 +402,29 @@
 					<artifactId>maven-jxr-plugin</artifactId>
 					<version>3.0.0</version>
 					<configuration>
-						<stylesheet>${project.parent.basedir}/src/site/resources/jxr.css</stylesheet>
+						<stylesheet>${project.parent.basedir}/src/site/resources/css/jxr.css</stylesheet>
 					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>3.7.1</version>
                     <configuration>
+						<generateSitemap>true</generateSitemap>
 						<asciidoc>
+							<attributes>
+								<toc />
+								<sectlinks />
+								<source-highlighter>highlight.js</source-highlighter>
+								<project-groupId>${project.groupId}</project-groupId>
+								<project-version>${project.version}</project-version>
+								<graphvizdot>${env.GRAPHVIZ_HOME}/bin/dot.exe</graphvizdot>
+								<outdir>${project.build.directory}</outdir>
+								<imagesdir>images/adoc-diagram</imagesdir>
+								<imagesoutdir>${project.reporting.outputDirectory}/images/adoc-diagram</imagesoutdir>
+							</attributes>
 							<requires>
 								<require>asciidoctor-diagram</require>
 							</requires>
-							<attributes>
-								<source-highlighter>highlight.js</source-highlighter>
-							</attributes>
 						</asciidoc>
                         <skipDeploy>true</skipDeploy>
                     </configuration>
@@ -467,29 +434,16 @@
 							<artifactId>asciidoctor-maven-plugin</artifactId>
 							<version>1.5.7.1</version>
 						</dependency>
+						<dependency>
+							<groupId>org.asciidoctor</groupId>
+							<artifactId>asciidoctorj-diagram</artifactId>
+							<version>1.5.11</version>
+						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
 					<artifactId>maven-project-info-reports-plugin</artifactId>
 					<version>3.0.0</version>
-					<dependencies>
-						<dependency>
-							<groupId>org.apache.maven.shared</groupId>
-							<artifactId>maven-shared-jar</artifactId>
-							<version>1.2</version>
-							<exclusions>
-								<exclusion>
-									<groupId>org.apache.bcel</groupId>
-									<artifactId>bcel</artifactId>
-								</exclusion>
-							</exclusions>
-						</dependency>
-						<dependency>
-							<groupId>com.google.code.findbugs</groupId>
-							<artifactId>bcel-findbugs</artifactId>
-							<version>6.0</version>
-						</dependency>
-					</dependencies>
 				</plugin>
 				<plugin>
 					<artifactId>maven-source-plugin</artifactId>
@@ -540,48 +494,100 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>javadoc</report>
-						</reports>
-					</reportSet>
-					<reportSet>
-						<id>aggregate</id>
-						<inherited>false</inherited>
-						<reports>
-							<report>aggregate</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>jxr</report>
-							<report>test-jxr</report>
-						</reports>
-					</reportSet>
-					<reportSet>
-						<id>aggregate</id>
-						<inherited>false</inherited>
-						<reports>
-							<report>aggregate</report>
-							<report>test-aggregate</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
 		</plugins>
 	</reporting>
 
 	<profiles>
+		<profile>
+			<id>gh-pages</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-site-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>stage-report</id>
+								<phase>post-site</phase>
+								<goals>
+									<goal>stage</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-publish-plugin</artifactId>
+						<version>3.0.0</version>
+						<configuration>
+							<pubScmUrl>${project.scm.developerConnection}</pubScmUrl>
+							<checkinComment>Update report for ${project.version}</checkinComment>
+							<tryUpdate>true</tryUpdate>
+							<scmBranch>gh-pages</scmBranch>
+						</configuration>
+						<executions>
+							<execution>
+								<id>scm-publish</id>
+								<phase>site-deploy</phase>
+								<goals>
+									<goal>publish-scm</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<reporting>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jxr-plugin</artifactId>
+						<configuration>
+							<inherited>false</inherited>
+							<stylesheet>${basedir}/src/site/resources/css/jxr.css</stylesheet>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<reportSets>
+							<reportSet>
+								<reports>
+									<report>javadoc</report>
+								</reports>
+							</reportSet>
+							<reportSet>
+								<id>aggregate</id>
+								<inherited>false</inherited>
+								<reports>
+									<report>aggregate</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jxr-plugin</artifactId>
+						<reportSets>
+							<reportSet>
+								<reports>
+									<report>jxr</report>
+									<report>test-jxr</report>
+								</reports>
+							</reportSet>
+							<reportSet>
+								<id>aggregate</id>
+								<inherited>false</inherited>
+								<reports>
+									<report>aggregate</report>
+									<report>test-aggregate</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
+				</plugins>
+			</reporting>
+		</profile>
 		<profile>
 			<id>oss-deploy</id>
 			<distributionManagement>
