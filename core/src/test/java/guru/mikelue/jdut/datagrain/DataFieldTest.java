@@ -1,10 +1,14 @@
 package guru.mikelue.jdut.datagrain;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
 public class DataFieldTest {
 	public DataFieldTest() {}
@@ -12,7 +16,8 @@ public class DataFieldTest {
 	/**
 	 * Tests the consturctor of object(by supplier).
 	 */
-	@Test(dataProvider="DataFieldBySupplier")
+	@ParameterizedTest
+	@MethodSource
 	public void dataFieldBySupplier(
 		Supplier<Integer> sampleSupplier
 	) {
@@ -25,22 +30,22 @@ public class DataFieldTest {
 			sampleColumn, sampleSupplier
 		);
 
-		Assert.assertEquals(testedField.getColumn(), sampleColumn);
-		Assert.assertEquals(testedField.getData(), sampleSupplier.get());
+		assertEquals(sampleColumn, testedField.getColumn());
+		assertEquals(sampleSupplier.get(), testedField.getData());
 	}
-	@DataProvider(name="DataFieldBySupplier")
-	private Object[][] getDataFieldBySupplier()
+	static Arguments[] dataFieldBySupplier()
 	{
-		return new Object[][] {
-			{ (Supplier<Integer>)() -> 20 },
-			{ (Supplier<Integer>)() -> null },
+		return new Arguments[] {
+			arguments((Supplier<Integer>)() -> 20),
+			arguments((Supplier<Integer>)() -> null),
 		};
 	}
 
 	/**
 	 * Tests the consturctor of object(by value).
 	 */
-	@Test(dataProvider="DataFieldByValue")
+	@ParameterizedTest
+	@MethodSource
 	public void dataFieldByValue(
 		Object sampleData, Integer expectedValue
 	) {
@@ -53,25 +58,25 @@ public class DataFieldTest {
 			sampleColumn, sampleData
 		);
 
-		Assert.assertEquals(testedField.getColumn(), sampleColumn);
-		Assert.assertEquals(testedField.getData(), expectedValue);
+		assertEquals(sampleColumn, testedField.getColumn());
+		assertEquals(expectedValue, testedField.getData());
 	}
-	@DataProvider(name="DataFieldByValue")
-	private Object[][] getDataFieldByValue()
+	static Arguments[] dataFieldByValue()
 	{
-		return new Object[][] {
-			{ 84, 84 },
-			{ null, null },
-			{ (Supplier<Integer>)() -> 77, 77 }, // Tests the auto-detected lambda expression
+		return new Arguments[] {
+			arguments(84, 84),
+			arguments(null, null),
+			arguments((Supplier<Integer>)() -> 77, 77), // Tests the auto-detected lambda expression
 		};
 	}
 
 	/**
 	 * Tests the keeping of value by supplier.
 	 */
-	@Test(dataProvider="KeepValue")
+	@ParameterizedTest
+	@MethodSource
 	public void keepValue(
-		final Integer sampleValue
+		final Optional<Integer> sampleValue
 	) {
 		Supplier<Integer> onceSupplier = new Supplier<Integer>() {
 			boolean run = false;
@@ -80,12 +85,12 @@ public class DataFieldTest {
 			public Integer get()
 			{
 				if (run) {
-					Assert.fail("The supplier has been run");
+					fail("The supplier has been run");
 				}
 
 				run = true;
 
-				return sampleValue;
+				return sampleValue.orElse(null);
 			}
 		};
 
@@ -97,15 +102,14 @@ public class DataFieldTest {
 			onceSupplier
 		);
 
-		Assert.assertEquals(testedField.getData(), sampleValue);
+		assertEquals(sampleValue.orElse(null), testedField.getData());
 		testedField.getData(); // Should use keeped value
 	}
-	@DataProvider(name="KeepValue")
-	private Object[][] getKeepValue()
+	static Arguments[] keepValue()
 	{
-		return new Object[][] {
-			{ 77 },
-			{ null }
+		return new Arguments[] {
+			arguments(Optional.of(77)),
+			arguments(Optional.<Integer>empty())
 		};
 	}
 }

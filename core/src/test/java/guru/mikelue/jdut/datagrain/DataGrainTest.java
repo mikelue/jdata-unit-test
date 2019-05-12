@@ -3,8 +3,9 @@ package guru.mikelue.jdut.datagrain;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests RowsBuilderImpl.
@@ -47,19 +48,19 @@ public class DataGrainTest {
 
 		List<DataRow> testedRows = testedDataGrain.getRows();
 		testedRows.forEach(
-			row -> Assert.assertEquals(row.getTable().getName(), "tb_thing")
+			row -> assertEquals("tb_thing", row.getTable().getName())
 		);
-		Assert.assertEquals(testedRows.get(0).getData("ct_1"), new Integer(1));
-		Assert.assertEquals(testedRows.get(0).getData("ct_2"), "BANANA-01");
-		Assert.assertEquals(testedRows.get(1).getData("ct_1"), new Integer(2));
-		Assert.assertEquals(testedRows.get(1).getData("ct_2"), "BANANA-02");
-		Assert.assertEquals(testedRows.get(2).getData("ct_1"), new Integer(11));
-		Assert.assertEquals(testedRows.get(2).getData("ct_2"), "PINEAPPLE-02");
-		Assert.assertEquals(testedRows.get(2).getData("ct_3"), (String)null);
-		Assert.assertEquals(testedRows.get(3).getData("ct_1"), new Integer(12));
-		Assert.assertEquals(testedRows.get(3).getData("ct_3"), "PINEAPPLE-03");
-		Assert.assertEquals(testedRows.get(4).getData("ct_1"), (Integer)null);
-		Assert.assertEquals(testedRows.get(4).getData("ct_2"), (String)null);
+		assertEquals(Integer.valueOf(1), testedRows.get(0).getData("ct_1"));
+		assertEquals("BANANA-01", testedRows.get(0).getData("ct_2"));
+		assertEquals(Integer.valueOf(2), testedRows.get(1).getData("ct_1"));
+		assertEquals("BANANA-02", testedRows.get(1).getData("ct_2"));
+		assertEquals(Integer.valueOf(11), testedRows.get(2).getData("ct_1"));
+		assertEquals("PINEAPPLE-02", testedRows.get(2).getData("ct_2"));
+		assertEquals((String)null, testedRows.get(2).getData("ct_3"));
+		assertEquals(Integer.valueOf(12), testedRows.get(3).getData("ct_1"));
+		assertEquals("PINEAPPLE-03", testedRows.get(3).getData("ct_3"));
+		assertEquals((Integer)null, testedRows.get(4).getData("ct_1"));
+		assertEquals((String)null, testedRows.get(4).getData("ct_2"));
 	}
 
 	/**
@@ -85,12 +86,12 @@ public class DataGrainTest {
 		);
 
 		List<DataRow> testedRows = testedDataGrain.getRows();
-		Assert.assertEquals(testedRows.get(0).getTable().getName(), "tb_thing_1");
-		Assert.assertEquals(testedRows.get(0).getData("t1_c1"), new Integer(1));
-		Assert.assertEquals(testedRows.get(0).getData("t1_c2"), "OK-1");
-		Assert.assertEquals(testedRows.get(1).getTable().getName(), "tb_thing_2");
-		Assert.assertEquals(testedRows.get(1).getData("t2_c1"), new Integer(2));
-		Assert.assertEquals(testedRows.get(1).getData("t2_c2"), "OK-2");
+		assertEquals("tb_thing_1", testedRows.get(0).getTable().getName());
+		assertEquals(Integer.valueOf(1), testedRows.get(0).getData("t1_c1"));
+		assertEquals("OK-1", testedRows.get(0).getData("t1_c2"));
+		assertEquals("tb_thing_2", testedRows.get(1).getTable().getName());
+		assertEquals(Integer.valueOf(2), testedRows.get(1).getData("t2_c1"));
+		assertEquals("OK-2", testedRows.get(1).getData("t2_c2"));
 	}
 
 	/**
@@ -113,11 +114,11 @@ public class DataGrainTest {
 				.fieldOfValue("col_3", "v3") // Adds new field
 		);
 
-		Assert.assertEquals(testedDataGrain.getRow(0).<String>getData("col_1"), "v1-1"); // Modified field
-		Assert.assertEquals(testedDataGrain.getRow(0).<String>getData("col_2"), "v2"); // Nothing changed
-		Assert.assertEquals(testedDataGrain.getRow(0).<String>getData("col_3"), "v3"); // Added field
-		Assert.assertEquals(testedDataGrain.getRow(1).<String>getData("col_1"), "v1-1"); // Modified field
-		Assert.assertEquals(testedDataGrain.getRow(1).<String>getData("col_2"), "v2"); // Nothing changed
-		Assert.assertEquals(testedDataGrain.getRow(1).<String>getData("col_3"), "v3"); // Added field
+		assertEquals("v1-1", testedDataGrain.getRow(0).<String>getData("col_1")); // Modified field
+		assertEquals("v2", testedDataGrain.getRow(0).<String>getData("col_2")); // Nothing changed
+		assertEquals("v3", testedDataGrain.getRow(0).<String>getData("col_3")); // Added field
+		assertEquals("v1-1", testedDataGrain.getRow(1).<String>getData("col_1")); // Modified field
+		assertEquals("v2", testedDataGrain.getRow(1).<String>getData("col_2")); // Nothing changed
+		assertEquals("v3", testedDataGrain.getRow(1).<String>getData("col_3")); // Added field
 	}
 }

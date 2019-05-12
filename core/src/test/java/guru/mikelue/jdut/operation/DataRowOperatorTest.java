@@ -3,11 +3,12 @@ package guru.mikelue.jdut.operation;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.datagrain.DataRow;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataRowOperatorTest {
 	public DataRowOperatorTest() {}
@@ -30,6 +31,6 @@ public class DataRowOperatorTest {
 		List<DataRow> processedResult = ((DataRowOperator)(connection, dataRow) -> dataRow)
 			.toDataRowsOperator().operate(null, sampleDataGrain.getRows());
 
-		Assert.assertEquals(processedResult.size(), 3);
+		assertEquals(3, processedResult.size());
 	}
 }

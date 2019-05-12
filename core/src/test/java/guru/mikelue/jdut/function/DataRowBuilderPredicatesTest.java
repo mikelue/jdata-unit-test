@@ -2,12 +2,15 @@ package guru.mikelue.jdut.function;
 
 import java.util.function.Predicate;
 
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import guru.mikelue.jdut.datagrain.DataRow;
 import guru.mikelue.jdut.datagrain.SchemaTable;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
 public class DataRowBuilderPredicatesTest {
 	public DataRowBuilderPredicatesTest() {}
@@ -15,7 +18,8 @@ public class DataRowBuilderPredicatesTest {
 	/**
 	 * Test the predicates of null value.
 	 */
-	@Test(dataProvider="NotExistingColumn")
+	@ParameterizedTest
+	@MethodSource
 	public void notExistingColumn(
 		final String sampleColumnName,
 		boolean expectedResult
@@ -34,15 +38,14 @@ public class DataRowBuilderPredicatesTest {
 				.fieldOfValue(sampleColumnName, 20)
 				.fieldOfValue("ktc_0", "String-V1");
 
-			Assert.assertEquals(testedPredicate.test(rowBuilder), expectedResult);
+			assertEquals(expectedResult, testedPredicate.test(rowBuilder));
 		});
 	}
-	@DataProvider(name="NotExistingColumn")
-	private Object[][] getNullValue()
+	static Arguments[] notExistingColumn()
 	{
-		return new Object[][] {
-			{ "kt_1", false },
-			{ "kt_2", true },
+		return new Arguments[] {
+			arguments("kt_1", false),
+			arguments("kt_2", true),
 		};
 	}
 }

@@ -3,8 +3,9 @@ package guru.mikelue.jdut.jdbc;
 import java.sql.SQLException;
 import java.util.function.Function;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JdbcFunctionTest {
 	public JdbcFunctionTest() {}
@@ -21,13 +22,13 @@ public class JdbcFunctionTest {
 		Function<Integer, Integer> testedFunction =
 			((JdbcFunction<Integer, Integer>)v -> v + addedValue).asFunction();
 
-		Assert.assertEquals(testedFunction.apply(sampleValue), new Integer(sampleValue + addedValue));
+		assertEquals(Integer.valueOf(sampleValue + addedValue), testedFunction.apply(sampleValue));
 	}
 
 	/**
 	 * Tests the {@link JdbcFunction#asFunction} with {@link SQLExceptionConvert}.<p>
 	 */
-	@Test(expectedExceptions=SampleRuntimeException.class)
+	@Test
 	public void asFunctionWithSQLExceptionConvert()
 	{
 		Function<Integer, Integer> testedFunction =
@@ -35,7 +36,9 @@ public class JdbcFunctionTest {
 				e -> new SampleRuntimeException(e)
 			);
 
-		testedFunction.apply(20);
+		assertThrows(SampleRuntimeException.class,
+			() -> testedFunction.apply(20)
+		);
 	}
 
 	/**
@@ -49,6 +52,6 @@ public class JdbcFunctionTest {
 			f -> v -> f.applyJdbc(v * 3)
 		);
 
-		Assert.assertEquals(surroundedFunc.applyJdbc(7), new Integer(25));
+		assertEquals(Integer.valueOf(25), surroundedFunc.applyJdbc(7));
 	}
 }

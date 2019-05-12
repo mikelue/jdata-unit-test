@@ -4,8 +4,9 @@ import java.sql.SQLException;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JdbcVoidFunctionTest {
 	public JdbcVoidFunctionTest() {}
@@ -23,13 +24,13 @@ public class JdbcVoidFunctionTest {
 
 		testedConsumer.accept(3);
 
-		Assert.assertEquals(surroundingSampleData.intValue(), 5);
+		assertEquals(5, surroundingSampleData.intValue());
 	}
 
 	/**
 	 * Tests the {@link JdbcVoidFunction#asConsumer} with {@link SQLExceptionConvert}.<p>
 	 */
-	@Test(expectedExceptions=SampleRuntimeException.class)
+	@Test
 	public void asConsumerWithSQLExceptionConvert()
 	{
 		Consumer<Integer> testedConsumer =
@@ -37,7 +38,9 @@ public class JdbcVoidFunctionTest {
 				e -> new SampleRuntimeException(e)
 			);
 
-		testedConsumer.accept(20);
+		assertThrows(SampleRuntimeException.class,
+			() -> testedConsumer.accept(20)
+		);
 	}
 
 	/**
@@ -56,8 +59,8 @@ public class JdbcVoidFunctionTest {
 
 		surroundedFunc.applyJdbc(9);
 
-		Assert.assertEquals(surroundedSampleData.intValue(), 119); // Asserts the execution surrounded function
-		Assert.assertEquals(surroundingSampleData.intValue(), 122); // Asserts execution of the surrounding function
+		assertEquals(119, surroundedSampleData.intValue()); // Asserts the execution surrounded function
+		assertEquals(122, surroundingSampleData.intValue()); // Asserts execution of the surrounding function
 	}
 
 	private <T> JdbcFunction.SurroundOperator<Integer, T> buildSurrounding(final MutableInt sampleData)

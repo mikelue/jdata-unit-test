@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import mockit.Mocked;
 import mockit.Verifications;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import guru.mikelue.jdut.operation.DataGrainOperator;
 

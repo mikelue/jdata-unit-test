@@ -3,8 +3,9 @@ package guru.mikelue.jdut.jdbc;
 import java.sql.SQLException;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JdbcRunnableTest {
 	public JdbcRunnableTest() {}
@@ -22,13 +23,13 @@ public class JdbcRunnableTest {
 
 		testedRun.run();
 
-		Assert.assertTrue(hasRun.booleanValue());
+		assertTrue(hasRun.booleanValue());
 	}
 
 	/**
 	 * Tests the {@link JdbcRunnable#asRunnable} with {@link SQLExceptionConvert}.<p>
 	 */
-	@Test(expectedExceptions=SampleRuntimeException.class)
+	@Test
 	public void asRunnableWithSQLExceptionConvert()
 	{
 		Runnable testedRun =
@@ -36,6 +37,6 @@ public class JdbcRunnableTest {
 				e -> new SampleRuntimeException(e)
 			);
 
-		testedRun.run();
+		assertThrows(SampleRuntimeException.class, testedRun::run);
 	}
 }

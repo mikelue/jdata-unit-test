@@ -2,10 +2,11 @@ package guru.mikelue.jdut.operation;
 
 import java.sql.SQLException;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataRowsOperatorTest {
 	public DataRowsOperatorTest() {}
@@ -27,6 +28,6 @@ public class DataRowsOperatorTest {
 		DataGrain processedResult = ((DataRowsOperator)(connection, dataRows) -> dataRows)
 			.toDataGrainOperator().operate(null, sampleDataGrain);
 
-		Assert.assertEquals(processedResult.getNumberOfRows(), 2);
+		assertEquals(2, processedResult.getNumberOfRows());
 	}
 }

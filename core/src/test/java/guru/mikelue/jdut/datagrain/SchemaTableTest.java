@@ -5,12 +5,15 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import mockit.Mocked;
 import mockit.Expectations;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SchemaTableTest {
 	public SchemaTableTest() {}
@@ -18,7 +21,8 @@ public class SchemaTableTest {
 	/**
 	 * Tests the building of object.
 	 */
-	@Test(dataProvider="Build")
+	@ParameterizedTest
+	@MethodSource
 	public void build(
 		String sampleTableName, String expectedTableName,
 		String[] sampleKeys, List<String> expectedKeys
@@ -33,46 +37,46 @@ public class SchemaTableTest {
 				.column(SchemaColumn.build(columnBuilder -> columnBuilder.name("DC_2"))) // Put again
 		);
 
-		Assert.assertEquals(testedTableSchema.getName(), expectedTableName);
-		Assert.assertEquals(testedTableSchema.getKeys(), expectedKeys);
+		assertEquals(testedTableSchema.getName(), expectedTableName);
+		assertEquals(testedTableSchema.getKeys(), expectedKeys);
 
 		/**
 		 * Asserts the index of column
 		 */
-		Assert.assertEquals(testedTableSchema.getColumn(0).getName(), "dc_1");
-		Assert.assertEquals(testedTableSchema.getColumn(1).getName(), "DC_2");
-		Assert.assertEquals(testedTableSchema.getColumn(2).getName(), "Dc_3");
+		assertEquals(testedTableSchema.getColumn(0).getName(), "dc_1");
+		assertEquals(testedTableSchema.getColumn(1).getName(), "DC_2");
+		assertEquals(testedTableSchema.getColumn(2).getName(), "Dc_3");
 		// :~)
 		/**
 		 * Asserts the case of column name(insensitive)
 		 */
-		Assert.assertEquals(testedTableSchema.getColumn("DC_1").getName(), "dc_1");
-		Assert.assertEquals(testedTableSchema.getColumn("dc_2").getName(), "DC_2");
-		Assert.assertEquals(testedTableSchema.getColumn("dc_3").getName(), "Dc_3");
+		assertEquals(testedTableSchema.getColumn("DC_1").getName(), "dc_1");
+		assertEquals(testedTableSchema.getColumn("dc_2").getName(), "DC_2");
+		assertEquals(testedTableSchema.getColumn("dc_3").getName(), "Dc_3");
 		// :~)
 	}
-	@DataProvider(name="Build")
-	private Object[][] get()
+	static Arguments[] build()
 	{
-		return new Object[][] {
-			{ "gt_car", "gt_car",
+		return new Arguments[] {
+			a("gt_car", "gt_car",
 				new String[] { "col_1", "col_2" },
 				Arrays.asList("col_1", "col_2")
-			},
-			{ "  gt_car  ", "gt_car",
+			),
+			a("  gt_car  ", "gt_car",
 				new String[] { " col_4 ", null, "", " col_3 " },
 				Arrays.asList("col_4", "col_3")
-			}
+			)
 		};
 	}
 
 	@Mocked
-	private DatabaseMetaData mockMetaData;
+	DatabaseMetaData mockMetaData;
 
 	/**
 	 * Tests the case for column's name.
 	 */
-	@Test(dataProvider="HasColumn")
+	@ParameterizedTest
+	@MethodSource
 	public void hasColumn(
 		boolean storesUpperCaseIdentifiers,
 		boolean storesLowerCaseIdentifiers,
@@ -103,55 +107,59 @@ public class SchemaTableTest {
 				.column(SchemaColumn.build(columnBuilder -> columnBuilder.name(sampleColumnName)))
 		);
 
-		Assert.assertEquals(testedTableSchema.hasColumn(checkingColumnName), expectedResult);
+		assertEquals(testedTableSchema.hasColumn(checkingColumnName), expectedResult);
 	}
-	@DataProvider(name="HasColumn")
-	private Object[][] getHasColumn()
+	static Arguments[] hasColumn()
 	{
-		return new Object[][] {
+		return new Arguments[] {
 			/**
 			 * Case insensitive
 			 */
-			{ false, false, true, false,
+			a(false, false, true, false,
 				"gc_1", "gc_1", true
-			},
-			{ false, false, true, false,
+			),
+			a(false, false, true, false,
 				"gc_1", "GC_1", true
-			},
+			),
 			// :~)
 			/**
 			 * Case insensitive(stores lower case)
 			 */
-			{ false, true, false, false,
+			a(false, true, false, false,
 				"GC_1", "gc_1", true
-			},
-			{ false, true, false, false,
+			),
+			a(false, true, false, false,
 				"GC_1", "gc_1", true
-			},
+			),
 			// :~)
 			/**
 			 * Case insensitive(stores upper case)
 			 */
-			{ true, false, false, false,
+			a(true, false, false, false,
 				"GC_1", "gc_1", true
-			},
-			{ true, false, false, false,
+			),
+			a(true, false, false, false,
 				"gc_1", "GC_1", true
-			},
+			),
 			// :~)
 			/**
 			 * Case sensitive
 			 */
-			{ false, false, false, true,
+			a(false, false, false, true,
 				"gc_1", "gc_1", true
-			},
-			{ false, false, false, true,
+			),
+			a(false, false, false, true,
 				"GC_1", "GC_1", true
-			},
-			{ false, false, false, true,
+			),
+			a(false, false, false, true,
 				"gc_1", "GC_1", false
-			},
+			),
 			// :~)
 		};
+	}
+
+	private static Arguments a(Object... args)
+	{
+		return Arguments.arguments(args);
 	}
 }

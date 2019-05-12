@@ -2,9 +2,12 @@ package guru.mikelue.jdut.function;
 
 import java.util.function.Supplier;
 
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
 public class ValueSuppliersTest {
 	public ValueSuppliersTest() {}
@@ -12,7 +15,8 @@ public class ValueSuppliersTest {
 	/**
 	 * Tests the cached value of value supplier.
 	 */
-	@Test(dataProvider="CachedValue")
+	@ParameterizedTest
+	@MethodSource
 	public void cachedValue(
 		final Integer sampleValue
 	) {
@@ -24,7 +28,7 @@ public class ValueSuppliersTest {
 				public Integer get()
 				{
 					if (run) {
-						Assert.fail("The supplier is evaluated again");
+						fail("The supplier is evaluated again");
 					}
 
 					run = true;
@@ -34,15 +38,14 @@ public class ValueSuppliersTest {
 			}
 		);
 
-		Assert.assertEquals(testedSupplier.get(), sampleValue);
+		assertEquals(sampleValue, testedSupplier.get());
 		testedSupplier.get(); // Should use cached value
 	}
-	@DataProvider(name="CachedValue")
-	private Object[][] getCachedValue()
+	static Arguments[] cachedValue()
 	{
-		return new Object[][] {
-			{ 30 },
-			{ null },
+		return new Arguments[] {
+			arguments(30),
+			arguments((Object)null),
 		};
 	}
 }

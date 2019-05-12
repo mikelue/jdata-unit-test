@@ -3,8 +3,9 @@ package guru.mikelue.jdut.operation;
 import java.sql.SQLException;
 
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataGrainOperatorTest {
 	public DataGrainOperatorTest() {}
@@ -32,6 +33,6 @@ public class DataGrainOperatorTest {
 
 		testedOperator.operate(null, null);
 
-		Assert.assertEquals(executeTimes.intValue(), 2);
+		assertEquals(2, executeTimes.intValue());
 	}
 }

@@ -7,9 +7,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.datagrain.DataRow;
@@ -19,13 +19,17 @@ import guru.mikelue.jdut.jdbc.SQLExceptionConvert;
 import guru.mikelue.jdut.operation.DataGrainOperator;
 import guru.mikelue.jdut.operation.OperatorFactory;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.*;
+
 public class ConductorConfigTest {
 	public ConductorConfigTest() {}
 
 	/**
 	 * Tests the getting of resource loader.
 	 */
-	@Test(dataProvider="GetResourceLoader")
+	@ParameterizedTest
+	@MethodSource
 	public void getResourceLoader(
 		ConductorConfig sampleParent, Function<String, Reader> resourceLoader,
 		boolean expectedResourceLoader, int expectedValueOfResourceLoader
@@ -37,35 +41,35 @@ public class ConductorConfigTest {
 		);
 
 		Optional<Function<String, Reader>> testedLoader = testedConfig.getResourceLoader();
-		Assert.assertEquals(testedLoader.isPresent(), expectedResourceLoader);
+		assertEquals(expectedResourceLoader, testedLoader.isPresent());
 
 		if (testedLoader.isPresent()) {
-			Assert.assertEquals(
-				((SampleResourceLoader)testedLoader.get()).v,
-				expectedValueOfResourceLoader
+			assertEquals(
+				expectedValueOfResourceLoader,
+				((SampleResourceLoader)testedLoader.get()).v
 			);
 		}
 	}
-	@DataProvider(name="GetResourceLoader")
-	private Object[][] getGetResourceLoader()
+	static Arguments[] getResourceLoader()
 	{
 		ConductorConfig parent = ConductorConfig.build(
 			builder -> builder
 				.resourceLoader(new SampleResourceLoader(2))
 		);
 
-		return new Object[][] {
-			{ null, null, false, 0 }, // No resource loader
-			{ null, new SampleResourceLoader(1), true, 1 }, // Has resource loader
-			{ parent, new SampleResourceLoader(1), true, 1 }, // Overrides parent's loader
-			{ parent, null, true, 2 }, // Use parent's resource loader
+		return new Arguments[] {
+			arguments(null, null, false, 0), // No resource loader
+			arguments(null, new SampleResourceLoader(1), true, 1), // Has resource loader
+			arguments(parent, new SampleResourceLoader(1), true, 1), // Overrides parent's loader
+			arguments(parent, null, true, 2), // Use parent's resource loader
 		};
 	}
 
 	/**
 	 * Tests the getting of resource loader.
 	 */
-	@Test(dataProvider="GetSqlExceptionConvert")
+	@ParameterizedTest
+	@MethodSource
 	public void getSqlExceptionConvert(
 		ConductorConfig sampleParent, SQLExceptionConvert<?> sqlExceptionConvert,
 		boolean expectedSqlExceptionConvert, int expectedValueOfSqlExceptionConvert
@@ -77,35 +81,35 @@ public class ConductorConfigTest {
 		);
 
 		Optional<SQLExceptionConvert<?>> testedLoader = testedConfig.getSqlExceptionConvert();
-		Assert.assertEquals(testedLoader.isPresent(), expectedSqlExceptionConvert);
+		assertEquals(expectedSqlExceptionConvert, testedLoader.isPresent());
 
 		if (testedLoader.isPresent()) {
-			Assert.assertEquals(
-				((SampleSqlExceptionConvert)testedLoader.get()).v,
-				expectedValueOfSqlExceptionConvert
+			assertEquals(
+				expectedValueOfSqlExceptionConvert,
+				((SampleSqlExceptionConvert)testedLoader.get()).v
 			);
 		}
 	}
-	@DataProvider(name="GetSqlExceptionConvert")
-	private Object[][] getGetSqlExceptionConvert()
+	static Arguments[] getSqlExceptionConvert()
 	{
 		ConductorConfig parent = ConductorConfig.build(
 			builder -> builder
 				.sqlExceptionConvert(new SampleSqlExceptionConvert(2))
 		);
 
-		return new Object[][] {
-			{ null, null, false, 0 }, // No resource loader
-			{ null, new SampleSqlExceptionConvert(1), true, 1 }, // Has resource loader
-			{ parent, new SampleSqlExceptionConvert(1), true, 1 }, // Overrides parent's loader
-			{ parent, null, true, 2 }, // Use parent's resource loader
+		return new Arguments[] {
+			arguments(null, null, false, 0), // No resource loader
+			arguments(null, new SampleSqlExceptionConvert(1), true, 1), // Has resource loader
+			arguments(parent, new SampleSqlExceptionConvert(1), true, 1), // Overrides parent's loader
+			arguments(parent, null, true, 2), // Use parent's resource loader
 		};
 	}
 
 	/**
 	 * Tests the getting of decorator.
 	 */
-	@Test(dataProvider="GetDecorator")
+	@ParameterizedTest
+	@MethodSource
 	public void getDecorator(
 		ConductorConfig sampleParent, String nameOfDecorator,
 		boolean expectedDecorator, int expectedValueOfDecorator
@@ -117,17 +121,16 @@ public class ConductorConfigTest {
 		);
 
 		Optional<DataGrainDecorator> testedDecorator = testedConfig.getDecorator(nameOfDecorator);
-		Assert.assertEquals(testedDecorator.isPresent(), expectedDecorator);
+		assertEquals(expectedDecorator, testedDecorator.isPresent());
 
 		if (testedDecorator.isPresent()) {
-			Assert.assertEquals(
-				((SampleDecorator)testedDecorator.get()).v,
-				expectedValueOfDecorator
+			assertEquals(
+				expectedValueOfDecorator,
+				((SampleDecorator)testedDecorator.get()).v
 			);
 		}
 	}
-	@DataProvider(name="GetDecorator")
-	private Object[][] getGetDecorator()
+	static Arguments[] getDecorator()
 	{
 		ConductorConfig parent = ConductorConfig.build(
 			builder -> builder
@@ -135,18 +138,19 @@ public class ConductorConfigTest {
 				.namedDecorator("existing-1", new SampleDecorator(3)) // Overrode
 		);
 
-		return new Object[][] {
-			{ null, "not-existing-1", false, 1 }, // No decorator
-			{ null, "existing-1", true, 1 }, // Has decorator
-			{ parent, "existing-1", true, 1 }, // Overrides decorator of parent
-			{ parent, "p-existing-1", true, 2 }, // Use parent's decorator
+		return new Arguments[] {
+			arguments(null, "not-existing-1", false, 1), // No decorator
+			arguments(null, "existing-1", true, 1), // Has decorator
+			arguments(parent, "existing-1", true, 1), // Overrides decorator of parent
+			arguments(parent, "p-existing-1", true, 2), // Use parent's decorator
 		};
 	}
 
 	/**
 	 * Tests the getting of JDBC function.
 	 */
-	@Test(dataProvider="GetJdbcFunction")
+	@ParameterizedTest
+	@MethodSource
 	public void getJdbcFunction(
 		ConductorConfig sampleParent, String nameOfJdbcFunction,
 		boolean expectedJdbcFunction, int expectedValueOfJdbcFunction
@@ -158,17 +162,16 @@ public class ConductorConfigTest {
 		);
 
 		Optional<JdbcFunction<Connection, ?>> testedJdbcFunction = testedConfig.getJdbcFunction(nameOfJdbcFunction);
-		Assert.assertEquals(testedJdbcFunction.isPresent(), expectedJdbcFunction);
+		assertEquals(expectedJdbcFunction, testedJdbcFunction.isPresent());
 
 		if (testedJdbcFunction.isPresent()) {
-			Assert.assertEquals(
-				((SampleJdbcFunction)testedJdbcFunction.get()).v,
-				expectedValueOfJdbcFunction
+			assertEquals(
+				expectedValueOfJdbcFunction,
+				((SampleJdbcFunction)testedJdbcFunction.get()).v
 			);
 		}
 	}
-	@DataProvider(name="GetJdbcFunction")
-	private Object[][] getGetJdbcFunction()
+	static Arguments[] getJdbcFunction()
 	{
 		ConductorConfig parent = ConductorConfig.build(
 			builder -> builder
@@ -176,18 +179,19 @@ public class ConductorConfigTest {
 				.namedJdbcFunction("existing-1", new SampleJdbcFunction(3)) // Overrode
 		);
 
-		return new Object[][] {
-			{ null, "not-existing-1", false, 1 }, // No JDBC function
-			{ null, "existing-1", true, 1 }, // Has JDBC function
-			{ parent, "existing-1", true, 1 }, // Overrides JDBC function of parent
-			{ parent, "f-existing-1", true, 2 }, // Use parent's JDBC function
+		return new Arguments[] {
+			arguments(null, "not-existing-1", false, 1), // No JDBC function
+			arguments(null, "existing-1", true, 1), // Has JDBC function
+			arguments(parent, "existing-1", true, 1), // Overrides JDBC function of parent
+			arguments(parent, "f-existing-1", true, 2), // Use parent's JDBC function
 		};
 	}
 
 	/**
 	 * Tests the getting of operator.
 	 */
-	@Test(dataProvider="GetOperator")
+	@ParameterizedTest
+	@MethodSource
 	public void getOperator(
 		ConductorConfig sampleParent, OperatorFactory sampleOperatorFactory,
 		String nameOfOperator,
@@ -201,17 +205,16 @@ public class ConductorConfigTest {
 		);
 
 		Optional<DataGrainOperator> testedOperator = testedConfig.getOperator(nameOfOperator);
-		Assert.assertEquals(testedOperator.isPresent(), expectedOperator);
+		assertEquals(expectedOperator, testedOperator.isPresent());
 
 		if (testedOperator.isPresent()) {
-			Assert.assertEquals(
-				((SampleOperator)testedOperator.get()).v,
-				expectedValueOfOperator
+			assertEquals(
+				expectedValueOfOperator,
+				((SampleOperator)testedOperator.get()).v
 			);
 		}
 	}
-	@DataProvider(name="GetOperator")
-	private Object[][] getGetOperator()
+	static Arguments[] getOperator()
 	{
 		ConductorConfig parent = ConductorConfig.build(
 			builder -> builder
@@ -233,22 +236,23 @@ public class ConductorConfigTest {
 				}
 			};
 
-		return new Object[][] {
-			{ null, null, "not-existing-1", false, 1 }, // No operator
-			{ null, null, "existing-1", true, 1 }, // Has operator
-			{ null, sampleOperatorFactory, "existing-1", true, 1 }, // Has operator(overrides factory)
-			{ null, sampleOperatorFactory, "of-existing-1", true, 13 }, // Has operator(by factory)
-			{ null, sampleOperatorFactory, "not-existing-1", false, 1 }, // No operator
-			{ parent, null, "existing-1", true, 1 }, // Overrides operator of parent
-			{ parent, sampleOperatorFactory, "of-existing-1", true, 13 }, // Overrides operator of parent
-			{ parent, sampleOperatorFactory, "p-existing-1", true, 2 }, // Use operator of parent
+		return new Arguments[] {
+			arguments(null, null, "not-existing-1", false, 1), // No operator
+			arguments(null, null, "existing-1", true, 1), // Has operator
+			arguments(null, sampleOperatorFactory, "existing-1", true, 1), // Has operator(overrides factory)
+			arguments(null, sampleOperatorFactory, "of-existing-1", true, 13), // Has operator(by factory)
+			arguments(null, sampleOperatorFactory, "not-existing-1", false, 1), // No operator
+			arguments(parent, null, "existing-1", true, 1), // Overrides operator of parent
+			arguments(parent, sampleOperatorFactory, "of-existing-1", true, 13), // Overrides operator of parent
+			arguments(parent, sampleOperatorFactory, "p-existing-1", true, 2), // Use operator of parent
 		};
 	}
 
 	/**
 	 * Tests the getting of supplier.
 	 */
-	@Test(dataProvider="GetSupplier")
+	@ParameterizedTest
+	@MethodSource
 	public void getSupplier(
 		ConductorConfig sampleParent, String nameOfSupplier,
 		boolean expectedSupplier, int expectedValueOfSupplier
@@ -260,17 +264,16 @@ public class ConductorConfigTest {
 		);
 
 		Optional<Supplier<?>> testedSupplier = testedConfig.getSupplier(nameOfSupplier);
-		Assert.assertEquals(testedSupplier.isPresent(), expectedSupplier);
+		assertEquals(expectedSupplier, testedSupplier.isPresent());
 
 		if (testedSupplier.isPresent()) {
-			Assert.assertEquals(
-				((SampleSupplier)testedSupplier.get()).v,
-				expectedValueOfSupplier
+			assertEquals(
+				expectedValueOfSupplier,
+				((SampleSupplier)testedSupplier.get()).v
 			);
 		}
 	}
-	@DataProvider(name="GetSupplier")
-	private Object[][] getGetSupplier()
+	static Arguments[] getSupplier()
 	{
 		ConductorConfig parent = ConductorConfig.build(
 			builder -> builder
@@ -278,11 +281,11 @@ public class ConductorConfigTest {
 				.namedSupplier("existing-1", new SampleSupplier(3)) // Overrode
 		);
 
-		return new Object[][] {
-			{ null, "not-existing-1", false, 1 }, // No supplier
-			{ null, "existing-1", true, 1 }, // Has supplier
-			{ parent, "existing-1", true, 1 }, // Overrides supplier of parent
-			{ parent, "p-existing-1", true, 2 }, // Use parent's supplier
+		return new Arguments[] {
+			arguments(null, "not-existing-1", false, 1), // No supplier
+			arguments(null, "existing-1", true, 1), // Has supplier
+			arguments(parent, "existing-1", true, 1), // Overrides supplier of parent
+			arguments(parent, "p-existing-1", true, 2), // Use parent's supplier
 		};
 	}
 }

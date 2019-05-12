@@ -1,8 +1,9 @@
 package guru.mikelue.jdut.decorate;
 
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataGrainDecoratorTest {
 	public DataGrainDecoratorTest() {}
@@ -20,6 +21,6 @@ public class DataGrainDecoratorTest {
 
 		testedDecorator.decorate(null);
 
-		Assert.assertEquals(calledTimes.intValue(), 2);
+		assertEquals(2, calledTimes.intValue());
 	}
 }

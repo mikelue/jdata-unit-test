@@ -3,13 +3,16 @@ package guru.mikelue.jdut.function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import guru.mikelue.jdut.datagrain.DataField;
 import guru.mikelue.jdut.datagrain.SchemaColumn;
 import guru.mikelue.jdut.datagrain.SchemaTable;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
 public class DataFieldPredicatesTest {
 	public DataFieldPredicatesTest() {}
@@ -17,7 +20,8 @@ public class DataFieldPredicatesTest {
 	/**
 	 * Test the predicates of null value.
 	 */
-	@Test(dataProvider="NullValue")
+	@ParameterizedTest
+	@MethodSource
 	public void nullValue(
 		Integer sampleValue,
 		boolean expectedResult
@@ -33,21 +37,21 @@ public class DataFieldPredicatesTest {
 			sampleValue
 		);
 
-		Assert.assertEquals(nullValuePredicate.test(sampleDataField), expectedResult);
+		assertEquals(expectedResult, nullValuePredicate.test(sampleDataField));
 	}
-	@DataProvider(name="NullValue")
-	private Object[][] getNullValue()
+	static Arguments[] nullValue()
 	{
-		return new Object[][] {
-			{ 30, false },
-			{ null, true },
+		return new Arguments[] {
+			arguments(30, false),
+			arguments(null, true),
 		};
 	}
 
 	/**
 	 * Tests the non-supplier predicate.
 	 */
-	@Test(dataProvider="NonSupplier")
+	@ParameterizedTest
+	@MethodSource
 	public void nonSupplier(
 		Object sampleData, boolean expectedResult
 	) {
@@ -59,14 +63,13 @@ public class DataFieldPredicatesTest {
 			SchemaColumn.build(builder -> builder.name("col_1")),
 			sampleData
 		);
-		Assert.assertEquals(testedPredicate.test(sampleDataField), expectedResult);
+		assertEquals(expectedResult, testedPredicate.test(sampleDataField));
 	}
-	@DataProvider(name="NonSupplier")
-	private Object[][] getNonSupplier()
+	static Arguments[] nonSupplier()
 	{
-		return new Object[][] {
-			{ 67, true },
-			{ (Supplier<Integer>)() -> 56, false }
+		return new Arguments[] {
+			arguments(67, true),
+			arguments((Supplier<Integer>)() -> 56, false)
 		};
 	}
 }

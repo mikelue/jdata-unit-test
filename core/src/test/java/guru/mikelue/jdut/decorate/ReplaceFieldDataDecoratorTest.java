@@ -1,9 +1,10 @@
 package guru.mikelue.jdut.decorate;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ReplaceFieldDataDecoratorTest {
 	public ReplaceFieldDataDecoratorTest() {}
@@ -29,9 +30,9 @@ public class ReplaceFieldDataDecoratorTest {
 				.addValues("MT-UN-01", "[V1]", 98, "[NULL]")
 		).decorate(testedDecorator);
 
-		Assert.assertEquals(sampleDataGrain.getRow(0).getData("gc_1"), "MT-01");
-		Assert.assertEquals(sampleDataGrain.getRow(0).getData("gc_2"), new Integer(20));
-		Assert.assertEquals(sampleDataGrain.getRow(0).getData("gc_3"), new Integer(98));
-		Assert.assertEquals(sampleDataGrain.getRow(0).getData("gc_4"), (Integer)null);
+		assertEquals("MT-01", sampleDataGrain.getRow(0).getData("gc_1"));
+		assertEquals(Integer.valueOf(20), sampleDataGrain.getRow(0).getData("gc_2"));
+		assertEquals(Integer.valueOf(98), sampleDataGrain.getRow(0).getData("gc_3"));
+		assertEquals((Integer)null, sampleDataGrain.getRow(0).getData("gc_4"));
 	}
 }

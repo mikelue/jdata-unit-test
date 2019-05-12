@@ -3,8 +3,9 @@ package guru.mikelue.jdut.jdbc;
 import java.sql.SQLException;
 import java.util.function.Supplier;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JdbcSupplierTest {
 	public JdbcSupplierTest() {}
@@ -20,13 +21,13 @@ public class JdbcSupplierTest {
 		Supplier<Integer> testedSupplier =
 			((JdbcSupplier<Integer>)() -> sampleValue).asSupplier();
 
-		Assert.assertEquals(testedSupplier.get(), sampleValue);
+		assertEquals(testedSupplier.get(), sampleValue);
 	}
 
 	/**
 	 * Tests the {@link JdbcSupplier#asSupplier} with {@link SQLExceptionConvert}.<p>
 	 */
-	@Test(expectedExceptions=SampleRuntimeException.class)
+	@Test
 	public void asSupplierWithSQLExceptionConvert()
 	{
 		Supplier<Integer> testedSupplier =
@@ -34,6 +35,6 @@ public class JdbcSupplierTest {
 				e -> new SampleRuntimeException(e)
 			);
 
-		testedSupplier.get();
+		assertThrows(SampleRuntimeException.class, testedSupplier::get);
 	}
 }

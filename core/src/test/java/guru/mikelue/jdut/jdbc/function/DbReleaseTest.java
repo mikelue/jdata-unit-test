@@ -2,10 +2,11 @@ package guru.mikelue.jdut.jdbc.function;
 
 import mockit.Mocked;
 import mockit.Verifications;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import guru.mikelue.jdut.jdbc.JdbcFunction;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DbReleaseTest {
 	@Mocked
@@ -26,7 +27,7 @@ public class DbReleaseTest {
 
 		testedFunction = testedFunction.surroundedBy(DbRelease::autoClose);
 
-		Assert.assertEquals(testedFunction.applyJdbc(mockedCloseable), sampleValue);
+		assertEquals(sampleValue, testedFunction.applyJdbc(mockedCloseable));
 		new Verifications() {{
 			mockedCloseable.close();
 			times = 1;

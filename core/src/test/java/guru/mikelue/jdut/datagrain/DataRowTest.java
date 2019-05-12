@@ -5,8 +5,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataRowTest {
 	public DataRowTest() {}
@@ -39,9 +40,9 @@ public class DataRowTest {
 				.data(sampleData)
 		);
 
-		Assert.assertEquals(testedRow.getTable(), sampleTableSchema);
-		Assert.assertEquals(testedRow.<Integer>getDataField("col_1").getData(), new Integer(30));
-		Assert.assertEquals(testedRow.<String>getDataField("col_2").getData(), "EXP-01");
+		assertEquals(sampleTableSchema, testedRow.getTable());
+		assertEquals(Integer.valueOf(30), testedRow.<Integer>getDataField("col_1").getData());
+		assertEquals("EXP-01", testedRow.<String>getDataField("col_2").getData());
 
 		/**
 		 * Asserts the changing of table schema
@@ -51,8 +52,8 @@ public class DataRowTest {
 				.tableSchema(SchemaTable.build(tableBuilder -> tableBuilder.name("gt_table2"))),
 			testedRow
 		);
-		Assert.assertEquals(testedRow.getTable().getName(), "gt_table2");
-		Assert.assertEquals(testedRow.<Integer>getDataField("col_1").getTableName(), "gt_table2");
+		assertEquals("gt_table2", testedRow.getTable().getName());
+		assertEquals("gt_table2", testedRow.<Integer>getDataField("col_1").getTableName());
 		// :~)
 	}
 
@@ -88,11 +89,11 @@ public class DataRowTest {
 			testedRow
 		);
 
-		Assert.assertEquals(testedRow.getTable().getName(), "gc_apple2");
-		Assert.assertEquals(testedRow.getData("ct_1"), new Integer(40));
-		Assert.assertEquals(testedRow.getData("ct_2"), "Exp-77");
-		Assert.assertEquals(testedRow.getData("ct_3"), new Integer(97));
-		Assert.assertEquals(testedRow.getData("ct_4"), new Integer(54));
+		assertEquals("gc_apple2", testedRow.getTable().getName());
+		assertEquals(Integer.valueOf(40), testedRow.getData("ct_1"));
+		assertEquals("Exp-77", testedRow.getData("ct_2"));
+		assertEquals(Integer.valueOf(97), testedRow.getData("ct_3"));
+		assertEquals(Integer.valueOf(54), testedRow.getData("ct_4"));
 	}
 
 	/**
@@ -114,13 +115,13 @@ public class DataRowTest {
 		);
 
 		testedRow.validate();
-		Assert.assertTrue(testedRow.isValidated());
+		assertTrue(testedRow.isValidated());
 	}
 
 	/**
 	 * Tests the validatation of data row(failed).
 	 */
-	@Test(expectedExceptions=MissedColumnException.class)
+	@Test
 	public void validateWithError() throws DataRowException
 	{
 		DataRow testedRow = DataRow.build(
@@ -132,7 +133,8 @@ public class DataRowTest {
 				.fieldOfValue("ec_1", 20)
 		);
 
-		Assert.assertFalse(testedRow.isValidated());
-		testedRow.validate();
+		assertFalse(testedRow.isValidated());
+
+		assertThrows(MissedColumnException.class, testedRow::validate);
 	}
 }

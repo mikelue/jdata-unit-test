@@ -10,11 +10,14 @@ import javax.sql.DataSource;
 
 import mockit.Mocked;
 import mockit.Expectations;
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
 public class DefaultOperatorFactoryTest {
 	@Mocked
@@ -29,7 +32,8 @@ public class DefaultOperatorFactoryTest {
 	 *
 	 * The testing of default ones is performed by {@link DefaultOperatorsTest}.
 	 */
-	@Test(dataProvider="Build")
+	@ParameterizedTest
+	@MethodSource
 	public void build(
 		String sampleProductName, String sampleOperatorName,
 		Consumer<CallingTracer> assertion
@@ -65,27 +69,26 @@ public class DefaultOperatorFactoryTest {
 
 		assertion.accept(tracer);
 	}
-	@DataProvider(name="Build")
-	private Object[][] getBuild()
+	static Arguments[] build()
 	{
-		return new Object[][] {
+		return new Arguments[] {
 			/**
 			 * Asserts the matched operations
 			 */
-			{ "match-1", DefaultOperators.INSERT,
+			arguments( "match-1", DefaultOperators.INSERT,
 				(Consumer<CallingTracer>)tracer -> {
-					Assert.assertTrue(tracer.insert1);
-					Assert.assertFalse(tracer.insert2);
-					Assert.assertFalse(tracer.update);
+					assertTrue(tracer.insert1);
+					assertFalse(tracer.insert2);
+					assertFalse(tracer.update);
 				}
-			},
-			{ "match-1", DefaultOperators.UPDATE,
+			),
+			arguments( "match-1", DefaultOperators.UPDATE,
 				(Consumer<CallingTracer>)tracer -> {
-					Assert.assertFalse(tracer.insert1);
-					Assert.assertFalse(tracer.insert2);
-					Assert.assertTrue(tracer.update);
+					assertFalse(tracer.insert1);
+					assertFalse(tracer.insert2);
+					assertTrue(tracer.update);
 				}
-			},
+			),
 			// :~)
 		};
 	}

@@ -7,14 +7,17 @@ import java.util.List;
 import java.util.Optional;
 
 import mockit.Expectations;
-import mockit.Verifications;
 import mockit.Mocked;
-
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import mockit.Verifications;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import guru.mikelue.jdut.jdbc.JdbcFunction;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
 public class TransactionalTest {
 	@Mocked
@@ -25,7 +28,8 @@ public class TransactionalTest {
 	/**
 	 * Tests the operator for transaction surrounding.<p>
 	 */
-	@Test(dataProvider="OperateTransactional")
+	@ParameterizedTest
+	@MethodSource
 	public void operateTransactional(
 		boolean oldValueAutoCommit, Integer oldValueOfIsolation,
 		JdbcFunction.SurroundOperator<Connection, Integer> surroundingFunc,
@@ -46,7 +50,7 @@ public class TransactionalTest {
 		};
 		sampleFunc = sampleFunc.surroundedBy(surroundingFunc);
 
-		Assert.assertEquals(sampleFunc.applyJdbc(mockedConn), Integer.valueOf(sampleValue));
+		assertEquals(Integer.valueOf(sampleValue), sampleFunc.applyJdbc(mockedConn));
 
 		new Verifications() {{
 			mockedConn.commit();
@@ -58,8 +62,8 @@ public class TransactionalTest {
 				List<Boolean> setAutoCommit = new ArrayList<>(2);
 				mockedConn.setAutoCommit(withCapture(setAutoCommit));
 
-				Assert.assertFalse(setAutoCommit.get(0));
-				Assert.assertTrue(setAutoCommit.get(1));
+				assertFalse(setAutoCommit.get(0));
+				assertTrue(setAutoCommit.get(1));
 			}};
 		} else {
 			new Verifications() {{
@@ -74,8 +78,8 @@ public class TransactionalTest {
 
 				mockedConn.setTransactionIsolation(withCapture(isolations));
 
-				Assert.assertEquals(isolations.get(0), expectedTransactionIsolation.get());
-				Assert.assertEquals(isolations.get(1), oldValueOfIsolation);
+				assertEquals(expectedTransactionIsolation.get(), isolations.get(0));
+				assertEquals(oldValueOfIsolation, isolations.get(1));
 			}};
 		} else {
 			new Verifications() {{
@@ -85,32 +89,31 @@ public class TransactionalTest {
 		}
 	}
 
-	@DataProvider(name="OperateTransactional")
-	private Object[][] getOperateTransactional()
+	static Arguments[] operateTransactional()
 	{
-		return new Object[][] {
-			{ // Set has effect
+		return new Arguments[] {
+			arguments(// Set has effect
 				true, Connection.TRANSACTION_SERIALIZABLE,
 				(JdbcFunction.SurroundOperator<Connection, Integer>)new Transactional<Connection, Integer>(Connection.TRANSACTION_READ_COMMITTED),
 				true, Optional.of(Connection.TRANSACTION_READ_COMMITTED)
-			},
-			{ // Doesn't have to set
+			),
+			arguments(// Doesn't have to set
 				false, Connection.TRANSACTION_READ_COMMITTED,
 				(JdbcFunction.SurroundOperator<Connection, Integer>)new Transactional<Connection, Integer>(Connection.TRANSACTION_READ_COMMITTED),
 				true, Optional.empty()
-			},
-			{ // Simple transaction
+			),
+			arguments(// Simple transaction
 				false, Connection.TRANSACTION_READ_COMMITTED,
 				(JdbcFunction.SurroundOperator<Connection, Integer>)(JdbcFunction.SurroundOperator<Connection, Integer>)Transactional::simple,
 				true, Optional.empty()
-			},
+			),
 		};
 	}
 
 	/**
 	 * Tests the rollback of transaction surrounding.<p>
 	 */
-	@Test(expectedExceptions=SQLException.class)
+	@Test
 	public void operateTransactionalWithRollback()
 		throws SQLException
 	{
@@ -125,12 +128,16 @@ public class TransactionalTest {
 			times = 1;
 		}};
 
-		JdbcFunction<Connection, Integer> sampleFunc = conn -> {
+		JdbcFunction<Connection, Integer> rollbackFunc = conn -> {
 			throw new SQLException("Rollback");
 		};
-		sampleFunc = sampleFunc.surroundedBy(new Transactional<Connection, Integer>(Connection.TRANSACTION_SERIALIZABLE));
+		JdbcFunction<Connection, Integer> sampleFunc = rollbackFunc.surroundedBy(
+			new Transactional<Connection, Integer>(Connection.TRANSACTION_SERIALIZABLE)
+		);
 
-		sampleFunc.applyJdbc(mockedConn);
+		assertThrows(SQLException.class,
+			() -> sampleFunc.applyJdbc(mockedConn)
+		);
 
 		new Verifications() {{
 			/**
@@ -139,8 +146,8 @@ public class TransactionalTest {
 			List<Boolean> setAutoCommit = new ArrayList<>(2);
 			mockedConn.setAutoCommit(withCapture(setAutoCommit));
 
-			Assert.assertFalse(setAutoCommit.get(0));
-			Assert.assertTrue(setAutoCommit.get(1));
+			assertFalse(setAutoCommit.get(0));
+			assertTrue(setAutoCommit.get(1));
 			// :~)
 
 			/**
@@ -149,8 +156,8 @@ public class TransactionalTest {
 			List<Integer> isolations = new ArrayList<>(2);
 			mockedConn.setTransactionIsolation(withCapture(isolations));
 
-			Assert.assertEquals(isolations.get(0).intValue(), Connection.TRANSACTION_SERIALIZABLE);
-			Assert.assertEquals(isolations.get(1).intValue(), Connection.TRANSACTION_READ_COMMITTED);
+			assertEquals(Connection.TRANSACTION_SERIALIZABLE, isolations.get(0).intValue());
+			assertEquals(Connection.TRANSACTION_READ_COMMITTED, isolations.get(1).intValue());
 			// :~)
 		}};
 	}

@@ -2,9 +2,12 @@ package guru.mikelue.jdut.datagrain;
 
 import java.sql.JDBCType;
 
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
 public class SchemaColumnTest {
 	public SchemaColumnTest() {}
@@ -12,7 +15,8 @@ public class SchemaColumnTest {
 	/**
 	 * Tests the building of object.
 	 */
-	@Test(dataProvider="Build")
+	@ParameterizedTest
+	@MethodSource
 	public void build(
 		final JDBCType sampleJdbcType
 	) {
@@ -24,15 +28,14 @@ public class SchemaColumnTest {
 				.jdbcType(sampleJdbcType)
 		);
 
-		Assert.assertEquals(testedColumn.getName(), sampleName);
-		Assert.assertEquals(testedColumn.getJdbcType().orElse(null), sampleJdbcType);
+		assertEquals(testedColumn.getName(), sampleName);
+		assertEquals(testedColumn.getJdbcType().orElse(null), sampleJdbcType);
 	}
-	@DataProvider(name="Build")
-	private Object[][] getBuild()
+	static Arguments[] build()
 	{
-		return new Object[][] {
-			{ JDBCType.BIGINT },
-			{ null }
+		return new Arguments[] {
+			arguments(JDBCType.BIGINT),
+			arguments((Object)null)
 		};
 	}
 }
