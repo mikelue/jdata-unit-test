@@ -75,12 +75,19 @@
 
 	<properties>
 		<!--
+		  - Versions of plugins
+		  -->
+		<version.plugin.surefire>2.22.0</version.plugin.surefire>
+		<!-- :~) -->
+
+		<!--
 		  - Versions of dependencies
 		  -->
 		<version.apache.commons.langs>3.8.1</version.apache.commons.langs>
 		<version.dbpool>7.0.1-jdk7</version.dbpool>
-		<version.jmockit>1.43</version.jmockit>
+		<version.jmockit>1.46</version.jmockit>
 		<version.junit>4.12</version.junit>
+		<version.junit.jupiter>5.4.2</version.junit.jupiter>
 		<version.liquibase.slf4j>2.0.0</version.liquibase.slf4j>
 		<version.liquibase>3.6.2</version.liquibase>
 		<version.logback>1.2.3</version.logback>
@@ -222,6 +229,21 @@
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${version.junit}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-engine</artifactId>
+				<version>${version.junit.jupiter}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-api</artifactId>
+				<version>${version.junit.jupiter}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-params</artifactId>
+				<version>${version.junit.jupiter}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jmockit</groupId>
@@ -390,7 +412,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.22.0</version>
+					<version>${version.plugin.surefire}</version>
 					<configuration>
 						<argLine>
 							-javaagent:${settings.localRepository}/org/jmockit/jmockit/${version.jmockit}/jmockit-${version.jmockit}.jar
