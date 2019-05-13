@@ -1,5 +1,7 @@
 package guru.mikelue.jdut.example;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.lang.reflect.Method;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -8,14 +10,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
 import guru.mikelue.jdut.DuetConductor;
 import guru.mikelue.jdut.annotation.IfDatabaseVendor;
@@ -42,22 +43,26 @@ public class YamlExampleTest extends AbstractDataSourceTestBase {
 
     public YamlExampleTest() {}
 
-    @BeforeMethod
-    private void buildData(Method method)
+    @BeforeEach
+    private void buildData(TestInfo testInfo)
     {
+		String methodName = testInfo.getTestMethod().get().getName();
+
         duetConductors.put(
-            method.getName(),
+            methodName,
             yamlConductor.conductResource(
-                "guru/mikelue/jdut/example/YamlExampleTest-" + method.getName() + ".yaml"
+				String.format("guru/mikelue/jdut/example/YamlExampleTest-%s.yaml", methodName)
             )
         );
 
-        duetConductors.get(method.getName()).build();
+        duetConductors.get(methodName).build();
     }
-    @AfterMethod
-    private void cleanData(Method method)
+    @AfterEach
+    private void cleanData(TestInfo testInfo)
     {
-		duetConductors.get(method.getName()).clean();
+		String methodName = testInfo.getTestMethod().get().getName();
+
+		duetConductors.get(methodName).clean();
     }
 
 	/**
@@ -123,14 +128,14 @@ public class YamlExampleTest extends AbstractDataSourceTestBase {
 	@Test
 	public void countAlbumsByType() throws SQLException
 	{
-		Assert.assertEquals(
-			testedDao.countAlbumsByType(1),
-			2
+		assertEquals(
+			2,
+			testedDao.countAlbumsByType(1)
 		);
 	}
 
-	@BeforeClass
-	private static void setupDatabaseSchema()
+	@BeforeAll
+	void setupDatabaseSchema()
 	{
 		SchemaSetup.buildSchema(getDataSource());
 
@@ -170,11 +175,6 @@ public class YamlExampleTest extends AbstractDataSourceTestBase {
                 )
         );
 	}
-    @AfterClass
-    private static void releaseResources()
-    {
-        duetConductors = null;
-    }
 
 	private static Date randomDate()
 	{

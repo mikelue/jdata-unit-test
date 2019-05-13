@@ -1,16 +1,15 @@
 package guru.mikelue.jdut.jdbc;
 
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
+import guru.mikelue.jdut.test.DoLiquibase;
 
 public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 	public JdbcTemplateFactoryTest() {}
@@ -32,7 +31,7 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 			}
 		);
 
-		Assert.assertEquals(testedFunc.applyJdbc(9), new Integer(23));
+		assertEquals(Integer.valueOf(23), testedFunc.applyJdbc(9));
 	}
 
 	/**
@@ -50,13 +49,13 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 			f -> v -> f.applyJdbc(v + 2)
 		);
 
-		Assert.assertEquals(testedFunc.applyJdbc(8), new Integer(28));
+		assertEquals(Integer.valueOf(28), testedFunc.applyJdbc(8));
 	}
 
 	/**
 	 * Tests the building of {@link JdbcRunnable} from {@link JdbcFunction}.
 	 */
-	@Test
+	@Test @DoLiquibase
 	public void buildRunnableAndSupplier()
 		throws SQLException
 	{
@@ -87,8 +86,8 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 		).runJdbc();
 		// :~)
 
-		Assert.assertTrue(testedConn.isClosed()); // Ensure the closing of resource
-		Assert.assertTrue(surroundingExecutedForRunnable.booleanValue());
+		assertTrue(testedConn.isClosed()); // Ensure the closing of resource
+		assertTrue(surroundingExecutedForRunnable.booleanValue());
 
 		/**
 		 * Gets data
@@ -124,12 +123,12 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 				/**
 				 * Remove data
 				 */
-				Assert.assertEquals(
+				assertEquals(
 					JdbcTemplateFactory.buildSupplier(
 						() -> conn.createStatement(),
 						stat -> stat.executeUpdate("DELETE FROM tab_data")
 					).getJdbc(),
-					new Integer(1)
+					Integer.valueOf(1)
 				);
 				// :~)
 
@@ -138,27 +137,7 @@ public class JdbcTemplateFactoryTest extends AbstractDataSourceTestBase {
 		).getJdbc();
 		// :~)
 
-		Assert.assertEquals(testedValue, "GTO-98");
-		Assert.assertTrue(surroundingExecutedForSupplier.booleanValue());
-	}
-
-	@BeforeMethod
-	private void buildSchema(Method method)
-	{
-		switch (method.getName()) {
-			case "buildRunnableAndSupplier":
-				updateLiquibase(method);
-				break;
-		}
-	}
-
-	@AfterMethod
-	private void cleanSchema(Method method)
-	{
-		switch (method.getName()) {
-			case "buildRunnableAndSupplier":
-				rollbackLiquibase(method);
-				break;
-		}
+		assertEquals("GTO-98", testedValue);
+		assertTrue(surroundingExecutedForSupplier.booleanValue());
 	}
 }

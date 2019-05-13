@@ -2,9 +2,8 @@ package guru.mikelue.jdut.operation;
 
 import java.sql.SQLException;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import guru.mikelue.jdut.assertion.ResultSetAssert;
 import guru.mikelue.jdut.datagrain.DataGrain;
@@ -13,6 +12,8 @@ import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
 import guru.mikelue.jdut.jdbc.function.DbResultSet;
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.test.DoLiquibase;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * This test uses {@link DefaultOperatorFactory} without any added customized operators.
@@ -36,7 +37,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 				.addValues(12, 12, "K2", null) // Null value
 				.implicitColumns("dm_id", "dm_v1", "dm_v3")
 				.addValues(13, 13, 0) // default Value
-		).decorate(getSchemaLoadingDecorator());
+		).decorate(getSchemaLoading());
 
 		/**
 		 * Executes the tested lambda
@@ -90,7 +91,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 				.implicitColumns("du_id", "du_v1")
 				.addValues(1, "EXP-1")
 				.addValues(2, "EXP-2")
-		).decorate(getSchemaLoadingDecorator());
+		).decorate(getSchemaLoading());
 
 		/**
 		 * Executes the tested lambda
@@ -137,7 +138,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 				.implicitColumns("dr_id", "dr_v1")
 				.addValues(1, "RPC-1")
 				.addValues(2, "RPC-2")
-		).decorate(getSchemaLoadingDecorator());
+		).decorate(getSchemaLoading());
 
 		/**
 		 * Executes the tested lambda
@@ -177,7 +178,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 				.implicitColumns("dd_id")
 				.addValues(1)
 				.addValues(2)
-		).decorate(getSchemaLoadingDecorator());
+		).decorate(getSchemaLoading());
 
 		/**
 		 * Executes the tested lambda
@@ -212,7 +213,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 				.implicitColumns("dda_id")
 				.addValues(1)
 				.addValues(2)
-		).decorate(getSchemaLoadingDecorator());
+		).decorate(getSchemaLoading());
 
 		/**
 		 * Executes the tested lambda
@@ -247,7 +248,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 				.implicitColumns("dt_id")
 				.addValues(1)
 				.addValues(2)
-		).decorate(getSchemaLoadingDecorator());
+		).decorate(getSchemaLoading());
 
 		/**
 		 * Executes the tested lambda
@@ -282,7 +283,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 				.implicitColumns("itx_id", "itx_value")
 				.addValues(1, "EXP-1")
 				.addValues(2, "EXP-2")
-		).decorate(getSchemaLoadingDecorator());
+		).decorate(getSchemaLoading());
 
 		/**
 		 * Executes the tested lambda
@@ -325,7 +326,7 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 				.addValues(1, "EXP-1")
 				.addValues(2, "EXP-2")
 				.addValues(1, "EXP-1-1") // Repeated id, rollbacked
-		).decorate(getSchemaLoadingDecorator());
+		).decorate(getSchemaLoading());
 
 		/**
 		 * Executes the tested lambda
@@ -358,11 +359,11 @@ public class DefaultOperatorsTest extends AbstractDataSourceTestBase {
 		}
 		// :~)
 
-		Assert.fail("No exception thrown for rollback");
+		fail("No exception thrown for rollback");
 	}
 
-	@BeforeClass
-	private void init()
+	@BeforeAll
+	void init()
 	{
 		operatorFactory = DefaultOperatorFactory.build(getDataSource(), builder -> {});
 	}

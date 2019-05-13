@@ -143,7 +143,23 @@
 		</rollback>
 	</changeSet>
 
-	<changeSet id="conductResourceWithDbTypeOfSpecificVendors" labels="conductResourceWithDbTypeOfSpecificVendors" author="${testClassName}">
+	<changeSet id="conductDbTypeExclude1" labels="conductDbTypeExclude1" author="${testClassName}">
+		<createTable tableName="nsv_1">
+			<column name="nt_id" type="INTEGER">
+				<constraints primaryKey="true" />
+			</column>
+
+			<column name="nt_nstring" type="NVARCHAR(64)" />
+			<column name="nt_blob" type="BLOB" />
+			<column name="nt_clob" type="CLOB" />
+			<column name="nt_nclob" type="NCLOB" />
+		</createTable>
+		<rollback>
+			<dropTable tableName="nsv_1" />
+		</rollback>
+	</changeSet>
+
+	<changeSet id="conductDbTypeExclude2" labels="conductDbTypeExclude2" author="${testClassName}">
 		<createTable tableName="nsv_1">
 			<column name="nt_id" type="INTEGER">
 				<constraints primaryKey="true" />

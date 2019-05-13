@@ -21,7 +21,8 @@
  * <p>There are some supplementary methods provided by this object to generates name of file by certain context(e.g. {@link java.lang.Class Class} or {@link java.lang.reflect.Method Method}).</p>
  *
  * @see <a href="https://testng.org/">TestNG</a>
- * @see <a href="https://junit.org/junit4/">JUnit</a>
+ * @see <a href="https://junit.org/junit4/">JUnit 4</a>
+ * @see <a href="https://junit.org/junit5/">JUnit 5</a>
  * @see DatabaseVendor
  */
 package guru.mikelue.jdut.annotation;

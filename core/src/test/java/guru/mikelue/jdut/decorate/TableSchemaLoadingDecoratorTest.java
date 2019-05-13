@@ -4,15 +4,19 @@ import java.sql.JDBCType;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
 import guru.mikelue.jdut.datagrain.DataRow;
 import guru.mikelue.jdut.datagrain.SchemaColumn;
 import guru.mikelue.jdut.datagrain.SchemaTable;
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.test.DoLiquibase;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
 public class TableSchemaLoadingDecoratorTest extends AbstractDataSourceTestBase {
 	public TableSchemaLoadingDecoratorTest() {}
@@ -38,7 +42,7 @@ public class TableSchemaLoadingDecoratorTest extends AbstractDataSourceTestBase 
 		);
 
 		SchemaTable tableSchema = testedRow.getTable();
-		Assert.assertEquals(tableSchema.getNumberOfColumns(), 2);
+		assertEquals(2, tableSchema.getNumberOfColumns());
 		assertColumn(
 			tableSchema, "col_varchar_1",
 			JDBCType.VARCHAR, true, false
@@ -54,15 +58,16 @@ public class TableSchemaLoadingDecoratorTest extends AbstractDataSourceTestBase 
 	) {
 		SchemaColumn column = tableSchema.getColumn(columnName);
 
-		Assert.assertEquals(column.getJdbcType().get(), expectedType);
-		Assert.assertEquals(column.getNullable().get(), isNullable);
-		Assert.assertEquals(column.getHasDefaultValue(), hasDefaultValue);
+		assertEquals(expectedType, column.getJdbcType().get());
+		assertEquals(isNullable, column.getNullable().get());
+		assertEquals(hasDefaultValue, column.getHasDefaultValue());
 	}
 
 	/**
 	 * Tests the loading of keys.
 	 */
-	@Test(dataProvider="DecorateForKeys") @DoLiquibase
+	@ParameterizedTest
+	@MethodSource @DoLiquibase
 	public void decorateForKeys(
 		String sampleNameOfTable,
 		String[] expectedKeys
@@ -83,26 +88,27 @@ public class TableSchemaLoadingDecoratorTest extends AbstractDataSourceTestBase 
 
 		List<String> testedKeys = testedRow.getTable().getKeys();
 
+		getLogger().warn("TK: {}, EK: {}", testedKeys, expectedKeys);
+
 		/**
 		 * Asserts every key
 		 */
 		IntStream.range(0, expectedKeys.length)
 			.forEach(
-				i -> Assert.assertEquals(
-					testedKeys.get(i).toLowerCase(),
-					expectedKeys[i].toLowerCase()
+				i -> assertEquals(
+					expectedKeys[i].toLowerCase(),
+					testedKeys.get(i).toLowerCase()
 				)
 			);
 		// :~)
 	}
-	@DataProvider(name="DecorateForKeys")
-	private Object[][] getDecorateForKeys()
+	static Arguments[] decorateForKeys()
 	{
-		return new Object[][] {
-			{ "tab_has_pk", new String[] { "pk_id_1", "pk_id_2" } }, // PK priority to unique
-			{ "tab_has_not_null_unique", new String[] { "nnu_col_1", "nnu_col_2" } }, // least unique index
-			{ "tab_has_not_null_unique_2", new String[] { "nnu2_col_1", "nnu2_col_2" } }, // not nullable index priority to nullable one
-			{ "tab_has_nothing", new String[0] }, // cannot find anything
+		return new Arguments[] {
+			arguments("tab_has_pk", new String[] { "pk_id_1", "pk_id_2" }), // PK priority to unique
+			arguments("tab_has_not_null_unique", new String[] { "nnu_col_1", "nnu_col_2" }), // least unique index
+			arguments("tab_has_not_null_unique_2", new String[] { "nnu2_col_1", "nnu2_col_2" }), // not nullable index priority to nullable one
+			arguments("tab_has_nothing", new String[0]), // cannot find anything
 		};
 	}
 }
