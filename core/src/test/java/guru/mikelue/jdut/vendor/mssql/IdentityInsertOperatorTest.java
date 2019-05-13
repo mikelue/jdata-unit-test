@@ -2,7 +2,7 @@ package guru.mikelue.jdut.vendor.mssql;
 
 import java.sql.SQLException;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import guru.mikelue.jdut.assertion.ResultSetAssert;
 import guru.mikelue.jdut.datagrain.DataGrain;
@@ -43,7 +43,7 @@ public class IdentityInsertOperatorTest extends AbstractDataSourceTestBase {
 			)
 			// :~)
 		)
-		.decorate(getSchemaLoadingDecorator());
+		.decorate(getSchemaLoading());
 
 		/**
 		 * Uses insert operation for testing

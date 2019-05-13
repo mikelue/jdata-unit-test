@@ -1,6 +1,8 @@
 package guru.mikelue.jdut.test;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import javax.sql.DataSource;
 
 import liquibase.Contexts;
@@ -10,26 +12,22 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ConditionEvaluationResult;
+import org.junit.jupiter.api.extension.ExecutionCondition;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestInstancePostProcessor;
+import org.junit.platform.commons.support.AnnotationSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.testng.IConfigurable;
-import org.testng.IConfigureCallBack;
-import org.testng.IInvokedMethod;
-import org.testng.IInvokedMethodListener;
-import org.testng.ITestContext;
-import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
-import org.testng.SkipException;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Listeners;
-import org.testng.annotations.Test;
-import org.testng.internal.ConstructorOrMethod;
-import org.testng.internal.TestNGMethod;
 
 import guru.mikelue.jdut.annotation.AnnotationUtil;
 import guru.mikelue.jdut.annotation.IfDatabaseVendor;
@@ -39,217 +37,240 @@ import guru.mikelue.jdut.jdbc.JdbcRunnable;
 import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
 import guru.mikelue.jdut.vendor.DatabaseVendor;
 
-@Listeners({AbstractDataSourceTestBase.IfDatabaseVendorConfigurableListener.class, AbstractDataSourceTestBase.IfDatabaseVendorTestListener.class})
-@Test(testName="DataSourceTest", groups="DataSourceGroup")
+@TestInstance(Lifecycle.PER_CLASS)
+@ExtendWith({
+	AbstractDataSourceTestBase.IocContainer.class,
+	AbstractDataSourceTestBase.DatabaseVendorCondition.class,
+	AbstractDataSourceTestBase.LiquibaseSetup.class,
+})
 public abstract class AbstractDataSourceTestBase {
-	/**
-	 * Used to skip configurations
-	 */
-	public static class IfDatabaseVendorConfigurableListener implements IConfigurable {
-		private Logger logger = LoggerFactory.getLogger(IfDatabaseVendorConfigurableListener.class);
-
-		@Override
-		public void run(IConfigureCallBack callBack, ITestResult testResult)
-		{
-			ITestNGMethod targetMethod = testResult.getMethod();
-			if (!needSkip(targetMethod)) {
-				callBack.runConfigurationMethod(testResult);
-			}
-
-			logger.debug("Skip configuration [{}].", targetMethod.getMethodName());
-		}
+	private static AbstractDataSourceTestBase getBaseInstance(ExtensionContext junitContext)
+	{
+		return (AbstractDataSourceTestBase)junitContext.getRequiredTestInstance();
 	}
-	/**
-	 * Used to skip tests
-	 */
-	public static class IfDatabaseVendorTestListener implements IInvokedMethodListener {
-		private Logger logger = LoggerFactory.getLogger(IfDatabaseVendorTestListener.class);
 
-		public IfDatabaseVendorTestListener() {}
+	public static class IocContainer implements AfterAllCallback, TestInstancePostProcessor {
+		private ConfigurableApplicationContext appContext;
+		private DataGrainDecorator schemaLoading;
 
-		@Override
-		public void beforeInvocation(IInvokedMethod method, ITestResult testResult)
+		private final Logger logger = LoggerFactory.getLogger(IocContainer.class);
+
+		public IocContainer()
 		{
-			if (!method.isTestMethod()) {
-				return;
-			}
+			AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+			ctx.register(DataSourceContext.class);
+			ctx.refresh();
 
-			ITestNGMethod targetMethod = method.getTestMethod();
-			if (needSkip(targetMethod)) {
-				logger.debug("Skip test [{}].", targetMethod.getMethodName());
-				throw new SkipException("Skip test because the vendor of database is not matched.");
-			}
+			appContext = ctx;
+
+			schemaLoading = new TableSchemaLoadingDecorator(
+				ctx.getBean(DataSource.class)
+			);
 		}
 
 		@Override
-		public void afterInvocation(IInvokedMethod method, ITestResult testResult) {}
+		public void afterAll(ExtensionContext junitContext) throws Exception
+		{
+			logger.info("Release Application Context: {}", DataSourceContext.class);
+
+			appContext.close();
+		}
+
+		@Override
+		public void postProcessTestInstance(Object instance, ExtensionContext junitContext) throws Exception
+		{
+			AbstractDataSourceTestBase typedBase = (AbstractDataSourceTestBase)instance;
+			typedBase.appContext = appContext;
+			typedBase.schemaLoading = schemaLoading;
+		}
 	}
 
-	private static Logger mainLogger = LoggerFactory.getLogger(AbstractDataSourceTestBase.class);
+	public static class DatabaseVendorCondition implements ExecutionCondition {
+		private final Logger logger = LoggerFactory.getLogger(DatabaseVendorCondition.class);
+
+		@Override
+		public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
+			/**
+			 * Checks the @IfDatabaseVendor on class level
+			 */
+			Optional<Object> targetObject = context.getTestInstance();
+			if (targetObject.isPresent() && needSkip(context, targetObject.get().getClass())) {
+				return ConditionEvaluationResult.disabled("Disabled by not matched database vendor(on class level)");
+			}
+			// :~)
+
+			/**
+			 * Checks the @IfDatabaseVendor on method level
+			 */
+			Optional<Method> targetMethod = context.getTestMethod();
+			if (targetMethod.isPresent() && needSkip(context, targetMethod.get())) {
+				return ConditionEvaluationResult.disabled("Disabled by not matched database vendor(on method level)");
+			}
+			// :~)
+
+			return ConditionEvaluationResult.enabled("Enabled by database vendor or no vendor requirement");
+		}
+
+		private boolean needSkip(ExtensionContext junitContext, AnnotatedElement annotatedEle)
+		{
+			Optional<IfDatabaseVendor> requiredVendors = AnnotationSupport.findAnnotation(annotatedEle, IfDatabaseVendor.class);
+			if (!requiredVendors.isPresent()) {
+				return false;
+			}
+
+			DatabaseVendor currentVendor = getBaseInstance(junitContext).getCurrentVendor();
+
+			boolean matchDatabaseVendor = AnnotationUtil.matchDatabaseVendor(currentVendor, requiredVendors.get());
+			if (!matchDatabaseVendor) {
+				logger.debug("The needed vendor of database [{}] is not matched. Current vendor: [{}]", requiredVendors.get(), currentVendor.name());
+			}
+
+			return !matchDatabaseVendor;
+		}
+	}
+
+	public static class LiquibaseSetup implements BeforeEachCallback, AfterEachCallback {
+		private final Logger logger = LoggerFactory.getLogger(LiquibaseSetup.class);
+
+		@Override
+		public void beforeEach(ExtensionContext junitContext) throws Exception
+		{
+			Method testingMethod = junitContext.getRequiredTestMethod();
+			Optional<DoLiquibase> performLiquibase = AnnotationSupport.findAnnotation(testingMethod, DoLiquibase.class);
+
+			performLiquibase.ifPresent(
+				liquibaseSetting -> {
+					if (liquibaseSetting.update()) {
+						updateLiquibase(testingMethod, getDataSource(junitContext));
+					}
+				}
+			);
+		}
+
+		@Override
+		public void afterEach(ExtensionContext junitContext) throws Exception
+		{
+			Method testingMethod = junitContext.getRequiredTestMethod();
+
+			Optional<DoLiquibase> performLiquibase = AnnotationSupport.findAnnotation(testingMethod, DoLiquibase.class);
+
+			performLiquibase.ifPresent(
+				liquibaseSetting -> {
+					if (liquibaseSetting.rollback()) {
+						rollbackLiquibase(testingMethod, getDataSource(junitContext));
+					}
+				}
+			);
+		}
+
+		private DataSource getDataSource(ExtensionContext junitContext)
+		{
+			return getBaseInstance(junitContext).getDataSource();
+		}
+
+		/**
+		 * Updates the database by change log of {@code <package_path>/ClassName.xml} and {@link LabelExpression label} of method name.
+		 *
+		 * @param method The method of tested
+		 */
+		private void updateLiquibase(Method method, DataSource dataSource)
+		{
+			liquibaseExecutor(
+				getFileNameOfChangeSet(method),
+				liquibase -> {
+					logger.info("Update with label: \"{}\"", method.getName());
+					liquibase.update(
+						new Contexts(), new LabelExpression(method.getName())
+					);
+				},
+				dataSource
+			);
+		}
+		/**
+		 * Rollbacks(8 change set) the database by change log of {@code <package_path>/ClassName.xml} and {@link LabelExpression label} of method name.
+		 *
+		 * @param method The method of tested
+		 */
+		private void rollbackLiquibase(Method method, DataSource dataSource)
+		{
+			liquibaseExecutor(
+				getFileNameOfChangeSet(method),
+				liquibase -> {
+					logger.info("Rollback with label: \"{}\"", method.getName());
+					liquibase.rollback(
+						8, new Contexts(), new LabelExpression(method.getName())
+					);
+				},
+				dataSource
+			);
+		}
+
+		private void liquibaseExecutor(String fileNameOfChangeLog, LiquibaseConsumer liquibaseConsumer, DataSource dataSource)
+		{
+			JdbcRunnable executeLiquibase = JdbcTemplateFactory.buildRunnable(
+				() -> dataSource.getConnection(),
+				conn -> {
+					Liquibase liquibase = null;
+					try {
+						liquibase = new Liquibase(
+							fileNameOfChangeLog, new ClassLoaderResourceAccessor(),
+							DatabaseFactory.getInstance().findCorrectDatabaseImplementation(
+								new JdbcConnection(conn)
+							)
+						);
+						if (liquibase.listLocks().length > 0) {
+							liquibase.forceReleaseLocks();
+						}
+						logger.info("[Liquibase] Change log: \"{}\"", fileNameOfChangeLog);
+
+						liquibase.setChangeLogParameter("testClassName", getClass().getName());
+
+						liquibaseConsumer.accept(liquibase);
+					} catch (LiquibaseException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			);
+
+			executeLiquibase.asRunnable().run();
+		}
+
+		private String getFileNameOfChangeSet(Method testingMethod)
+		{
+			return String.format("%s.xml", testingMethod.getDeclaringClass().getName().replace(".", "/"));
+		}
+	}
+
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
-	private static AnnotationConfigApplicationContext ctx;
-	private static DataGrainDecorator schemaLoading;
+	private ApplicationContext appContext;
+	private DataGrainDecorator schemaLoading;
 
 	protected AbstractDataSourceTestBase() {}
 
-	@BeforeTest
-	public static void initContext()
+	protected DatabaseVendor getCurrentVendor()
 	{
-		ctx = new AnnotationConfigApplicationContext();
-		ctx.register(DataSourceContext.class);
-		ctx.refresh();
-
-		schemaLoading = new TableSchemaLoadingDecorator(getDataSource());
-	}
-	@AfterTest
-	public static void releaseContext(ITestContext testContext)
-	{
-		ctx.close();
+		return appContext.getBean(DatabaseVendor.class);
 	}
 
-	@BeforeMethod(firstTimeOnly=true)
-	protected void doLiquibaseBefore(Method method)
+	protected DataSource getDataSource()
 	{
-		DoLiquibase doLiquibase = method.getAnnotation(DoLiquibase.class);
-		if (doLiquibase != null && doLiquibase.update()) {
-			updateLiquibase(method);
-		}
-	}
-	@AfterMethod(lastTimeOnly=true)
-	protected void doLiquibaseAfter(Method method)
-	{
-		DoLiquibase doLiquibase = method.getAnnotation(DoLiquibase.class);
-		if (doLiquibase != null && doLiquibase.rollback()) {
-			rollbackLiquibase(method);
-		}
-	}
-
-	protected void liquibaseExecutor(String fileNameOfChangeLog, LiquibaseConsumer liquibaseConsumer)
-	{
-		JdbcRunnable executeLiquibase = JdbcTemplateFactory.buildRunnable(
-			() -> getDataSource().getConnection(),
-			conn -> {
-				Liquibase liquibase = null;
-				try {
-					liquibase = new Liquibase(
-						fileNameOfChangeLog, new ClassLoaderResourceAccessor(),
-						DatabaseFactory.getInstance().findCorrectDatabaseImplementation(
-							new JdbcConnection(conn)
-						)
-					);
-					if (liquibase.listLocks().length > 0) {
-						liquibase.forceReleaseLocks();
-					}
-					mainLogger.info("[Liquibase] Change log: \"{}\"", fileNameOfChangeLog);
-
-					liquibase.setChangeLogParameter("testClassName", getClass().getName());
-
-					liquibaseConsumer.accept(liquibase);
-				} catch (LiquibaseException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		);
-
-		executeLiquibase.asRunnable().run();
+		return appContext.getBean(DataSource.class);
 	}
 
 	/**
-	 * Updates the database by change log of {@code <package_path>/ClassName.xml} and {@link LabelExpression label} of method name.
-	 *
-	 * @param method The method of tested
+	 * @return the schemaLoading for current database
 	 */
-	protected void updateLiquibase(Method method)
-	{
-		liquibaseExecutor(
-			getFileNameOfChangeSet(),
-			liquibase -> {
-				mainLogger.info("Update with label: \"{}\"", method.getName());
-				liquibase.update(
-					new Contexts(), new LabelExpression(method.getName())
-				);
-			}
-		);
-	}
-	/**
-	 * Rollbacks(8 change set) the database by change log of {@code <package_path>/ClassName.xml} and {@link LabelExpression label} of method name.
-	 *
-	 * @param method The method of tested
-	 */
-	protected void rollbackLiquibase(Method method)
-	{
-		liquibaseExecutor(
-			getFileNameOfChangeSet(),
-			liquibase -> {
-				mainLogger.info("Rollback with label: \"{}\"", method.getName());
-				liquibase.rollback(
-					8, new Contexts(), new LabelExpression(method.getName())
-				);
-			}
-		);
-	}
-
-	protected Logger getLogger()
-	{
-		return logger;
-	}
-
-	protected DataGrainDecorator getSchemaLoadingDecorator()
-	{
+	protected DataGrainDecorator getSchemaLoading() {
 		return schemaLoading;
 	}
 
-	protected static DatabaseVendor getCurrentVendor()
+	/**
+	 * @return the logger with name of final class
+	 */
+	protected Logger getLogger()
 	{
-		return ctx.getBean(DatabaseVendor.class);
-	}
-
-	protected static ApplicationContext getApplicationContext()
-	{
-		return ctx;
-	}
-
-	protected static DataSource getDataSource()
-	{
-		return ctx.getBean(DataSource.class);
-	}
-
-	private String getFileNameOfChangeSet()
-	{
-		return String.format("%s.xml", getClass().getName().replace(".", "/"));
-	}
-
-	private static boolean needSkip(ITestNGMethod method)
-	{
-		/**
-		 * Checks:
-		 * 1) IfDatabaseVendor annotation on class declaration
-		 * 2) IfDatabaseVendor annotation on method declaration
-		 */
-		ConstructorOrMethod targetMethod = method.getConstructorOrMethod();
-		IfDatabaseVendor vendorCondition = targetMethod
-				.getDeclaringClass()
-				.getAnnotation(IfDatabaseVendor.class);
-
-		if (vendorCondition == null) {
-			vendorCondition = targetMethod
-				.getMethod()
-				.getAnnotation(IfDatabaseVendor.class);
-
-			if (vendorCondition == null) {
-				return false;
-			}
-		}
-		// :~)
-
-		DatabaseVendor currentVendor = ctx.getBean(DatabaseVendor.class);
-		boolean matchDatabaseVendor = AnnotationUtil.matchDatabaseVendor(currentVendor, vendorCondition);
-		if (!matchDatabaseVendor) {
-			mainLogger.debug("The needed vendor of database [{}] is not matched. Current vendor: [{}]", vendorCondition.match(), currentVendor.name());
-		}
-
-		return !matchDatabaseVendor;
+		return logger;
 	}
 }
 

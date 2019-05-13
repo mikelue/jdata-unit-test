@@ -3,14 +3,17 @@ package guru.mikelue.jdut;
 import java.sql.SQLException;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.operation.DataGrainOperator;
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.test.DoLiquibase;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
 public class DataConductorTest extends AbstractDataSourceTestBase {
 	public DataConductorTest() {}
@@ -23,7 +26,8 @@ public class DataConductorTest extends AbstractDataSourceTestBase {
 	 *   <li>The using of decorator</li>
 	 * </ol>
 	 */
-	@Test(dataProvider="Conduct") @DoLiquibase
+	@ParameterizedTest @MethodSource
+	@DoLiquibase
 	public void conduct(
 		boolean hasDecorator
 	) throws SQLException {
@@ -62,15 +66,14 @@ public class DataConductorTest extends AbstractDataSourceTestBase {
 			);
 		}
 
-		Assert.assertTrue(operated.booleanValue());
-		Assert.assertEquals(decorated.booleanValue(), hasDecorator);
+		assertTrue(operated.booleanValue());
+		assertEquals(hasDecorator, decorated.booleanValue());
 	}
-	@DataProvider(name="Conduct")
-	private Object[][] getConduct()
+	static Arguments[] conduct()
 	{
-		return new Object[][] {
-			{ true }, // Has decorator
-			{ false }
+		return new Arguments[] {
+			arguments(true), // Has decorator
+			arguments(false)
 		};
 	}
 }

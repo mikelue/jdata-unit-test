@@ -1,8 +1,11 @@
 package guru.mikelue.jdut.annotation;
 
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.vendor.DatabaseVendor;
@@ -14,7 +17,8 @@ public class AnnotationUtilTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the matching for annotation {@link IfDatabaseVendor}.
 	 */
-	@Test(dataProvider="MatchDatabaseVendor")
+	@ParameterizedTest
+	@MethodSource
 	public void matchDatabaseVendor(
 		String sampleMethodName, DatabaseVendor checkedVendor,
 		boolean expectedResult
@@ -22,85 +26,83 @@ public class AnnotationUtilTest extends AbstractDataSourceTestBase {
 		IfDatabaseVendor sampleValueOfAnnotation = SampleForIfDatabaseVendor.class.getMethod(sampleMethodName)
 			.getAnnotation(IfDatabaseVendor.class);
 
-		Assert.assertEquals(
+		assertEquals(
+			expectedResult,
 			AnnotationUtil.matchDatabaseVendor(
 				checkedVendor, sampleValueOfAnnotation
-			),
-			expectedResult
+			)
 		);
 	}
-	@DataProvider(name="MatchDatabaseVendor")
-	private Object[][] getMatchDatabaseVendor()
+	static Arguments[] matchDatabaseVendor()
 	{
-		return new Object[][] {
-			{ "nullMethod", DatabaseVendor.H2, true },
-			{ "defaultMethod", DatabaseVendor.H2, true },
-			{ "matchOne", DatabaseVendor.H2, true },
-			{ "matchOne", DatabaseVendor.MySql, false },
-			{ "notMatchOne", DatabaseVendor.H2, false },
-			{ "notMatchOne", DatabaseVendor.MySql, true },
-			{ "contradict", DatabaseVendor.H2, false },
-			{ "contradict", DatabaseVendor.MySql, false },
-			{ "multiple", DatabaseVendor.Oracle, true },
-			{ "multiple", DatabaseVendor.H2, false },
-			{ "multiple", DatabaseVendor.PostgreSql, false },
+		return new Arguments[] {
+			arguments("nullMethod", DatabaseVendor.H2, true),
+			arguments("defaultMethod", DatabaseVendor.H2, true),
+			arguments("matchOne", DatabaseVendor.H2, true),
+			arguments("matchOne", DatabaseVendor.MySql, false),
+			arguments("notMatchOne", DatabaseVendor.H2, false),
+			arguments("notMatchOne", DatabaseVendor.MySql, true),
+			arguments("contradict", DatabaseVendor.H2, false),
+			arguments("contradict", DatabaseVendor.MySql, false),
+			arguments("multiple", DatabaseVendor.Oracle, true),
+			arguments("multiple", DatabaseVendor.H2, false),
+			arguments("multiple", DatabaseVendor.PostgreSql, false),
 		};
 	}
 
 	/**
 	 * Tests the building of duet conductor by convention.
 	 */
-	@Test(dataProvider="BuildConductorByConventionAndMethod")
+	@ParameterizedTest
+	@MethodSource
 	public void buildConductorByConventionAndMethod(
 		String sampleMethodName,
 		boolean hasConductor
 	) throws NoSuchMethodException {
 		YamlConductorFactory sampleFactory = YamlConductorFactory.build(getDataSource());
 
-		Assert.assertEquals(
+		assertEquals(
+			hasConductor,
 			AnnotationUtil.buildConductorByConvention(
 				sampleFactory, AnnotationUtilTest.class.getMethod(sampleMethodName)
-			).isPresent(),
-			hasConductor
+			).isPresent()
 		);
 	}
-	@DataProvider(name="BuildConductorByConventionAndMethod")
-	private Object[][] getBuildConductorByConventionAndMethod()
+	static Arguments[] buildConductorByConventionAndMethod()
 	{
-		return new Object[][] {
-			{ "withJdutResource", true },
-			{ "withoutJdutResource", false }
+		return new Arguments[] {
+			arguments("withJdutResource", true),
+			arguments("withoutJdutResource", false),
 		};
 	}
 
-	@Test(enabled=false) @JdutResource
+	@JdutResource
 	public void withJdutResource() {}
-	@Test(enabled=false)
 	public void withoutJdutResource() {}
 
 	/**
 	 * Tests the building of duet conductor by convention.
 	 */
-	@Test(dataProvider="BuildConductorByConventionAndClass")
+	@ParameterizedTest
+	@MethodSource
 	public void buildConductorByConventionAndClass(
 		Class<?> sampleClass,
 		boolean hasConductor
 	) {
 		YamlConductorFactory sampleFactory = YamlConductorFactory.build(getDataSource());
 
-		Assert.assertEquals(
+		assertEquals(
+			hasConductor,
 			AnnotationUtil.buildConductorByConvention(
 				sampleFactory, sampleClass
-			).isPresent(),
-			hasConductor
+			).isPresent()
 		);
 	}
-	@DataProvider(name="BuildConductorByConventionAndClass")
-	private Object[][] getBuildConductorByConventionAndClass()
+	static Arguments[] buildConductorByConventionAndClass()
 	{
-		return new Object[][] {
-			{ WithAnnotation.class, true },
-			{ WithoutAnnotation.class, false }
+		return new Arguments[] {
+			arguments(WithAnnotation.class, true),
+			arguments(WithoutAnnotation.class, false)
 		};
 	}
 }

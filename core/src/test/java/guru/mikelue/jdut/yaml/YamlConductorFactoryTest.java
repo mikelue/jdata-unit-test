@@ -12,15 +12,15 @@ import java.sql.NClob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import java.util.Base64;
 
-import org.testng.Assert;
-import org.testng.SkipException;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import guru.mikelue.jdut.DuetConductor;
+import guru.mikelue.jdut.annotation.IfDatabaseVendor;
 import guru.mikelue.jdut.assertion.ResultSetAssert;
 import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
 import guru.mikelue.jdut.jdbc.JdbcVoidFunction;
@@ -33,13 +33,19 @@ import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.test.DoLiquibase;
 import guru.mikelue.jdut.vendor.DatabaseVendor;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.ThrowableAssert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
 public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 	public YamlConductorFactoryTest() {}
 
 	/**
 	 * Tests the loading of simple data.
 	 */
-	@Test @DoLiquibase
+	@Test
+	@DoLiquibase
 	public void conductResourceWithSimpleData() throws SQLException
 	{
 		YamlConductorFactory factory = YamlConductorFactory.build(
@@ -106,7 +112,8 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the loading of code.
 	 */
-	@Test @DoLiquibase
+	@Test
+	@DoLiquibase
 	public void conductResourceWithCode() throws SQLException
 	{
 		YamlConductorFactory factory = YamlConductorFactory.build(
@@ -159,7 +166,8 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the transactional operation(by rollback).
 	 */
-	@Test @DoLiquibase
+	@Test
+	@DoLiquibase
 	public void conductResourceWithTransaction() throws SQLException
 	{
 		YamlConductorFactory factory = YamlConductorFactory.build(
@@ -175,7 +183,7 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 		try {
 			conductor.build();
 		} catch (RuntimeException e) {
-			Assert.assertTrue(
+			assertTrue(
 				SQLException.class.isInstance(e.getCause())
 			);
 
@@ -195,13 +203,14 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 			return;
 		}
 
-		Assert.fail("Should be rollback");
+		fail("Should be rollback");
 	}
 
 	/**
 	 * Tests the operator configuration.
 	 */
-	@Test @DoLiquibase
+	@Test
+	@DoLiquibase
 	public void conductResourceWithOperation() throws SQLException
 	{
 		OperatorFactory operatorFactory = DefaultOperatorFactory.build(getDataSource(), builder -> {});
@@ -271,7 +280,8 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the decoration of data grain
 	 */
-	@Test @DoLiquibase
+	@Test
+	@DoLiquibase
 	public void conductResourceWithDecorator() throws SQLException
 	{
 		YamlConductorFactory factory = YamlConductorFactory.build(
@@ -318,7 +328,8 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the usage of supplier and cached value by {@link DataField}.
 	 */
-	@Test @DoLiquibase
+	@Test
+	@DoLiquibase
 	public void conductResourceWithSupplier() throws SQLException
 	{
 		Supplier<Integer> idGenerator = new Supplier<Integer>() {
@@ -371,7 +382,8 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 	/**
 	 * Tests the construction for direct type of database in value of field.
 	 */
-	@Test @DoLiquibase
+	@Test
+	@DoLiquibase
 	public void conductResourceWithDbType() throws SQLException
 	{
 		YamlConductorFactory factory = YamlConductorFactory.build(
@@ -480,16 +492,30 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 		conductor.clean();
 	}
 
-	@Test(dataProvider="ConductResourceWithDbTypeOfSpecificVendors") @DoLiquibase
-	public void conductResourceWithDbTypeOfSpecificVendors(
+	@ParameterizedTest
+	@MethodSource("conductDbType1") @DoLiquibase
+	@IfDatabaseVendor(notMatch=DatabaseVendor.PostgreSql)
+	public void conductDbTypeExclude1(
 		String yamlData, int sampleId,
-		DatabaseVendor[] excludeVendors,
 		JdbcVoidFunction<ResultSet> assertionFunction
 	) throws SQLException, IOException {
-		if (Stream.of(excludeVendors).anyMatch(excludeVendor -> excludeVendor == getCurrentVendor())) {
-			throw new SkipException("Skip vendor: " + getCurrentVendor());
-		}
+		conductDbTypeTest(yamlData, sampleId, assertionFunction);
+	}
 
+	@ParameterizedTest
+	@MethodSource("conductDbType2") @DoLiquibase
+	@IfDatabaseVendor(notMatch={DatabaseVendor.PostgreSql, DatabaseVendor.Derby})
+	public void conductDbTypeExclude2(
+		String yamlData, int sampleId,
+		JdbcVoidFunction<ResultSet> assertionFunction
+	) throws SQLException, IOException {
+		conductDbTypeTest(yamlData, sampleId, assertionFunction);
+	}
+
+	private void conductDbTypeTest(
+		String yamlData, int sampleId,
+		JdbcVoidFunction<ResultSet> assertionFunction
+	) throws SQLException, IOException {
 		YamlConductorFactory factory = YamlConductorFactory.build(
 			getDataSource(), builder -> builder
 				.resourceLoader(ReaderFunctions.loadByClass(getClass()))
@@ -518,15 +544,14 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 
 		conductor.clean();
 	}
-	@DataProvider(name="ConductResourceWithDbTypeOfSpecificVendors")
-	private Object[][] getConductResourceWithDbTypeOfSpecificVendors()
+	// Excludes: PostgreSql
+	static Arguments[] conductDbType1()
 	{
 		byte[] expectedBytes = Base64.getDecoder().decode("VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=");
 
-		return new Object[][] {
-			{ // CLOB
+		return new Arguments[] {
+			arguments( // CLOB
 				"{ nt_id: 13, nt_clob: !dbtype!clob \"GABB-3\" }", 13,
-				new DatabaseVendor[] { DatabaseVendor.PostgreSql },
 				(JdbcVoidFunction<ResultSet>)rs -> {
 					Connection conn = rs.getStatement().getConnection();
 					Clob clob = conn.createClob();
@@ -536,10 +561,9 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 					.assertNextTrue()
 					.assertClob("nt_clob", clob);
 				}
-			},
-			{ // BLOB
+			),
+			arguments( // BLOB
 				"{ nt_id: 1, nt_blob: !dbtype!blob \"VEhFIEtpbmcgd2FzIG9uIGhpcyB0aG9ybmU=\" }", 1,
-				new DatabaseVendor[] { DatabaseVendor.PostgreSql },
 				(JdbcVoidFunction<ResultSet>)rs -> {
 					Connection conn = rs.getStatement().getConnection();
 					Blob blob = conn.createBlob();
@@ -549,17 +573,21 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 					.assertNextTrue()
 					.assertBlob("nt_blob", blob);
 				}
-			},
-			{ // NSTRING
+			),
+		};
+	}
+	// Excludes: Derby, PostgreSql
+	static Arguments[] conductDbType2()
+	{
+		return new Arguments[] {
+			arguments( // NSTRING
 				"{ nt_id: 2, nt_nstring: !dbtype!nvarchar \"NSTR-1\" }", 2,
-				new DatabaseVendor[] { DatabaseVendor.Derby, DatabaseVendor.PostgreSql },
 				(JdbcVoidFunction<ResultSet>)rs -> new ResultSetAssert(rs)
 					.assertNextTrue()
 					.assertNString("nt_nstring", "NSTR-1")
-			},
-			{ // NCLOB
+			),
+			arguments( // NCLOB
 				"{ nt_id: 3, nt_nclob: !dbtype!nclob \"NSTR-2\" }", 3,
-				new DatabaseVendor[] { DatabaseVendor.Derby, DatabaseVendor.PostgreSql },
 				(JdbcVoidFunction<ResultSet>)rs -> {
 					Connection conn = rs.getStatement().getConnection();
 
@@ -570,14 +598,14 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 						.assertNextTrue()
 						.assertNClob("nt_nclob", nclob);
 				}
-			},
+			),
 		};
 	}
 
 	/**
 	 * Tests the exception convertion
 	 */
-	@Test(expectedExceptions=RuntimeException.class, expectedExceptionsMessageRegExp="Test for sqlExceptionConvert")
+	@Test
 	public void sqlExceptionConvert() throws IOException
 	{
 		YamlConductorFactory factory = YamlConductorFactory.build(
@@ -595,7 +623,10 @@ public class YamlConductorFactoryTest extends AbstractDataSourceTestBase {
 				r, builder -> builder.sqlExceptionConvert(e -> new RuntimeException("Test for sqlExceptionConvert"))
 			);
 
-			conductor.build();
+			Throwable thrown = catchThrowable(conductor::build);
+
+			assertThat(thrown).isInstanceOf(RuntimeException.class)
+				.hasMessageContaining("sqlExceptionConvert");
 		}
 	}
 }
