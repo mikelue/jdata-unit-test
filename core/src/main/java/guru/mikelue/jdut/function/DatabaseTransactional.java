@@ -12,14 +12,13 @@ import guru.mikelue.jdut.operation.DataGrainOperator;
  * As surrounding of operation data grain for transactional wrapping.<br>
  *
  * <h3>Make your {@link DataGrainOperator} transactional:</h3>
- * <pre>{@code
- * // hjls:java
+ * <pre><code class="java">
  * // operator_1 - An operator to be transactional
  * operator_1 = yourOperator.surroundedBy(DatabaseTransactional::simple);
  *
  * // operator_2 = An operator to be transactional with assigned transaction isoation
  * operator_2 = yourOperator.surroundedBy(new DatabaseTransactional(Connection.TRANSACTION_SERIALIZABLE));
- * }</pre>
+ * </code></pre>
  */
 public class DatabaseTransactional implements DataGrainOperator.SurroundOperator {
 	private final Optional<Integer> transactionIsolation;
