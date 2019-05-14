@@ -46,7 +46,8 @@ public final class ReaderFunctions {
     {
         return resourceName -> {
 			URL fileUrl = classForLoadResource.getResource(resourceName);
-			Validate.notNull(fileUrl, "The file is not existing: \"%s\". Package: \"%s\"", resourceName, classForLoadResource.getPackage().getName());
+			Validate.notNull(fileUrl, "The file is not existing: \"%s\". Class: \"%s\". Package: \"%s\".",
+				resourceName, classForLoadResource, classForLoadResource.getPackage().getName());
 
 			return new InputStreamReader(
 				classForLoadResource.getResourceAsStream(resourceName)
