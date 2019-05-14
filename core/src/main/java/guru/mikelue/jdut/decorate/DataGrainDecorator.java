@@ -11,11 +11,11 @@ import guru.mikelue.jdut.datagrain.DataRow;
  * <h3>Chaining</h3>
  * You could chaining a bunch of decorators:
  *
- * <pre class="java">{@code
+ * <pre><code class="java">
  * // decorator - The first decorator
  * // nextDecorator - The next decorator
  * decorator = decorator.chain(nextDecorator);
- * }</pre>
+ * </code></pre>
  *
  * @see <a target="_blank" href="https://github.com/mikelue/jdata-unit-test/wiki/Provided-decorators-of-data-grain">Provided decorators</a>
  */

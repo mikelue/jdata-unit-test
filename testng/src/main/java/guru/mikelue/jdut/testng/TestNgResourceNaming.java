@@ -13,10 +13,10 @@ import guru.mikelue.jdut.annotation.JdutResourceNaming;
  * <p>Provides generating of resource name by format string({@link MessageFormat}) and properties of {@link ITestContext}, {@link ITestNGMethod}, or {@link ISuite}.</p>
  *
  * For example:<br>
- * <pre class="java">{@code
+ * <pre><code class="java">
  * // objISuite - The object of org.testng.ISuite
  * String fileName = TestNgResourceNaming.naming("{1}", objISuite, ".yaml");
- * }</pre>
+ * </code></pre>
  *
  */
 public final class TestNgResourceNaming {

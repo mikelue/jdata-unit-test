@@ -12,13 +12,13 @@ import guru.mikelue.jdut.jdbc.JdbcFunction;
  * As surrounding of JDBC function for transactional wrapping.<br>
  *
  * <p>For example:</p>
- * <pre class="java">{@code
+ * <pre><code class="java">
  * // function_1 - An instance of JdbcFunction
  * function_1 = function_1.surroundedBy(Transactional::simple);
  *
  * // function_2 - An instance of JdbcFunction
  * function_2 = function_2.surroundedBy(new Transaction(Connection.TRANSACTION_READ_COMMITTED));
- * }</pre>
+ * </code></pre>
  *
  * @param <T> The type of connection object
  * @param <R> The type of returned value

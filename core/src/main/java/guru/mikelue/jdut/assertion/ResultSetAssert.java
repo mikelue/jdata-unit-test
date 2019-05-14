@@ -23,20 +23,20 @@ import guru.mikelue.jdut.jdbc.SQLExceptionConvert;
 /**
  * A stateful object to assert data of result set by cascading way.
  *
- * <pre class="java">{@code
+ * <pre><code class="java">
  * JdbcTemplateFactory.buildRunnable(
- *     () -> getDataSource().getConnection(),
- *     conn -> DbResultSet.buildRunnable(
+ *     () -&gt; getDataSource().getConnection(),
+ *     conn -&gt; DbResultSet.buildRunnable(
  *         conn,
  *         "SELECT * FROM DO_INSERT",
- *         rs -> new ResultSetAssert(rs)
+ *         rs -&gt; new ResultSetAssert(rs)
  *             .assertNextTrue()
  *             .assertInt("dm_v1", 1)
  *             .assertInt("dm_v3", 20)
  *             .assertNextTrue()
  *     ).run()
  * ).run();
- * }</pre>
+ * </code></pre>
  */
 public class ResultSetAssert {
 	private final ResultSet testedResultSet;

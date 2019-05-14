@@ -23,10 +23,10 @@ public interface JdbcFunction<T, R> {
 	 * This operator is used to surround fed {@link JdbcFunction} by the implementation of surrounding.<p>
 	 *
 	 * For example:
-	 * <pre class="java">{@code
-	 * static <T, R> JdbcFunction.SurroundOperator<T, R> buildLogging(Logger logger)
+	 * <pre><code class="java">
+	 * static &lt;T, R&gt; JdbcFunction.SurroundOperator&lt;T, R&gt; buildLogging(Logger logger)
 	 * {
-	 *     return surroundedFunc -> v -> {
+	 *     return surroundedFunc -&gt; v -&gt; {
 	 *         logger.info("Before Invoke: {}", v);
 	 *
 	 *         R result = surroundedFunc.apply(v);
@@ -37,8 +37,8 @@ public interface JdbcFunction<T, R> {
 	 *     };
 	 * }
 	 *
-	 * JdbcFunction<Integer, Integer> loggedFunc = sourceFunc.surroundedBy(buildLogging(logger));
-	 * }</pre>
+	 * JdbcFunction&lt;Integer, Integer&gt; loggedFunc = sourceFunc.surroundedBy(buildLogging(logger));
+	 * </code></pre>
 	 *
  	 * @param <T> The type of fed object
  	 * @param <R> The type of returned object

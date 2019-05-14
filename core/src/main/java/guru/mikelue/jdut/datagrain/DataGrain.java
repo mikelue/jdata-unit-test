@@ -22,35 +22,35 @@ import guru.mikelue.jdut.decorate.DataGrainDecorator;
  * <h3>Defining data grains</h3>
  * The simplest by to build a data grain is using {@link #build} method:
  *
- * <pre class="java">{@code
+ * <pre><code class="java">
  * DataGrain dataGrain = DataGrain.build(
- *     tableBuilder -> tableBuilder
+ *     tableBuilder -&gt; tableBuilder
  *         .name("tab_name_1"),
- *     rowsBuilder -> rowsBuilder
+ *     rowsBuilder -&gt; rowsBuilder
  *         .implicitColumns("col_id", "col_value")
  *         .addValues(1, "v_1")
  *         .addValues(2, "v_2")
  * );
- * }</pre>
+ * </code></pre>
  *
  * <h3>Combining data grains</h3>
  * The data grains could be combines(sequentially) by {@link #aggregate} method.
  *
- * <pre class="java">{@code
+ * <pre><code class="java">
  * // dataGrain - Initialized object of DataGrain
  * // nextDataGrain - The next data grain
  * dataGrain = dataGrain.aggregate(nextDataGrain);
- * }</pre>
+ * </code></pre>
  *
  * <h3>Decoration</h3>
  * You may decorates data grain by {@link DataGrainDecorator}.
  *
- * <pre class="java">{@code
+ * <pre><code class="java">
  * // dataGrain - Initialized object of DataGrain
  * // myDecorator - Your decorator
  *
  * dataGrain = dataGrain.decorate(myDecorator)
- * }</pre>
+ * </code></pre>
  *
  * @see DataGrainDecorator
  * @see <a target="_blank" href="https://github.com/mikelue/jdata-unit-test/wiki/API-Guideline">API Guideline</a>

@@ -12,16 +12,16 @@
  * <h2>Quick example</h2>
  * Following example shows the basic usage of JDBC coding.
  *
- * <pre class="java">{@code
+ * <pre><code class="java">
  * // dataSource - The initialized object of javax.sql.DataSource
  *
- * JdbcVoidFunction<Connection> jdbcFunc = JdbcTemplateFactory.buildRunnable(
- *     () -> dataSource.getConnection(), // The supplier provides connection object
- *     connection -> {
+ * JdbcVoidFunction&lt;Connection&gt; jdbcFunc = JdbcTemplateFactory.buildRunnable(
+ *     () -&gt; dataSource.getConnection(), // The supplier provides connection object
+ *     connection -&gt; {
  *         JdbcExecuteFactory.buildRunnable(
- *             () -> connection.createStatement(), // The supplier provides statement object
+ *             () -&gt; connection.createStatement(), // The supplier provides statement object
  *             JdbcTemplateFactory.buildRunnable(
- *                 statement -> {
+ *                 statement -&gt; {
  *                     statement.executeUpdate("INSERT INTO tab_car VALUES('CC-01', 20)");
  *                 };
  *             )
@@ -34,7 +34,7 @@
  * } catch (SQLException e) {
  *     throws new RuntimeException(e);
  * }
- * }</pre>
+ * </code></pre>
  *
  * <h2>{@link guru.mikelue.jdut.jdbc.JdbcFunction} and {@link guru.mikelue.jdut.jdbc.JdbcVoidFunction}</h2>
  *
@@ -48,16 +48,16 @@
  * Using either {@link guru.mikelue.jdut.jdbc.JdbcFunction#surroundedBy JdbcFunction.surroundedBy()} or {@link guru.mikelue.jdut.jdbc.JdbcTemplateFactory#surround JdbcExecuteFactory.surround()},
  * you can surround your code by lambda expression.
  *
- * <pre class="java">{@code
- * JdbcFunction<Connection, Integer> funcGetCount = conn -> { 20 };
+ * <pre><code class="java">
+ * JdbcFunction&lt;Connection, Integer&gt; funcGetCount = conn -&gt; { 20 };
  * funcGetCount.surroundedBy(
- *     func -> conn -> {
+ *     func -&gt; conn -&gt; {
  *         logger.info("Before calling");
  *         func.applyJdbc(conn);
  *         logger.info("After calling");
  *     }
  * );
- * }</pre>
+ * </code></pre>
  *
  * <h2>Transaction</h2>
  *
@@ -66,17 +66,17 @@
  *
  * Reference {@link guru.mikelue.jdut.jdbc.function.Transactional}.
  *
- * <pre class="java">{@code
- * JdbcVoidFunction<Connection> jdbcFunc = JdbcTemplateFactory.buildRunnable(
- *     () -> dataSource.getConnection(), // The supplier provides connection object
- *     connection -> {
+ * <pre><code class="java">
+ * JdbcVoidFunction&lt;Connection&gt; jdbcFunc = JdbcTemplateFactory.buildRunnable(
+ *     () -&gt; dataSource.getConnection(), // The supplier provides connection object
+ *     connection -&gt; {
  *         // Using connection....
  *     },
- *     surroundingList -> {
+ *     surroundingList -&gt; {
  *         surroundingList.add(Transactional::new);
  *     };
  * )
- * }</pre>
+ * </code></pre>
  *
  * @see guru.mikelue.jdut.jdbc.JdbcFunction
  * @see guru.mikelue.jdut.jdbc.JdbcTemplateFactory

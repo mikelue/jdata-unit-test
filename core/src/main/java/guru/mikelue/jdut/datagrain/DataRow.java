@@ -32,21 +32,21 @@ public class DataRow {
  	 * <h3><em style="color:red">Infinite recursion</em> while using {@link Supplier} for value of field</h3>
  	 * In following code snippet, the builder will set-up <em style="color:red">a field which cause infinite recursion while getting data</em>:
  	 *
- 	 * <pre class="java">{@code
- 	 * builder -> builder.fieldOfValueSupplier(
- 	 *     "ct_1", () -> 30 + builder.getDataSupplier("ct_1").get().get()
+ 	 * <pre><code class="java">
+ 	 * builder -&gt; builder.fieldOfValueSupplier(
+ 	 *     "ct_1", () -&gt; 30 + builder.getDataSupplier("ct_1").get().get()
  	 * )
- 	 * }</pre>
+ 	 * </code></pre>
  	 *
  	 * Since the lazy evaluation of lambda expression, the new lambda expression of <em>"ct_1"</em> would be
  	 * a self-reference to builder.<br>
  	 * Instead, you should keep "<b>the old instance of lambda expression</b>":
- 	 * <pre class="java">{@code
- 	 * builder -> {
- 	 *     final Supplier<Integer> oldSupplier = builder.getDataSupplier("ct_1").get();
- 	 *     builder.fieldOfValueSupplier("ct_1", () -> 30 + oldSupplier.get());
+ 	 * <pre><code class="java">
+ 	 * builder -&gt; {
+ 	 *     final Supplier&lt;Integer&gt; oldSupplier = builder.getDataSupplier("ct_1").get();
+ 	 *     builder.fieldOfValueSupplier("ct_1", () -&gt; 30 + oldSupplier.get());
  	 * }
- 	 * }</pre>
+ 	 * </code></pre>
 	 */
 	public class Builder {
 		private DataField.Factory fieldFactory = null;
@@ -195,19 +195,19 @@ public class DataRow {
 		 * <p style="color:red">Note: be careful of lazy building, which may cause infinite recursion</p>
 		 *
 		 * <b style="color:red">Following code will cause infinite recursion</b>
-		 * <pre class="java">{@code
-		 * Supplier<Integer> wrappedSupplier = () -> 20 + builder.<Integer>getDataSupplier("ct_1").get().get();
+		 * <pre><code class="java">
+		 * Supplier&lt;Integer&gt; wrappedSupplier = () -&gt; 20 + builder.&lt;Integer&gt;getDataSupplier("ct_1").get().get();
 		 * builder.fieldOfValueSupplier("col_1", wrappedSupplier);
-		 * }</pre>
+		 * </code></pre>
 		 *
 		 * <b style="color:green">Instead, you should:</b>
-		 * <pre class="java">{@code
+		 * <pre><code class="java">
 		 * // Keep the reference of supplier in current lambda of builder
-		 * Supplier<Integer> sourceSupplier = builder.<Integer>getDataSupplier("ct_1").get();
-		 * Supplier<Integer> wrappedSupplier = () -> 20 + sourceSupplier.get();
+		 * Supplier&lt;Integer&gt; sourceSupplier = builder.&lt;Integer&gt;getDataSupplier("ct_1").get();
+		 * Supplier&lt;Integer&gt; wrappedSupplier = () -&gt; 20 + sourceSupplier.get();
 		 *
 		 * builder.fieldOfValueSupplier("col_1", wrappedSupplier);
-		 * }</pre>
+		 * </code></pre>
 		 *
 		 * @param <T> The type of data for the supplier
 		 * @param columnName The name of column
