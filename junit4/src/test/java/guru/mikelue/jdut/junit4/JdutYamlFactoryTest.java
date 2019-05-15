@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -23,6 +22,8 @@ import guru.mikelue.jdut.junit4.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.operation.DefaultOperators;
 import guru.mikelue.jdut.yaml.YamlConductorFactory;
 
+// file: classpath:guru/mikelue/jdut/junit4
+// 	-> JdutYamlFactoryForClassRuleTest.yaml
 public class JdutYamlFactoryTest extends AbstractDataSourceTestBase {
 	private static YamlConductorFactory conductorFactory;
 
@@ -31,6 +32,8 @@ public class JdutYamlFactoryTest extends AbstractDataSourceTestBase {
 	@Rule
 	public JdutYamlFactory jdutYamlFactoryForMethodLevel = new JdutYamlFactory(conductorFactory);
 
+	// file: classpath:guru/mikelue/jdut/junit4
+	// 	-> JdutYamlFactoryForClassRuleTest-sampleTest.yaml
 	@Test @JdutResource
 	public void sampleTest() throws SQLException
 	{
