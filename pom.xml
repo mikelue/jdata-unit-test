@@ -19,6 +19,7 @@
 		<module>core</module>
 		<module>testng</module>
 		<module>junit4</module>
+		<module>junit5</module>
 	</modules>
 
 	<!--
@@ -142,6 +143,7 @@
 		  - Setting for maven-compiler-plugin
 		  -->
 		<maven.compiler.release>8</maven.compiler.release>
+		<maven.compiler.source>1.8</maven.compiler.source>
 		<!-- :~) -->
 	</properties>
 
@@ -493,10 +495,16 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.1.0</version>
 					<configuration>
+						<javaApiLinks>
+							<property>
+								<name>api_1.8</name>
+								<value>https://docs.oracle.com/javase/8/docs/api/</value>
+							</property>
+						</javaApiLinks>
 						<footer><![CDATA[
-							<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/rainbow.min.css" />
+							<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/github.min.css" />
 							<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/highlight.min.js"></script>
 							<script>hljs.initHighlightingOnLoad();</script>
 						]]></footer>
@@ -504,6 +512,7 @@
 							<link>https://jitpack.io/com/github/cbeust/testng/master/javadoc/</link>
 							<link>https://jdut.gh.mikelue.guru/apidocs/</link>
 							<link>https://junit.org/junit4/javadoc/latest/</link>
+							<link>https://junit.org/junit5/docs/current/api/</link>
 						</links>
 						<additionalOptions>--allow-script-in-comments</additionalOptions>
 					</configuration>
