@@ -13,7 +13,7 @@ public class AppContextExtension implements BeforeAllCallback, AfterAllCallback 
 
 	public static ApplicationContext getAppContext(ExtensionContext junitContext)
 	{
-		Store store = junitContext.getStore(Namespace.GLOBAL);
+		Store store = getStore(junitContext);
 		return store.get(NAME_APP_CONTEXT, ApplicationContext.class);
 	}
 
@@ -22,10 +22,7 @@ public class AppContextExtension implements BeforeAllCallback, AfterAllCallback 
 	{
 		Store store = getStore(junitContext);
 
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(DataSourceContext.class);
-		ctx.refresh();
-
+		AnnotationConfigApplicationContext ctx = newAppContext();
 		store.put(NAME_APP_CONTEXT, ctx);
 	}
 
@@ -33,10 +30,18 @@ public class AppContextExtension implements BeforeAllCallback, AfterAllCallback 
 	public void afterAll(ExtensionContext junitContext) throws Exception
 	{
 		Store store = getStore(junitContext);
-
 		AnnotationConfigApplicationContext appContext = store.remove(NAME_APP_CONTEXT, AnnotationConfigApplicationContext.class);
 		appContext.close();
 		appContext = null;
+	}
+
+	public static AnnotationConfigApplicationContext newAppContext()
+	{
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.register(DataSourceContext.class);
+		ctx.refresh();
+
+		return ctx;
 	}
 
 	private static Store getStore(ExtensionContext junitContext)

@@ -1,38 +1,40 @@
 package guru.mikelue.jdut.junit5.test;
 
-import java.io.Reader;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import guru.mikelue.jdut.ConductorConfig;
 import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.junit5.JdutYamlFactory;
-import guru.mikelue.jdut.junit5.example.SchemaSetup;
 import guru.mikelue.jdut.operation.DefaultOperators;
-import guru.mikelue.jdut.yaml.ReaderFunctions;
 import guru.mikelue.jdut.yaml.YamlConductorFactory;
 
+@TestInstance(PER_CLASS)
 @ExtendWith({ AppContextExtension.class, SampleJdutYamlExtension.class })
 public abstract class AbstractDataSourceTestBase {
 	public AbstractDataSourceTestBase() {}
 
 	@RegisterExtension
-	static TestInstancePostProcessor appContextSetup = new TestInstancePostProcessor() {
+	static BeforeAllCallback appContextSetup = new BeforeAllCallback() {
 		@Override
-		public void postProcessTestInstance(Object instance, ExtensionContext context) throws Exception
+		public void beforeAll(ExtensionContext context) throws Exception
 		{
-			AbstractDataSourceTestBase testBase = (AbstractDataSourceTestBase)instance;
+			AbstractDataSourceTestBase testBase = (AbstractDataSourceTestBase)context.getRequiredTestInstance();
 			testBase.appContext = AppContextExtension.getAppContext(context);
 		}
 	};
@@ -42,6 +44,20 @@ public abstract class AbstractDataSourceTestBase {
 	public DataSource getDataSource()
 	{
 		return appContext.getBean(DataSource.class);
+	}
+
+	/**
+	 * @return the appContext
+	 */
+	public ApplicationContext getAppContext() {
+		return appContext;
+	}
+
+	/**
+	 * @param appContext the appContext to set
+	 */
+	public void setAppContext(ApplicationContext appContext) {
+		this.appContext = appContext;
 	}
 }
 
@@ -54,14 +70,11 @@ class SampleJdutYamlExtension extends JdutYamlFactory {
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception
 	{
-		Class<?> targetClass = context.getRequiredTestClass();
-		Function<String, Reader> readerByClass = ReaderFunctions.loadByClass(targetClass);
-		DataSource dataSoruce = AppContextExtension.getAppContext(context).getBean(DataSource.class);
+		DataSource dataSource = AppContextExtension.getAppContext(context).getBean(DataSource.class);
 
 		factory = YamlConductorFactory.build(
-			dataSoruce,
+			dataSource,
 			builder -> builder
-				.resourceLoader(readerByClass)
 				.namedSupplier(
 					"random_date", SampleJdutYamlExtension::randomDate
 				)
@@ -90,9 +103,6 @@ class SampleJdutYamlExtension extends JdutYamlFactory {
 					}
 				)
 		);
-
-		SchemaSetup.buildSchema(dataSoruce);
-
 		super.beforeAll(context);
 	}
 	@Override

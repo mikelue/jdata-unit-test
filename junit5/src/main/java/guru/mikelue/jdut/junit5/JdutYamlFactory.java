@@ -1,9 +1,14 @@
 package guru.mikelue.jdut.junit5;
 
+import java.io.Reader;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
+
+import javax.sql.DataSource;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -15,9 +20,11 @@ import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import guru.mikelue.jdut.ConductorConfig;
 import guru.mikelue.jdut.DuetConductor;
 import guru.mikelue.jdut.annotation.JdutResource;
 import guru.mikelue.jdut.annotation.JdutResourceNaming;
+import guru.mikelue.jdut.yaml.ReaderFunctions;
 import guru.mikelue.jdut.yaml.YamlConductorFactory;
 
 /**
@@ -29,7 +36,7 @@ import guru.mikelue.jdut.yaml.YamlConductorFactory;
  * </p>
  *
  * <p>To use this class, you should implement {@link #getYamlConductorFactory} method to set-up
- * {@link javax.sql.DataSource} and related affairs of your test data.
+ * {@link DataSource} and related affairs of your test data.
  * </p>
  *
  * <p>By {@link BeforeEachCallback} and {@link AfterAllCallback},
@@ -81,7 +88,7 @@ public abstract class JdutYamlFactory implements BeforeAllCallback, AfterAllCall
 	 *
 	 * @return new object
 	 */
-	public static JdutYamlFactory build(Supplier<YamlConductorFactory> supplier)
+	public static JdutYamlFactory buildByFactory(Supplier<YamlConductorFactory> supplier)
 	{
 		return new JdutYamlFactory() {
 			@Override
@@ -90,6 +97,39 @@ public abstract class JdutYamlFactory implements BeforeAllCallback, AfterAllCall
 				return supplier.get();
 			}
 		};
+	}
+
+	/**
+	 * Builds a new object by {@link Supplier} of {@link DataSource}.
+	 *
+	 * @param supplier The functional interface of supplying {@link DataSource}
+	 *
+	 * @return new object
+	 */
+	public static JdutYamlFactory buildByDataSource(Supplier<DataSource> supplier)
+	{
+		return new JdutYamlFactory() {
+			@Override
+			protected YamlConductorFactory getYamlConductorFactory(ExtensionContext context, Event event)
+			{
+				return YamlConductorFactory.build(supplier.get());
+			}
+		};
+	}
+
+	/**
+	 * Constructs a builder for {@link ConductorConfig} by default convention for resource loading(from testing class).
+	 *
+	 * @param context The context provided by JUnit 5
+	 *
+	 * @return new builder
+	 */
+	public static Consumer<ConductorConfig.Builder> defaultBuilderOfConductorConfig(ExtensionContext context)
+	{
+		Class<?> targetClass = context.getRequiredTestClass();
+		Function<String, Reader> readerByClass = ReaderFunctions.loadByClass(targetClass);
+
+		return builder -> builder.resourceLoader(readerByClass);
 	}
 
 	/**
@@ -331,7 +371,7 @@ public abstract class JdutYamlFactory implements BeforeAllCallback, AfterAllCall
 	}
 
 	/**
-	 * Builds the {@link DuetConductor} by default convention.
+	 * Builds the {@link DuetConductor} by default convention({@link #defaultBuilderOfConductorConfig}).
 	 *
 	 * You can override this method to customize your own arsenal of test data.
 	 *
@@ -343,7 +383,8 @@ public abstract class JdutYamlFactory implements BeforeAllCallback, AfterAllCall
 	protected DuetConductor buildDuetConductor(ExtensionContext context, Event event)
 	{
 		return getYamlConductorFactory(context, event).conductResource(
-			event.getResourceUrl(context)
+			event.getResourceUrl(context),
+			defaultBuilderOfConductorConfig(context)
 		);
 	}
 
