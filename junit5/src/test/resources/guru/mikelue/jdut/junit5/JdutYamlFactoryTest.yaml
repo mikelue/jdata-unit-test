@@ -1,0 +1,33 @@
+%TAG !jdut! tag:jdut.mikelue.guru:1.0/
+%TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
+%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
+
+---
+- !sql!table ex_artist : [
+    { at_id: &artist_id 40201, at_name: "John Coltrane" }
+]
+
+- !sql!table ex_album : {
+    data: [
+        {
+            ab_id: 3281, ab_name: "GK 1",
+            ab_duration_seconds: 4560, ab_release_date: "2011-06-07",
+            ab_type: 11, ab_at_id: *artist_id
+        },
+        {
+            ab_id: 3282, ab_name: "GK 2",
+            ab_duration_seconds: 4560, ab_release_date: "2011-06-07",
+            ab_type: 11, ab_at_id: *artist_id
+        },
+        {
+            ab_id: 3283, ab_name: "GK 3",
+            ab_duration_seconds: 4560, ab_release_date: "2011-06-07",
+            ab_type: 2, ab_at_id: *artist_id
+        },
+        {
+            ab_id: 3284, ab_name: "GK 4",
+            ab_duration_seconds: 4560, ab_release_date: "2011-06-07",
+            ab_type: 3, ab_at_id: *artist_id
+        }
+    ]
+}
