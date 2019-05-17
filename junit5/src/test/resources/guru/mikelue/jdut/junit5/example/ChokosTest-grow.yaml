@@ -1,0 +1,9 @@
+%TAG !jdut! tag:jdut.mikelue.guru:1.0/
+%TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
+%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
+
+---
+- !sql!table ex_basket : [
+    { bk_id: 201, bk_name: "Steve" },
+    { bk_id: 202, bk_name: "Bob" },
+]

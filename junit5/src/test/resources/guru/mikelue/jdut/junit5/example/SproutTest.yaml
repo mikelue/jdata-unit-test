@@ -1,0 +1,13 @@
+%TAG !jdut! tag:jdut.mikelue.guru:1.0/
+%TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
+%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
+
+---
+- !sql!code
+  build_operation: !sql!statement
+    CREATE TABLE ex_basket(
+        bk_id INT PRIMARY KEY,
+        bk_name VARCHAR(64) NOT NULL
+    );
+  clean_operation: !sql!statement
+    DROP TABLE ex_basket
