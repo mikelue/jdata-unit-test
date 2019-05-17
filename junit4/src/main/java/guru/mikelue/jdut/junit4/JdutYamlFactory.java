@@ -2,7 +2,9 @@ package guru.mikelue.jdut.junit4;
 
 import java.io.Reader;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 
 import org.junit.ClassRule;
@@ -13,6 +15,7 @@ import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import guru.mikelue.jdut.ConductorConfig;
 import guru.mikelue.jdut.DuetConductor;
 import guru.mikelue.jdut.annotation.JdutResource;
 import guru.mikelue.jdut.annotation.JdutResourceNaming;
@@ -54,6 +57,45 @@ public class JdutYamlFactory implements TestRule {
 	private Logger logger = LoggerFactory.getLogger(JdutYamlFactory.class);
 
 	private final YamlConductorFactory yamlFactory;
+
+	/**
+	 * Constructs this object by {@link Supplier} of {@link DataSource}.
+	 *
+	 * @param supplier Provides {@link DataSource}
+	 *
+	 * @return new object
+	 */
+	public static JdutYamlFactory buildByDataSource(Supplier<DataSource> supplier)
+	{
+		return new JdutYamlFactory(supplier.get());
+	}
+
+	/**
+	 * Constructs this object by {@link Supplier} of {@link YamlConductorFactory}.
+	 *
+	 * @param supplier Provides {@link YamlConductorFactory}
+	 *
+	 * @return new object
+	 */
+	public static JdutYamlFactory buildByFactory(Supplier<YamlConductorFactory> supplier)
+	{
+		return new JdutYamlFactory(supplier.get());
+	}
+
+	/**
+	 * Constructs a builder for {@link ConductorConfig} by default convention for resource loading(from testing class).
+	 *
+	 * @param desc The test information provided by JUnit 4
+	 *
+	 * @return new builder
+	 */
+	public static Consumer<ConductorConfig.Builder> defaultBuilderOfConductorConfig(Description desc)
+	{
+		Class<?> targetClass = desc.getTestClass();
+		Function<String, Reader> readerByClass = ReaderFunctions.loadByClass(targetClass);
+
+		return builder -> builder.resourceLoader(readerByClass);
+	}
 
 	/**
 	 * Constructs this object by data source.
@@ -152,22 +194,21 @@ public class JdutYamlFactory implements TestRule {
 		);
 
 		Class<?> testClass = description.getTestClass();
-		Function<String, Reader> readerByClass = ReaderFunctions.loadByClass(testClass);
+		Consumer<ConductorConfig.Builder> config = defaultBuilderOfConductorConfig(description);
 
 		/**
 		 * This method is used for @ClassRule
 		 */
 		if (description.getMethodName() == null) {
 			return yamlFactory.conductResource(
-				JdutResourceNaming.naming("{1}", testClass, ".yaml"),
-				config -> config.resourceLoader(readerByClass)
+				JdutResourceNaming.naming("{1}", testClass, ".yaml"), config
 			);
 		}
 		// :~)
 
 		return yamlFactory.conductResource(
 			String.format("%s-%s.yaml", testClass.getSimpleName(), description.getMethodName()),
-			config -> config.resourceLoader(readerByClass)
+			config
 		);
 	}
 }

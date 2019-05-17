@@ -17,7 +17,6 @@ import guru.mikelue.jdut.assertion.ResultSetAssert;
 import guru.mikelue.jdut.datagrain.DataGrain;
 import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
 import guru.mikelue.jdut.jdbc.function.DbResultSet;
-import guru.mikelue.jdut.junit4.example.SchemaSetup;
 import guru.mikelue.jdut.junit4.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.operation.DefaultOperators;
 import guru.mikelue.jdut.yaml.YamlConductorFactory;
@@ -84,8 +83,6 @@ public class JdutYamlFactoryTest extends AbstractDataSourceTestBase {
 					}
 				)
 		);
-
-		SchemaSetup.buildSchema(getDataSource());
 	}
 	@AfterClass
 	public static void releaseYamlFactory()

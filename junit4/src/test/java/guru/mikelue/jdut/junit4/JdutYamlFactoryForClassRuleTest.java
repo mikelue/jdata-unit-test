@@ -12,7 +12,6 @@ import guru.mikelue.jdut.annotation.JdutResource;
 import guru.mikelue.jdut.assertion.ResultSetAssert;
 import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
 import guru.mikelue.jdut.jdbc.function.DbResultSet;
-import guru.mikelue.jdut.junit4.example.SchemaSetup;
 import guru.mikelue.jdut.junit4.test.AbstractDataSourceTestBase;
 
 @JdutResource
@@ -26,10 +25,9 @@ public class JdutYamlFactoryForClassRuleTest extends AbstractDataSourceTestBase 
 				@Override
 				public void evaluate() throws Throwable
 				{
-					SchemaSetup.buildSchema(getDataSource());
+					TestRule jdutRule = JdutYamlFactory.buildByDataSource(AbstractDataSourceTestBase::getDataSource);
 
-					new JdutYamlFactory(getDataSource())
-						.apply(base, description)
+					jdutRule.apply(base, description)
 						.evaluate();
 				}
 			};
