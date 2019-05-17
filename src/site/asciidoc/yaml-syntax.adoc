@@ -1,17 +1,17 @@
 = YAML Syntax
 
 :DuetConductor: link:apidocs/guru/mikelue/jdut/DuetConductor.html[DuetConductor]
-:Supplier: link:https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html[Supplier]
+:Supplier: https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html[Supplier]
 :JdbcFunction: link:apidocs/guru/mikelue/jdut/jdbc/JdbcFunction.html[JdbcFunction]
 :DataGrainDecorator: link:apidocs/guru/mikelue/jdut/decorate/DataGrainDecorator.html[DataGrainDecorator]
 
 **Why choose YAML as external representation of sample data for testing:**
 
 . The format could be edit by any of your favor editors.
-. The format could be maintained in link:https://en.wikipedia.org/wiki/Version_control[VCS].
-. The link:https://yaml.org/spec/1.1/#alias/information%20model[alias] of YAML, which benefits editing data of PK and FK on relational-database.
+. The format could be maintained in https://en.wikipedia.org/wiki/Version_control[VCS].
+. The https://yaml.org/spec/1.1/#alias/information%20model[alias] of YAML, which benefits editing data of PK and FK on relational-database.
 
-You may reference the link:https://github.com/mikelue/jdata-unit-test/tree/master/core/src/test/resources/guru/mikelue/jdut/yaml[sample YAML] used in testing code of this framework
+You may reference the https://github.com/mikelue/jdata-unit-test/tree/master/core/src/test/resources/guru/mikelue/jdut/yaml[sample YAML] used in testing code of this framework
 
 '''
 
@@ -162,7 +162,7 @@ YamlConductor.build(
 
 `clean_operation`:: The operation while executing link:apidocs/guru/mikelue/jdut/DuetConductor.html#clean--[DuetConductor.clean]
 
-`!sql!statement`:: indicates that the text is a SQL statement to be executed by link:https://docs.oracle.com/javase/8/docs/api/java/sql/Statement.html#executeUpdate-java.lang.String-[Statement.executeUpdate()].
+`!sql!statement`:: indicates that the text is a SQL statement to be executed by https://docs.oracle.com/javase/8/docs/api/java/sql/Statement.html#executeUpdate-java.lang.String-[Statement.executeUpdate()].
 
 `!sql!jdbcfunction`:: indicates that the text is the name of a {JdbcFunction}
 
@@ -298,11 +298,11 @@ See link:guidelines.haml[Guidelines]
     clean_operation: "DELETE"
 }
 
-- !sql!table tab_1 [
+- !sql!table tab_1 : [
   { col_1: 10, col_2: "String Value", col_3: !!Timestamp "2010-05-05 10:20:35+08" },
 ]
 
-- !sql!table tab_2 {
+- !sql!table tab_2 : {
   columns : [ "col_id", "col_name" ]
   data : [
     [10, "v1"],
@@ -327,6 +327,6 @@ See link:guidelines.haml[Guidelines]
 '''
 
 == References
-* link:https://yaml.org/spec/1.1/[YAML 1.1]
-* link:https://bitbucket.org/asomov/snakeyaml[SnakeYaml]
-* link:https://yaml.org/type/index.html[YAML Tag Repository]
+* https://yaml.org/spec/1.1/[YAML 1.1]
+* https://bitbucket.org/asomov/snakeyaml[SnakeYaml]
+* https://yaml.org/type/index.html[YAML Tag Repository]

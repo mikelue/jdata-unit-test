@@ -1,0 +1,180 @@
+= Guidelines
+
+:sectnums:
+
+:IInvokedMethodYamlFactoryListener: link:apidocs/guru/mikelue/jdut/testng/IInvokedMethodYamlFactoryListener.html[IInvokedMethodYamlFactoryListener]
+:ISuiteYamlFactoryListener: link:apidocs/guru/mikelue/jdut/testng/ISuiteYamlFactoryListener.html[ISuiteYamlFactoryListener]
+:ITestContextYamlFactoryListener: link:apidocs/guru/mikelue/jdut/testng/ITestContextYamlFactoryListener.html[ITestContextYamlFactoryListener]
+:JdutYamlFactory4: link:apidocs/guru/mikelue/jdut/junit4/JdutYamlFactory.html[JdutYamlFactory]
+:OperatorPredicate: link:apidocs/guru/mikelue/jdut/function/OperatorPredicate.html[OperatorPredicate]
+:DefaultOperators: link:apidocs/guru/mikelue/jdut/operation/DefaultOperators.html[DefaultOperators]
+:JdutYamlFactory5: link:apidocs/guru/mikelue/jdut/junit5/JdutYamlFactory.html[JdutYamlFactory]
+:JUnit4: https://junit.org/junit4/[JUnit4]
+:JUnit5: https://junit.org/junit5/[JUnit5]
+:TestNG: https://testng.org/[TestNG]
+
+This article contains the integration for various test frameworks.
+
+For quick example, see link:examples.html[Examples].
+
+'''
+
+== TestNG
+
+You should add dependency of `guru.mikelue.jdut:testng` before using this module.
+
+=== Listeners
+There are three main listeners to be used with
+
+{IInvokedMethodYamlFactoryListener}:: Default listener for building/cleaning data per-method
+
+{ISuiteYamlFactoryListener}:: Default listener for building/cleaning data per-suite
+
+{ITestContextYamlFactoryListener}:: Default listeners for building/clean data per-test
+
+You may extend the listeners to customize usage of YAML API
+
+=== Multiple listeners
+
+If you would use multiple listeners for different tests, the {TestNG} engine **would
+executes all of the listeners even if you don't annotate the class**.
+
+Every listener provided by JDUT has `needConductData` method to let you write your own logic that is
+whether or not to use the listener in certain context.
+
+
+=== Example
+Following example demonstrates the integration with {TestNG}.
+
+link:apidocs/guru/mikelue/jdut/annotation/JdutResource.html[@JdutResource]:: you may build your own processor to process the content of JDUT resources.
+
+link:apidocs/guru/mikelue/jdut/testng/TestNGConfig.html[@TestNGConfig]:: defines behaviour of TestNG.
+
+[source,java]
+----
+import guru.mikelue.jdut.annotation.JdutResource;
+import guru.mikelue.jdut.testng.IInvokedMethodYamlFactoryListener;
+import guru.mikelue.jdut.testng.TestNGConfig;
+
+@Listeners(IInvokedMethodYamlFactoryListener.class)
+public class YourTest {
+	/**
+	 * This method would look for YourTest-do1-yaml in folder idv/you/sample of classpath
+	 */
+	@Test @JdutResource
+	public void do1() {}
+
+	/**
+	 * 1. This method would look for YourTest-do2-yaml in folder idv/you/sample of classpath.
+	 * 2. The building and cleaning of data would be at first and last testing on the method with data provider, correspondingly.
+	 */
+	@Test(dataProvider="Do2")
+	@JdutResource @TestNGConfig(oneTimeOnly=true)
+	public void do2(int value) {}
+	private Object[][] getDo2()
+	{
+		return new Object[][] {
+			{ 1 },
+			{ 2 },
+		};
+	}
+
+	/**
+	 * Nothing would be built
+	 */
+	@Test
+	public void do3() {}
+}
+----
+
+== JUnit 5
+
+You should add dependency of `guru.mikelue.jdut:junit5` before using this module.
+
+{JdutYamlFactory5} provides conventions for loading of YAML files.
+
+.By data source link:{src-junit5-github-java}/SproutTest.java[^src^]
+====
+You can use link:apidocs/guru/mikelue/jdut/junit5/JdutYamlFactory.html#buildByDataSource(java.util.function.Supplier)[buildByDataSource()] to initialize a {JdutYamlFactory5}.
+
+[source,java]
+----
+include::{src-junit5-java}/SproutTest.java[tags=test_class;package]
+----
+
+<1> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/SproutTest.yaml` link:{src-junit5-github-resources}/SproutTest.yaml[^src^]
+<2> register factory by data source
+<3> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/SproutTest-grow.yaml` link:{src-junit5-github-resources}/SproutTest-grow.yaml[^src^]
+
+====
+
+.By customized YamlConductorFactory link:{src-junit5-github-java}/ChokosTest.java[^src^]
+====
+You can use link:apidocs/guru/mikelue/jdut/junit5/JdutYamlFactory.html#buildByFactory(java.util.function.Supplier)[buildByFactory()] to initialize a {JdutYamlFactory5}.
+
+[source,java]
+----
+include::{src-junit5-java}/ChokosTest.java[tags=test_class;package]
+----
+
+<1> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/ChokosTest.yaml` link:{src-junit5-github-resources}/ChokosTest.yaml[^src^]
+<2> register factory by data source
+<3> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/ChokosTest-grow.yaml` link:{src-junit5-github-resources}/ChokosTest-grow.yaml[^src^]
+
+====
+
+.By inheritance and @ExtendWith link:{src-junit5-github-java}/BroccoliTest.java[^src^]
+====
+
+You should extend link:apidocs/guru/mikelue/jdut/junit5/JdutYamlFactory.html[JdutYamlFactory] and implement link:apidocs/guru/mikelue/jdut/junit5/JdutYamlFactory#getYamlConductorFactory.html[getYamlConductorFactory()] method.
+
+[source,java]
+----
+include::{src-junit5-java}/BroccoliTest.java[tag=factory]
+----
+
+<1> You can customize data generation by JDUT's YAML configuration
+
+Put the factory in https://junit.org/junit5/docs/current/api/org/junit/jupiter/api/extension/ExtendWith.html[@ExtendWith]
+
+[source,java]
+----
+include::{src-junit5-java}/BroccoliTest.java[tags=test_class;package]
+----
+
+<1> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/BroccoliTest.yaml` link:{src-junit5-github-resources}/BroccoliTest.yaml[^src^]
+<2> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/BroccoliTest-grow.yaml` link:{src-junit5-github-resources}/BroccoliTest-grow.yaml[^src^]
+
+====
+
+== JUnit 4
+
+You should add dependency of `guru.mikelue.jdut:junit4` before using this module.
+
+This module supports JUnit4 since version of **4.9**.
+
+=== Rule
+
+The only rule provided by this module is {JdutYamlFactory4}.
+You may override `buildDuetConductor` method to load your own YAML file.
+
+
+[source,java]
+----
+import org.junit.Rule;
+import org.junit.Test;
+
+import guru.mikelue.jdut.junit4.JdutYamlFactoryTest;
+import guru.mikelue.jdut.annotation.JdutResource;
+
+public class YourSomethingTest {
+	@Rule
+	public JdutYamlFactory jdutYamlFactoryForMethodLevel = new JdutYamlFactory(conductorFactory);
+
+	@Test @JdutResource
+	public void sampleTest()
+	{
+		/* Your tests... */
+	}
+}
+----

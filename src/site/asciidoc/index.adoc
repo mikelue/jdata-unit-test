@@ -21,7 +21,7 @@ JDUT currently contains two modules:
 
 == Install
 
-Currently, this framework is on link:https://oss.sonatype.org/content/repositories/snapshots/guru/mikelue/jdut/[SNAPSHOT of oss.sonatype.org].
+Currently, this framework is on https://oss.sonatype.org/content/repositories/snapshots/guru/mikelue/jdut/[SNAPSHOT of oss.sonatype.org].
 
 You should put following setting of repository:
 

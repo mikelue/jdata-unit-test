@@ -12,28 +12,28 @@
 :DataGrainDecorator: link:apidocs/guru/mikelue/jdut/decorate/DataGrainDecorator.html[DataGrainDecorator]
 :YamlConductorFactory: link:apidocs/guru/mikelue/jdut/yaml/YamlConductorFactory.html[YamlConductorFactory]
 :ConductorContext: link:apidocs/guru/mikelue/jdut/ConductorContext.html[ConductorContext]
-:ThreadLocal: link:https://docs.oracle.com/javase/8/docs/api/java/lang/ThreadLocal.html[ThreadLocal]
+:ThreadLocal: https://docs.oracle.com/javase/8/docs/api/java/lang/ThreadLocal.html[ThreadLocal]
 :IInvokedMethodYamlFactoryListener: link:apidocs/guru/mikelue/jdut/testng/IInvokedMethodYamlFactoryListener.html[IInvokedMethodYamlFactoryListener]
 :ISuiteYamlFactoryListener: link:apidocs/guru/mikelue/jdut/testng/ISuiteYamlFactoryListener.html[ISuiteYamlFactoryListener]
 :ITestContextYamlFactoryListener: link:apidocs/guru/mikelue/jdut/testng/ITestContextYamlFactoryListener.html[ITestContextYamlFactoryListener]
 :JdutYamlFactory: link:apidocs/guru/mikelue/jdut/junit4/JdutYamlFactory.html[JdutYamlFactory]
 :OperatorPredicate: link:apidocs/guru/mikelue/jdut/function/OperatorPredicate.html[OperatorPredicate]
 :DefaultOperators: link:apidocs/guru/mikelue/jdut/operation/DefaultOperators.html[DefaultOperators]
-:postgresql: link:https://www.postgresql.org/[PostgreSql]
-:mysql: link:https://www.mysql.com/[MySql]
-:oracle: link:https://www.oracle.com/database/index.html[Oracle]
-:mssql: link:https://www.microsoft.com/en-cy/sql-server/sql-server-downloads[MsSql]
-:h2: link:https://www.h2database.com/[H2]
-:hsqldb: link:https://hsqldb.org/[HsqlDb]
-:derby: link:https://db.apache.org/derby/[Derby]
+:postgresql: https://www.postgresql.org/[PostgreSql]
+:mysql: https://www.mysql.com/[MySql]
+:oracle: https://www.oracle.com/database/index.html[Oracle]
+:mssql: https://www.microsoft.com/en-cy/sql-server/sql-server-downloads[MsSql]
+:h2: https://www.h2database.com/[H2]
+:hsqldb: https://hsqldb.org/[HsqlDb]
+:derby: https://db.apache.org/derby/[Derby]
 :DataGrainOperator: link:apidocs/guru/mikelue/jdut/operation/DataGrainOperator.html[DataGrainOperator]
-:Consumer: link:https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html[Consumer]
-:DataSource: link:https://docs.oracle.com/javase/8/docs/api/javax/sql/DataSource.html[DataSource]
-:Connection: link:https://docs.oracle.com/javase/8/docs/api/java/sql/Connection.html[Connection]
-:Reader: link:https://docs.oracle.com/javase/8/docs/api/java/io/Reader.html[Reader]
-:Map: link:https://docs.oracle.com/javase/8/docs/api/java/util/Map.html[Map]
-:JUnit4: link:https://junit.org/junit4/[JUnit4]
-:TestNG: link:https://testng.org/[TestNG]
+:Consumer: https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html[Consumer]
+:DataSource: https://docs.oracle.com/javase/8/docs/api/javax/sql/DataSource.html[DataSource]
+:Connection: https://docs.oracle.com/javase/8/docs/api/java/sql/Connection.html[Connection]
+:Reader: https://docs.oracle.com/javase/8/docs/api/java/io/Reader.html[Reader]
+:Map: https://docs.oracle.com/javase/8/docs/api/java/util/Map.html[Map]
+:JUnit4: https://junit.org/junit4/[JUnit4]
+:TestNG: https://testng.org/[TestNG]
 
 This article contains the main building blocks for usage of JDUT.
 
@@ -48,7 +48,7 @@ This section describes the usage of pure-Java API for building/cleaning data
 === Set-up data grain
 
 {DataGrain}:: Used to set-up values and definitions of data
-link:https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html[Supplier<?>]:: The value of field could be a supplier, which working as lazy-evaluation
+https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html[Supplier<?>]:: The value of field could be a supplier, which working as lazy-evaluation
 
 See link:xref-test/guru/mikelue/jdut/datagrain/DataGrainTest.html[DataGrainTest] for full example
 
@@ -230,12 +230,12 @@ dataConductor.conduct(
 ==== For Java API
 
 The build-in operators of JDUT would use the type of value
-to decide which method of `setXXX` in link:https://docs.oracle.com/javase/8/docs/api/java/sql/PreparedStatement.html[PreparedStatement]
+to decide which method of `setXXX` in https://docs.oracle.com/javase/8/docs/api/java/sql/PreparedStatement.html[PreparedStatement]
 to be called for setting parameter of SQL.
 
-link:https://docs.oracle.com/javase/8/docs/api/java/util/Date.html[java.util.Date]:: the engine would use link:https://docs.oracle.com/javase/8/docs/api/java/sql/PreparedStatement.html#setTimestamp-int-java.sql.Timestamp-[PreparedStatement.setTimestamp()].
+https://docs.oracle.com/javase/8/docs/api/java/util/Date.html[java.util.Date]:: the engine would use https://docs.oracle.com/javase/8/docs/api/java/sql/PreparedStatement.html#setTimestamp-int-java.sql.Timestamp-[PreparedStatement.setTimestamp()].
 
-**Type cannot be decided**:: the engine would use link:https://docs.oracle.com/javase/8/docs/api/java/sql/PreparedStatement.html#setObject-int-java.lang.Object-[PreparedStatement.setObject()]
+**Type cannot be decided**:: the engine would use https://docs.oracle.com/javase/8/docs/api/java/sql/PreparedStatement.html#setObject-int-java.lang.Object-[PreparedStatement.setObject()]
 
 ==== For YAML
 . The engine(loading YAML) builds the data into {DataGrain}. +
@@ -303,15 +303,15 @@ DOUBLE, FLOAT
 
 [[misc-1,**1*]]**1* - Could be converted to text-type of SQL
 
-`NUMERIC` and `DECIMAL`:: the value would be converted into link:https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html[BigDecimal].
+`NUMERIC` and `DECIMAL`:: the value would be converted into https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html[BigDecimal].
 
 ==== Complex Value
-For type of complex value, you could use link:https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html[Supplier<?>] to create data of these types:
+For type of complex value, you could use https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html[Supplier<?>] to create data of these types:
 **ARRAY**, **DISTINCT**, **JAVA_OBJECT**, **OTHER**, **REF**, **REF_CURSOR**, **ROWID**, **STRUCT**
 
 ==== References
-* link:https://bitbucket.org/asomov/snakeyaml/wiki/Documentation#markdown-header-yaml-tags-and-java-types[Data types provided by SnakeYaml]
-* link:https://bitbucket.org/asomov/snakeyaml/wiki/Documentation[SnakeYaml Documentation]
+* https://bitbucket.org/asomov/snakeyaml/wiki/Documentation#markdown-header-yaml-tags-and-java-types[Data types provided by SnakeYaml]
+* https://bitbucket.org/asomov/snakeyaml/wiki/Documentation[SnakeYaml Documentation]
 
 '''
 
@@ -368,7 +368,7 @@ YamlConductorFactory yamlConductor = YamlConductorFactory.build(
 
 === Build DuetConductor
 
-{DuetConductor}:: This interface defines build/clean data for link:https://en.wikipedia.org/wiki/Unit_testing[unit test].
+{DuetConductor}:: This interface defines build/clean data for https://en.wikipedia.org/wiki/Unit_testing[unit test].
 
 [source,java]
 ----
@@ -406,15 +406,15 @@ See link:apidocs/guru/mikelue/jdut/yaml/ReaderFunctions.html[ReaderFunctions] fo
 '''
 
 ==== Execute build/clean
-The {DuetConductor} should be used in proper event defined by link:https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#Java[testing framework].
+The {DuetConductor} should be used in proper event defined by https://en.wikipedia.org/wiki/List_of_unit_testing_frameworks#Java[testing framework].
 
 For {JUnit4}::
-	* link:apidocs/guru/mikelue/jdut/DuetConductor.html#build--[build()] - Could be used in link:https://junit.org/junit4/javadoc/latest/org/junit/Before.html[@Before] annotated method.
-	* link:apidocs/guru/mikelue/jdut/DuetConductor.html#clean--[clean()] - Could be used in link:https://junit.org/junit4/javadoc/latest/org/junit/After.html[@After] annotated method.
+	* link:apidocs/guru/mikelue/jdut/DuetConductor.html#build--[build()] - Could be used in https://junit.org/junit4/javadoc/latest/org/junit/Before.html[@Before] annotated method.
+	* link:apidocs/guru/mikelue/jdut/DuetConductor.html#clean--[clean()] - Could be used in https://junit.org/junit4/javadoc/latest/org/junit/After.html[@After] annotated method.
 
 For {TestNG}::
-	* link:apidocs/guru/mikelue/jdut/DuetConductor.html#build--[build()] - Could be used in link:https://jitpack.io/com/github/cbeust/testng/master/javadoc/org/testng/annotations/BeforeMethod.html[@BeforeMethod] annotated method.
-	* link:apidocs/guru/mikelue/jdut/DuetConductor.html#clean--[clean()] - Could be used in link:https://jitpack.io/com/github/cbeust/testng/master/javadoc/org/testng/annotations/AfterMethod.html[@AfterMethod] annotated method.
+	* link:apidocs/guru/mikelue/jdut/DuetConductor.html#build--[build()] - Could be used in https://jitpack.io/com/github/cbeust/testng/master/javadoc/org/testng/annotations/BeforeMethod.html[@BeforeMethod] annotated method.
+	* link:apidocs/guru/mikelue/jdut/DuetConductor.html#clean--[clean()] - Could be used in https://jitpack.io/com/github/cbeust/testng/master/javadoc/org/testng/annotations/AfterMethod.html[@AfterMethod] annotated method.
 
 Following example to execute the two methods when testing:
 
@@ -507,7 +507,7 @@ DataGrainDecorator replaceDecorate = ReplaceFieldDataDecorator.build(
 You can replace value with null-value checking
 
 * **DataFieldPredicates.nullValue(tableName, columnName)** - Builds a predicate to check null value for a column on table
-* **DataFieldPredicates::nonSupplier** - A predicate to check if the data of field doesn't comes from link:https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html[Supplier]
+* **DataFieldPredicates::nonSupplier** - A predicate to check if the data of field doesn't comes from https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html[Supplier]
   * This is used if you don't want to load data before the processing of operator
 
 [source,java]
@@ -534,7 +534,7 @@ DataGrainDecorator decorator = (rowBuilder -> rowBuilder.field("col_1", -1))
 	.predicate(DataRowBuilderPredicates.notExistingColumn("tabl_1", "col_1"));
 ----
 
-See link:https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html[Predicate.and(), .or()]
+See https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html[Predicate.and(), .or()]
 
 === Conductor Context
 
@@ -565,108 +565,6 @@ Any execution of link:apidocs/guru/mikelue/jdut/DataConductor.html#conduct-guru.
 
 '''
 
-== TestNG
-
-You should add dependency of `guru.mikelue.jdut:testng` before using this module.
-
-=== Listeners
-There are three main listeners to be used with
-
-{IInvokedMethodYamlFactoryListener}:: Default listener for building/cleaning data per-method
-
-{ISuiteYamlFactoryListener}:: Default listener for building/cleaning data per-suite
-
-{ITestContextYamlFactoryListener}:: Default listeners for building/clean data per-test
-
-You may extend the listeners to customize usage of YAML API
-
-=== Multiple listeners
-
-If you would use multiple listeners for different tests, the {TestNG} engine **would
-executes all of the listeners even if you don't annotate the class**.
-
-Every listener provided by JDUT has `needConductData` method to let you write your own logic that is
-whether or not to use the listener in certain context.
-
-
-=== Example
-Following example demonstrates the integration with {TestNG}.
-
-link:apidocs/guru/mikelue/jdut/annotation/JdutResource.html[@JdutResource]:: you may build your own processor to process the content of JDUT resources.
-
-link:apidocs/guru/mikelue/jdut/testng/TestNGConfig.html[@TestNGConfig]:: defines behaviour of TestNG.
-
-[source,java]
-----
-import guru.mikelue.jdut.annotation.JdutResource;
-import guru.mikelue.jdut.testng.IInvokedMethodYamlFactoryListener;
-import guru.mikelue.jdut.testng.TestNGConfig;
-
-@Listeners(IInvokedMethodYamlFactoryListener.class)
-public class YourTest {
-	/**
-	 * This method would look for YourTest-do1-yaml in folder idv/you/sample of classpath
-	 */
-	@Test @JdutResource
-	public void do1() {}
-
-	/**
-	 * 1. This method would look for YourTest-do2-yaml in folder idv/you/sample of classpath.
-	 * 2. The building and cleaning of data would be at first and last testing on the method with data provider, correspondingly.
-	 */
-	@Test(dataProvider="Do2")
-	@JdutResource @TestNGConfig(oneTimeOnly=true)
-	public void do2(int value) {}
-	private Object[][] getDo2()
-	{
-		return new Object[][] {
-			{ 1 },
-			{ 2 },
-		};
-	}
-
-	/**
-	 * Nothing would be built
-	 */
-	@Test
-	public void do3() {}
-}
-----
-
-== JUnit 4
-
-You should add dependency of `guru.mikelue.jdut:junit4` before using this module.
-
-This module supports JUnit4 since version of **4.9**.
-
-=== Rule
-
-The only rule provided by this module is {JdutYamlFactory}.
-You may override `buildDuetConductor` method to load your own YAML file.
-
-
-[source,java]
-----
-import org.junit.Rule;
-import org.junit.Test;
-
-import guru.mikelue.jdut.junit4.JdutYamlFactoryTest;
-import guru.mikelue.jdut.annotation.JdutResource;
-
-public class YourSomethingTest {
-	@Rule
-	public JdutYamlFactory jdutYamlFactoryForMethodLevel = new JdutYamlFactory(conductorFactory);
-
-	@Test @JdutResource
-	public void sampleTest()
-	{
-		/* Your tests... */
-	}
-}
-----
-
-'''
-
 == Database Vendor
 
 === Vendor-specific operators
@@ -687,7 +585,7 @@ The method of link:apidocs/guru/mikelue/jdut/operation/DefaultOperatorFactory.Bu
 You don't have to define all of the names defined in {DefaultOperators} in the {Map} of operators.
 {DefaultOperatorFactory} would fetch a default one if your mapping doesn't contain the name.
 
-See link:https://docs.oracle.com/javase/8/docs/api/java/sql/DatabaseMetaData.html[DatabaseMetaData].
+See https://docs.oracle.com/javase/8/docs/api/java/sql/DatabaseMetaData.html[DatabaseMetaData].
 
 
 **The first matched predicte would be selected for the vendor-specific operation**
@@ -760,4 +658,4 @@ In order to execute `DELETE` or `UPDATE` more precisely, following priority for 
 . Setting of keys in link:apidocs/guru/mikelue/jdut/datagrain/SchemaTable.Builder.html#keys-java.lang.String...-[SchemaTable.Builder.keys(String...)] or `keys` of YAML
 . *primary key*
 . *unique index* with least number of columns and all of their value have non-null value
-	* Choose first constraint(as order of link:https://docs.oracle.com/javase/8/docs/api/java/sql/DatabaseMetaData.html#getIndexInfo-java.lang.String-java.lang.String-java.lang.String-boolean-boolean-[DatabaseMetaData.getIndexInfo(...)])
+	* Choose first constraint(as order of https://docs.oracle.com/javase/8/docs/api/java/sql/DatabaseMetaData.html#getIndexInfo-java.lang.String-java.lang.String-java.lang.String-boolean-boolean-[DatabaseMetaData.getIndexInfo(...)])

@@ -5,7 +5,7 @@
 :DuetConductor: link:apidocs/guru/mikelue/jdut/DuetConductor.html[DuetConductor]
 :JdbcExampleTest: link:xref-test/guru/mikelue/jdut/example/JdbcExampleTest.html[JdbcExampleTest.java]
 :YamlExampleTest: link:xref-test/guru/mikelue/jdut/example/YamlExampleTest.html[YamlExampleTest.java]
-:TestNG: link:https://testng.org/[TestNG]
+:TestNG: https://testng.org/[TestNG]
 :TestNgExampleTest: link:xref-test/guru/mikelue/jdut/testng/example/TestNgExampleTest.html[TestNgExampleTest.java]
 
 This page demonstrates examples from testing code of JDUT.
@@ -131,7 +131,7 @@ break;
 
 The file {YamlExampleTest} contains runnable code for examples of using JDUT by YAML.
 
-You can find link:https://github.com/mikelue/jdata-unit-test/tree/master/core/src/test/resources/guru/mikelue/jdut/example/[YAML files] in GitHub.
+You can find https://github.com/mikelue/jdata-unit-test/tree/master/core/src/test/resources/guru/mikelue/jdut/example/[YAML files] in GitHub.
 
 === Building data by YAML
 
@@ -216,7 +216,7 @@ private void cleanData(Method method)
 
 The file {TestNgExampleTest} contains runnable code for examples of using JDUT by YAML and build-in listeners of {TestNG}.
 
-You can find link:https://github.com/mikelue/jdata-unit-test/tree/master/testng/src/test/resources/guru/mikelue/jdut/testng/example/[YAML files] in GitHub.
+You can find https://github.com/mikelue/jdata-unit-test/tree/master/testng/src/test/resources/guru/mikelue/jdut/testng/example/[YAML files] in GitHub.
 
 === Register listener(TestNG)
 Following code snippet shows the registering listener to {TestNG}.
@@ -309,11 +309,11 @@ public static class ExampleMethodListener extends IInvokedMethodYamlFactoryListe
 
 The module supports JUnit since version of **4.9**.
 
-You can find link:https://github.com/mikelue/jdata-unit-test/tree/master/junit4/src/test/resources/guru/mikelue/jdut/junit4/[YAML files] in GitHub.
+You can find https://github.com/mikelue/jdata-unit-test/tree/master/junit4/src/test/resources/guru/mikelue/jdut/junit4/[YAML files] in GitHub.
 
 === @Rule
 
-You may use link:https://junit.org/junit4/javadoc/latest/org/junit/Rule.html[@Rule] to use the conduction of data from YAML file.
+You may use https://junit.org/junit4/javadoc/latest/org/junit/Rule.html[@Rule] to use the conduction of data from YAML file.
 
 See full example from {JdutYamlFactoryTest}.
 
@@ -339,7 +339,7 @@ public class JdutYamlFactoryTest extends AbstractDataSourceTestBase {
 
 === @ClassRule
 
-You may use link:https://junit.org/junit4/javadoc/latest/org/junit/ClassRule.html[@ClassRule] to use the conduction of data from YAML file.
+You may use https://junit.org/junit4/javadoc/latest/org/junit/ClassRule.html[@ClassRule] to use the conduction of data from YAML file.
 
 See full example from {JdutYamlFactoryForClassRuleTest}.
 
