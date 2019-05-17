@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>MissedColumnException xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../apidocs/guru/mikelue/jdut/datagrain/MissedColumnException.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> guru.mikelue.jdut.datagrain;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_javadoccomment"> * Represents the exception which defined data field cannot be found</em>
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_javadoccomment"> * in database schema.</em>
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="MissedColumnException" href="../../../../guru/mikelue/jdut/datagrain/MissedColumnException.html#MissedColumnException">MissedColumnException</a> <strong class="jxr_keyword">extends</strong> <a name="DataRowException" href="../../../../guru/mikelue/jdut/datagrain/DataRowException.html#DataRowException">DataRowException</a> {
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="SchemaColumn" href="../../../../guru/mikelue/jdut/datagrain/SchemaColumn.html#SchemaColumn">SchemaColumn</a> missedColumn;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = 1L;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  	<strong class="jxr_keyword">public</strong> <a name="MissedColumnException" href="../../../../guru/mikelue/jdut/datagrain/MissedColumnException.html#MissedColumnException">MissedColumnException</a>(<a name="SchemaTable" href="../../../../guru/mikelue/jdut/datagrain/SchemaTable.html#SchemaTable">SchemaTable</a> tableSchema, <a name="SchemaColumn" href="../../../../guru/mikelue/jdut/datagrain/SchemaColumn.html#SchemaColumn">SchemaColumn</a> newMissedColumn)
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  	{
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  		<strong class="jxr_keyword">super</strong>(String.format(<span class="jxr_string">"Miss column: \&quot;%s.%s\&quot;"</span>, tableSchema.getName(), newMissedColumn.getName()));
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  		missedColumn = newMissedColumn;
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  	}
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  	<strong class="jxr_keyword">public</strong> <a name="SchemaColumn" href="../../../../guru/mikelue/jdut/datagrain/SchemaColumn.html#SchemaColumn">SchemaColumn</a> getMissedColumn()
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  	{
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  		<strong class="jxr_keyword">return</strong> missedColumn;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  	}
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2019. All rights reserved.</div>
+</body>
+</html>
