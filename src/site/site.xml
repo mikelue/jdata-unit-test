@@ -13,9 +13,15 @@
 
 	<body>
 		<head><![CDATA[
-			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/atelier-seaside-light.min.css" />
+			<link rel="stylesheet" href="${url.code.highlight.theme}" />
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/highlight.min.js"></script>
 			<script>hljs.initHighlightingOnLoad();</script>
+			<style>
+				code, pre {
+					font-family: "DejaVu Sans Mono","Bitstream Vera Sans Mono",Monaco,Menlo,Consolas,"Courier New",monospace;
+					font-size: 14px;
+				}
+			</style>
 		]]></head>
 
 		<breadcrumbs>
@@ -30,6 +36,7 @@
 		<menu name="Documents" inherit="top">
 			<item name="About" ref="index" />
 			<item name="Guidelines" href="guidelines.html" />
+			<item name="Integrate Test Frameworks" href="integrate-test-frameworks.html" />
 			<item name="Examples" href="examples.html" />
 			<item name="YAML Syntax" href="yaml-syntax.html" />
 		</menu>

@@ -1,10 +1,25 @@
 <!--
-  - For deployment of reporting(push to branch "gh-pages" on GitHub):
+  - For deployment of reporting:
   -
-  - mvn -P gh-pages clean site-deploy
+  - Local development:
+  -   ** Quick for writing AsciiDoctor **
+  -   mvn -P site-author -pl ':parent' site
+  -   ** With aggregation for javadoc/jxr **
+  -   mvn -P site-author -pl ':parent,junit5' -Dskip.aggregate=false site
+  -
+  - Local build:
+  -   ** Executes site:stage after building every modules **
+  -   mvn -P gh-pages clean site site:stage
+  -
+  - Deploy to Github "gh-pages":
+  -   mvn -P gh-pages -pl ":parent" scm-publish:publish-scm
   -
   - Properties:
   - 	-Dscmpublish.dryRun=true (Make the job dry run)
+  -
+  - For deployment of artifacts(to OSSRH):
+  -
+  -   mvn -P oss-deploy -DskipTests=true deploy
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -23,7 +38,7 @@
 	</modules>
 
 	<!--
-	  - Misc information
+	  - Deployment information
 	  -->
 	<name>JDUT:${project.artifactId}</name>
 	<description>Parent POM of JDUT</description>
@@ -64,7 +79,7 @@
 		<developer>
 			<name>Mike Lue</name>
 			<timezone>Asia/Taipei</timezone>
-			<email>mikelue@ms10.url.com.tw</email>
+			<email>mike.lue0627@msa.hinet.net</email>
 			<properties>
 				<picUrl>https://www.gravatar.com/avatar/fc7c50957bc60f457744c8a0acfcb442?s=64</picUrl>
 			</properties>
@@ -78,7 +93,7 @@
 		<!--
 		  - Versions of plugins
 		  -->
-		<version.plugin.surefire>2.22.0</version.plugin.surefire>
+		<version.plugin.surefire>3.0.0-M3</version.plugin.surefire>
 		<!-- :~) -->
 
 		<!--
@@ -94,7 +109,7 @@
 		<version.logback>1.2.3</version.logback>
 		<version.slf4j>1.7.25</version.slf4j>
 		<version.snakeyaml>1.23</version.snakeyaml>
-		<version.springframework>5.0.10.RELEASE</version.springframework>
+		<version.springframework>5.1.7.RELEASE</version.springframework>
 		<version.testng>6.14.3</version.testng>
 		<version.assertj>3.12.2</version.assertj>
 		<!-- :~) -->
@@ -102,7 +117,7 @@
 		<!--
 		  - Versions used in reporting
 		  -->
-		<version.highlight.js>9.13.1</version.highlight.js>
+		<version.highlight.js>9.15.6</version.highlight.js>
 		<version.jquery.js>3.3.1</version.jquery.js>
 		<!-- :~) -->
 
@@ -143,7 +158,23 @@
 		  - Setting for maven-compiler-plugin
 		  -->
 		<maven.compiler.release>8</maven.compiler.release>
-		<maven.compiler.source>1.8</maven.compiler.source>
+		<!-- :~) -->
+
+		<!--
+		  - Settings for site
+		  -->
+		<url.code.highlight.theme>https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/github.min.css</url.code.highlight.theme>
+		<!-- :~) -->
+
+		<!--
+		  - Attributes for AsciiDoctor
+		  -->
+		<adoc.attr.core.src>${project.basedir}/core/src</adoc.attr.core.src>
+		<adoc.attr.testng.src>${project.basedir}/testng/src</adoc.attr.testng.src>
+		<adoc.attr.junit4.src>${project.basedir}/junit4/src</adoc.attr.junit4.src>
+		<adoc.attr.junit5.src>${project.basedir}/junit5/src</adoc.attr.junit5.src>
+		<adoc.attr.github.tree>https://github.com/mikelue/jdata-unit-test/tree/master</adoc.attr.github.tree>
+		<adoc.attr.github.tree.junit5>${adoc.attr.github.tree}/junit5/src</adoc.attr.github.tree.junit5>
 		<!-- :~) -->
 	</properties>
 
@@ -436,15 +467,12 @@
 				<plugin>
 					<artifactId>maven-jxr-plugin</artifactId>
 					<version>3.0.0</version>
-					<configuration>
-						<stylesheet>${project.parent.basedir}/src/site/resources/css/jxr.css</stylesheet>
-					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>3.7.1</version>
                     <configuration>
-						<generateSitemap>true</generateSitemap>
+						<generateSitemap>false</generateSitemap>
 						<asciidoc>
 							<attributes>
 								<toc />
@@ -456,6 +484,15 @@
 								<outdir>${project.build.directory}</outdir>
 								<imagesdir>images/adoc-diagram</imagesdir>
 								<imagesoutdir>${project.reporting.outputDirectory}/images/adoc-diagram</imagesoutdir>
+
+								<!--
+								  - Attributes for AsciiDoctor
+								  -->
+								<src-junit5-java>${adoc.attr.junit5.src}/test/java/guru/mikelue/jdut/junit5/example</src-junit5-java>
+								<src-junit5-resources>${adoc.attr.junit5.src}/test/resources/guru/mikelue/jdut/junit5/example</src-junit5-resources>
+								<src-junit5-github-java>${adoc.attr.github.tree.junit5}/test/java/guru/mikelue/jdut/junit5/example</src-junit5-github-java>
+								<src-junit5-github-resources>${adoc.attr.github.tree.junit5}/test/resources/guru/mikelue/jdut/junit5/example</src-junit5-github-resources>
+								<!-- :~) -->
 							</attributes>
 							<requires>
 								<require>asciidoctor-diagram</require>
@@ -467,12 +504,12 @@
 						<dependency>
 							<groupId>org.asciidoctor</groupId>
 							<artifactId>asciidoctor-maven-plugin</artifactId>
-							<version>1.5.7.1</version>
+							<version>1.6.0</version>
 						</dependency>
 						<dependency>
 							<groupId>org.asciidoctor</groupId>
 							<artifactId>asciidoctorj-diagram</artifactId>
-							<version>1.5.11</version>
+							<version>1.5.16</version>
 						</dependency>
 					</dependencies>
 				</plugin>
@@ -504,7 +541,7 @@
 							</property>
 						</javaApiLinks>
 						<footer><![CDATA[
-							<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/styles/github.min.css" />
+							<link rel="stylesheet" href="${url.code.highlight.theme}" />
 							<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${version.highlight.js}/highlight.min.js"></script>
 							<script>hljs.initHighlightingOnLoad();</script>
 						]]></footer>
@@ -536,6 +573,41 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<reportSets>
+					<!--
+					  - By default, this plugin would generate javadoc and test-javadoc
+					  - This setting remove the generating of test-javadoc
+					  -->
+					<reportSet>
+						<id>default</id>
+						<inherited>true</inherited>
+						<reports>
+							<report>javadoc</report>
+						</reports>
+					</reportSet>
+					<!-- :~) -->
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<reportSets>
+					<reportSet>
+						<id>default</id>
+						<reports>
+							<report>jxr</report>
+							<report>test-jxr</report>
+						</reports>
+						<inherited>true</inherited>
+						<configuration>
+							<stylesheet>${basedir}/../src/site/resources/css/jxr.css</stylesheet>
+						</configuration>
+					</reportSet>
+				</reportSets>
+			</plugin>
 		</plugins>
 	</reporting>
 
@@ -544,19 +616,9 @@
 			<id>gh-pages</id>
 			<build>
 				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-site-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>stage-report</id>
-								<phase>post-site</phase>
-								<goals>
-									<goal>stage</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
+					<!--
+					  - "With a multi modules build, you cannot simply use mvn site-deploy: you must stage your site first."
+					  -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-scm-publish-plugin</artifactId>
@@ -564,39 +626,28 @@
 						<configuration>
 							<pubScmUrl>${project.scm.developerConnection}</pubScmUrl>
 							<checkinComment>Update report for ${project.version}</checkinComment>
-							<tryUpdate>true</tryUpdate>
 							<scmBranch>gh-pages</scmBranch>
 						</configuration>
-						<executions>
-							<execution>
-								<id>scm-publish</id>
-								<phase>site-deploy</phase>
-								<goals>
-									<goal>publish-scm</goal>
-								</goals>
-							</execution>
-						</executions>
 					</plugin>
+					<!-- :~) -->
 				</plugins>
 			</build>
 			<reporting>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-jxr-plugin</artifactId>
-						<configuration>
-							<inherited>false</inherited>
-							<stylesheet>${basedir}/src/site/resources/css/jxr.css</stylesheet>
-						</configuration>
+						<artifactId>maven-project-info-reports-plugin</artifactId>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<reportSets>
 							<reportSet>
-								<reports>
-									<report>javadoc</report>
-								</reports>
+								<id>default</id>
+								<inherited>true</inherited>
+								<configuration>
+									<skip>true</skip>
+								</configuration>
 							</reportSet>
 							<reportSet>
 								<id>aggregate</id>
@@ -612,10 +663,11 @@
 						<artifactId>maven-jxr-plugin</artifactId>
 						<reportSets>
 							<reportSet>
-								<reports>
-									<report>jxr</report>
-									<report>test-jxr</report>
-								</reports>
+								<id>default</id>
+								<inherited>true</inherited>
+								<configuration>
+									<skip>true</skip>
+								</configuration>
 							</reportSet>
 							<reportSet>
 								<id>aggregate</id>
@@ -773,6 +825,88 @@
 			</dependencies>
 		</profile>
 		<!-- :~) -->
+
+		<!-- Used to simplify authoring of site -->
+		<profile>
+			<id>site-author</id>
+
+			<properties>
+				<skip.aggregate>true</skip.aggregate>
+			</properties>
+			<reporting>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-project-info-reports-plugin</artifactId>
+						<reportSets>
+							<reportSet>
+								<reports>
+									<report>index</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<skip>${skip.aggregate}</skip>
+						</configuration>
+						<reportSets>
+							<!--
+							  - Skips the building of sub-modules
+							  -->
+							<reportSet>
+								<id>default</id>
+								<inherited>true</inherited>
+								<configuration>
+									<skip>true</skip>
+								</configuration>
+							</reportSet>
+							<!-- :~) -->
+							<reportSet>
+								<id>parent-build</id>
+								<inherited>false</inherited>
+								<reports>
+									<report>aggregate</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jxr-plugin</artifactId>
+						<configuration>
+							<skip>${skip.aggregate}</skip>
+						</configuration>
+						<reportSets>
+							<!--
+							  - Skips the building of sub-modules
+							  -->
+							<reportSet>
+								<id>default</id>
+								<inherited>true</inherited>
+								<configuration>
+									<skip>true</skip>
+								</configuration>
+							</reportSet>
+							<!-- :~) -->
+							<reportSet>
+								<id>parent-build</id>
+								<inherited>false</inherited>
+								<configuration>
+									<stylesheet>${basedir}/src/site/resources/css/jxr.css</stylesheet>
+								</configuration>
+								<reports>
+									<report>aggregate</report>
+									<report>test-aggregate</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
+				</plugins>
+			</reporting>
+		</profile>
 	</profiles>
 
 	<repositories>
