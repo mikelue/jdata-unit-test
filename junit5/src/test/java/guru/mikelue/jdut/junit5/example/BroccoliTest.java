@@ -16,14 +16,14 @@ import guru.mikelue.jdut.junit5.JdutYamlFactory;
 import guru.mikelue.jdut.yaml.YamlConductorFactory;
 
 // tag::test_class[]
-// Looking for:
-// 	for guru/mikelue/jdut/junit5/example/BroccoliTest.yaml
+// File: classpath:guru/mikelue/jdut/junit5/example
+// 		-> BroccoliTest.yaml
 @TestInstance(PER_CLASS) @JdutResource // <1>
 public class BroccoliTest {
 	public BroccoliTest() {}
 
-	// Looking for:
-	// 	guru/mikelue/jdut/junit5/example/BroccoliTest-grow.yaml
+	// 	File: classpath:guru/mikelue/jdut/junit5/example
+	// 		-> BroccoliTest-grow.yaml
 	@Test @JdutResource // <2>
 	void grow()
 	{
