@@ -12,8 +12,8 @@ import guru.mikelue.jdut.annotation.JdutResource;
 import guru.mikelue.jdut.junit5.JdutYamlFactory;
 
 // tag::test_class[]
-// Looking for:
-// 	for guru/mikelue/jdut/junit5/example/SproutTest.yaml
+// File: classpath:guru/mikelue/jdut/junit5/example
+// 		-> SproutTest.yaml
 @TestInstance(PER_CLASS) @JdutResource // <1>
 public class SproutTest {
 	public SproutTest() {}
@@ -25,8 +25,8 @@ public class SproutTest {
 	);
 	// end::impl_factory[]
 
-	// Looking for:
-	// 	guru/mikelue/jdut/junit5/example/SproutTest-grow.yaml
+	// File: classpath:guru/mikelue/jdut/junit5/example
+	// 		-> SproutTest-grow.yaml
 	@Test @JdutResource // <3>
 	void grow()
 	{

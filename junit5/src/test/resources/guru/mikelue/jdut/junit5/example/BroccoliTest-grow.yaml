@@ -4,6 +4,6 @@
 
 ---
 - !sql!table ex_basket : [
-    { bk_id: 201, bk_name: "Steve", bk_size: jdut!supplier "random_size" },
-    { bk_id: 202, bk_name: "Bob", bk_size: jdut!supplier "random_size" },
+    { bk_id: 201, bk_name: "Steve", bk_size: !jdut!supplier "random_size" },
+    { bk_id: 202, bk_name: "Bob", bk_size: !jdut!supplier "random_size" },
 ]

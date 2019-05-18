@@ -13,8 +13,8 @@ import guru.mikelue.jdut.junit5.JdutYamlFactory;
 import guru.mikelue.jdut.yaml.YamlConductorFactory;
 
 // tag::test_class[]
-// Looking for:
-// 	for guru/mikelue/jdut/junit5/example/ChokosTest.yaml
+// File: classpath:guru/mikelue/jdut/junit5/example
+// 		-> ChokosTest.yaml
 @TestInstance(PER_CLASS) @JdutResource // <1>
 public class ChokosTest {
 	public ChokosTest() {}
@@ -26,8 +26,8 @@ public class ChokosTest {
 	);
 	// end::impl_factory[]
 
-	// Looking for:
-	// 	guru/mikelue/jdut/junit5/example/ChokosTest-grow.yaml
+	// File: classpath:guru/mikelue/jdut/junit5/example
+	// 		-> ChokosTest-grow.yaml
 	@Test @JdutResource // <3>
 	void grow()
 	{
