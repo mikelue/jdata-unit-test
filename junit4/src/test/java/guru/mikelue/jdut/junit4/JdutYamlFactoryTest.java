@@ -21,8 +21,6 @@ import guru.mikelue.jdut.junit4.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.operation.DefaultOperators;
 import guru.mikelue.jdut.yaml.YamlConductorFactory;
 
-// file: classpath:guru/mikelue/jdut/junit4
-// 	-> JdutYamlFactoryForClassRuleTest.yaml
 public class JdutYamlFactoryTest extends AbstractDataSourceTestBase {
 	private static YamlConductorFactory conductorFactory;
 
@@ -32,7 +30,7 @@ public class JdutYamlFactoryTest extends AbstractDataSourceTestBase {
 	public JdutYamlFactory jdutYamlFactoryForMethodLevel = new JdutYamlFactory(conductorFactory);
 
 	// file: classpath:guru/mikelue/jdut/junit4
-	// 	-> JdutYamlFactoryForClassRuleTest-sampleTest.yaml
+	// 	-> JdutYamlFactoryTest-sampleTest.yaml
 	@Test @JdutResource
 	public void sampleTest() throws SQLException
 	{

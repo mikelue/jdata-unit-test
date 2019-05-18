@@ -175,6 +175,7 @@
 		<adoc.attr.junit5.src>${project.basedir}/junit5/src</adoc.attr.junit5.src>
 		<adoc.attr.github.tree>https://github.com/mikelue/jdata-unit-test/tree/master</adoc.attr.github.tree>
 		<adoc.attr.github.tree.junit5>${adoc.attr.github.tree}/junit5/src</adoc.attr.github.tree.junit5>
+		<adoc.attr.github.tree.junit4>${adoc.attr.github.tree}/junit4/src</adoc.attr.github.tree.junit4>
 		<!-- :~) -->
 	</properties>
 
@@ -488,6 +489,10 @@
 								<!--
 								  - Attributes for AsciiDoctor
 								  -->
+								<src-junit4-java>${adoc.attr.junit4.src}/test/java/guru/mikelue/jdut/junit4/example</src-junit4-java>
+								<src-junit4-resources>${adoc.attr.junit4.src}/test/resources/guru/mikelue/jdut/junit4/example</src-junit4-resources>
+								<src-junit4-github-java>${adoc.attr.github.tree.junit4}/test/java/guru/mikelue/jdut/junit4/example</src-junit4-github-java>
+								<src-junit4-github-resources>${adoc.attr.github.tree.junit4}/test/resources/guru/mikelue/jdut/junit4/example</src-junit4-github-resources>
 								<src-junit5-java>${adoc.attr.junit5.src}/test/java/guru/mikelue/jdut/junit5/example</src-junit5-java>
 								<src-junit5-resources>${adoc.attr.junit5.src}/test/resources/guru/mikelue/jdut/junit5/example</src-junit5-resources>
 								<src-junit5-github-java>${adoc.attr.github.tree.junit5}/test/java/guru/mikelue/jdut/junit5/example</src-junit5-github-java>

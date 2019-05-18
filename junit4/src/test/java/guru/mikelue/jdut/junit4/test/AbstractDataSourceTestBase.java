@@ -9,30 +9,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import guru.mikelue.jdut.decorate.DataGrainDecorator;
 import guru.mikelue.jdut.vendor.DatabaseVendor;
 
 public abstract class AbstractDataSourceTestBase {
-	private Logger logger = LoggerFactory.getLogger(getClass());
-
-	private static AnnotationConfigApplicationContext ctx;
-
-	private DataGrainDecorator schemaLoading;
+	private Logger logger = LoggerFactory.getLogger(AbstractDataSourceTestBase.class);
 
 	protected AbstractDataSourceTestBase() {}
 
+	private static AnnotationConfigApplicationContext ctx;
+
 	@ClassRule
-	public static ExternalResource dataSourceResource = new ExternalResource() {
+	public final static ExternalResource dataSourceResource = new ExternalResource() {
 		@Override
 		protected void before() throws Throwable
 		{
-			if (ctx != null) {
-				return;
-			}
-
-			ctx = new AnnotationConfigApplicationContext();
-			ctx.register(DataSourceContext.class);
-			ctx.refresh();
+			getApplicationContext();
 		}
 
 		@Override
@@ -48,23 +39,24 @@ public abstract class AbstractDataSourceTestBase {
 		return logger;
 	}
 
-	protected DataGrainDecorator getSchemaLoadingDecorator()
-	{
-		return schemaLoading;
-	}
-
 	protected static DatabaseVendor getCurrentVendor()
 	{
-		return ctx.getBean(DatabaseVendor.class);
+		return getApplicationContext().getBean(DatabaseVendor.class);
 	}
 
 	protected static ApplicationContext getApplicationContext()
 	{
+		if (ctx == null) {
+			ctx = new AnnotationConfigApplicationContext();
+			ctx.register(DataSourceContext.class);
+			ctx.refresh();
+		}
+
 		return ctx;
 	}
 
 	protected static DataSource getDataSource()
 	{
-		return ctx.getBean(DataSource.class);
+		return getApplicationContext().getBean(DataSource.class);
 	}
 }

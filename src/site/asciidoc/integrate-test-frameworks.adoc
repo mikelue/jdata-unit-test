@@ -1,4 +1,4 @@
-= Guidelines
+= Integrate test frameworks
 
 :sectnums:
 
@@ -87,11 +87,13 @@ public class YourTest {
 }
 ----
 
+:!example-number:
+
 == JUnit 5
 
 You should add dependency of `guru.mikelue.jdut:junit5` before using this module.
 
-{JdutYamlFactory5} provides conventions for loading of YAML files.
+{JdutYamlFactory5} provides out-of-box loading of YAML files by convention.
 
 .By data source link:{src-junit5-github-java}/SproutTest.java[^src^]
 ====
@@ -147,34 +149,42 @@ include::{src-junit5-java}/BroccoliTest.java[tags=test_class;package]
 
 ====
 
+:!example-number:
+
 == JUnit 4
 
 You should add dependency of `guru.mikelue.jdut:junit4` before using this module.
 
 This module supports JUnit4 since version of **4.9**.
 
-=== Rule
+{JdutYamlFactory4} provides out-of-box loading of YAML files by convention.
 
-The only rule provided by this module is {JdutYamlFactory4}.
-You may override `buildDuetConductor` method to load your own YAML file.
-
+.By @ClassRule link:{src-junit4-github-java}/PuhaTest.java[^src^]
+====
 
 [source,java]
 ----
-import org.junit.Rule;
-import org.junit.Test;
-
-import guru.mikelue.jdut.junit4.JdutYamlFactoryTest;
-import guru.mikelue.jdut.annotation.JdutResource;
-
-public class YourSomethingTest {
-	@Rule
-	public JdutYamlFactory jdutYamlFactoryForMethodLevel = new JdutYamlFactory(conductorFactory);
-
-	@Test @JdutResource
-	public void sampleTest()
-	{
-		/* Your tests... */
-	}
-}
+include::{src-junit4-java}/PuhaTest.java[tags=test_class;package]
 ----
+
+<1> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit4/example/Test-grow.yaml` link:{src-junit4-github-resources}/PuhaTest.yaml[^src^]
+<2> put https://junit.org/junit4/javadoc/latest/org/junit/ClassRule.html[@ClassRule] on the {JdutYamlFactory4} object
+
+====
+
+.By rule of method link:{src-junit4-github-java}/EggplantTest.java[^src^]
+====
+
+The only rule provided by this module is {JdutYamlFactory4}.
+
+You may override `buildDuetConductor` method to load your own YAML file.
+
+[source,java]
+----
+include::{src-junit4-java}/EggplantTest.java[tags=test_class;package]
+----
+
+<1> put https://junit.org/junit4/javadoc/latest/org/junit/Rule.html[@Rule] on the {JdutYamlFactory4} object
+<2> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit4/example/EggplantTest-grow.yaml` link:{src-junit4-github-resources}/EggplantTest-grow.yaml[^src^]
+
+====

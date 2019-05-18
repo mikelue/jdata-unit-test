@@ -30,25 +30,9 @@ import guru.mikelue.jdut.yaml.YamlConductorFactory;
  *
  * <p>This rule could be used with {@link Rule} or {@link ClassRule}.</p>
  *
- * While using with {@link ClassRule}, you should wrap the initialization of this object in {@link Statement}:
- *
  * <pre><code class="java">
  * &#64;ClassRule
- * public static TestRule dataConductor = new TestRule() {
- *     &#64;Override
- *     public Statement apply(Statement base, Description description)
- *     {
- *         return new Statement() {
- *             &#64;Override
- *             public void evaluate() throws Throwable
- *             {
- *                 new JdutYamlFactory(getDataSource())
- *                     .apply(base, description)
- *                     .evaluate();
- *             }
- *         };
- *    }
- * };
+ * public final static TestRule dataConductor = JdutYamlFactory.buildByDataSource(DataSourceGeter::get);
  * </code></pre>
  *
  * @see #buildDuetConductor
