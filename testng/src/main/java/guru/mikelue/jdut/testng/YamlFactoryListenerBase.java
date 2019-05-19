@@ -67,11 +67,13 @@ public abstract class YamlFactoryListenerBase {
 	 * Removes the data source from attribute
 	 *
 	 * @param attributes The attribute may contain data source
+	 *
+	 * @return The data source put by {@link #setDataSource}
 	 */
-	public static void removeDataSource(IAttributes attributes)
+	public static DataSource removeDataSource(IAttributes attributes)
 	{
 		staticLogger.debug("Remove data source from IAttributes: [{}]", attributes);
-		attributes.removeAttribute(DATA_SOURCE);
+		return (DataSource)attributes.removeAttribute(DATA_SOURCE);
 	}
 
 	protected YamlFactoryListenerBase() {}
@@ -143,15 +145,11 @@ public abstract class YamlFactoryListenerBase {
 		}
 
 		Optional<DuetConductor> conductor = conductors.get(attributes);
+		logger.debug("Remove DuetConductor[{}] from IAttributes: [{}]", conductor, attributes);
 
-		try {
-			conductor.ifPresent(
-				workingConductor -> workingConductor.clean()
-			);
-		} finally {
-			logger.debug("Remove DuetConductor[{}] from IAttributes: [{}]", conductor, attributes);
-			conductors.remove(attributes);
-		}
+		conductor.ifPresent(
+			workingConductor -> workingConductor.clean()
+		);
 	}
 
 	/**

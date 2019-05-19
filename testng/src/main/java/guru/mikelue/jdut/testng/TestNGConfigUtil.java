@@ -38,7 +38,7 @@ public final class TestNGConfigUtil {
 	 */
 	public static boolean firstTime(ITestNGMethod testNgMethod)
 	{
-		return testNgMethod.getCurrentInvocationCount() == 1;
+		return testNgMethod.getParameterInvocationCount() == 0;
 	}
 
 	/**
@@ -52,6 +52,6 @@ public final class TestNGConfigUtil {
 	 */
 	public static boolean lastTime(ITestNGMethod testNgMethod)
 	{
-		return testNgMethod.getCurrentInvocationCount() == testNgMethod.getParameterInvocationCount();
+		return !testNgMethod.hasMoreInvocation();
 	}
 }

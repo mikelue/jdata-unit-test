@@ -11,12 +11,42 @@ import org.testng.ITestResult;
 import guru.mikelue.jdut.DuetConductor;
 
 /**
- * This listener uses file name(<code style="color:blue">{@literal <test_name>.yaml}</code>) for resource({@link ClassLoader} of current thread)
+ * This listener uses file name(<code style="color:blue">{@literal classpath:<test_name>.yaml}</code>) for resource({@link ClassLoader} of current thread)
  * of conducting data.
  *
  * <p>By default, the {@link DataSource} would be retrieved from {@link ITestContext} object(which type of {@link IAttributes}).</p>
  *
  * <p>It is recommended that client implements {@link #needConductData} to trigger data conduction.</p>
+ *
+ * <p>Example by defulat conventions:</p>
+ * <pre><code class="java">
+ * package guru.mikelue.jdut.testng.example;
+ *
+ * // File: classpath:MakoSharkTest.yaml
+ * &#64;Test(testName="MakoSharkTest")
+ * &#64;Listeners(MakoSharkTest.MakoSharkSuiteListener.class)
+ * public class MakoSharkTest {
+ *     public static MakoSharkSuiteListener extends ITestContextYamlFactoryListener {
+ *         &#64;Override
+ *         public void onStart(ITestContext context)
+ *         {
+ *             YamlFactoryListenerBase.setDataSource(context, getDataSource(context));
+ *             super.onStart(context);
+ *         }
+ *         &#64;Override
+ *         public void onFinish(ITestContext context)
+ *         {
+ *             super.onFinish(context);
+ *             YamlFactoryListenerBase.removeDataSource(context);
+ *         }
+ *     }
+ *
+ *     &#64;Test
+ *     public void bite()
+ *     {
+ *     }
+ * }
+ * </code></pre>
  */
 public class ITestContextYamlFactoryListener extends YamlFactoryListenerBase implements ITestListener {
 	public ITestContextYamlFactoryListener() {}
@@ -31,7 +61,7 @@ public class ITestContextYamlFactoryListener extends YamlFactoryListenerBase imp
 	{
 		if (!needConductData(context)) {
 			if (getLogger().isTraceEnabled()) {
-				getLogger().trace("[Build Data] Not matched context: [{} - {}]",
+				getLogger().trace("[Clean Data] Not matched context: [{} - {}]",
 					context.getSuite().getName(),
 					context.getName()
 				);
@@ -51,7 +81,7 @@ public class ITestContextYamlFactoryListener extends YamlFactoryListenerBase imp
 	{
 		if (!needConductData(context)) {
 			if (getLogger().isTraceEnabled()) {
-				getLogger().trace("[Clean Data] Not matched context: [{} - {}]",
+				getLogger().trace("[Build Data] Not matched context: [{} - {}]",
 					context.getSuite().getName(),
 					context.getName()
 				);

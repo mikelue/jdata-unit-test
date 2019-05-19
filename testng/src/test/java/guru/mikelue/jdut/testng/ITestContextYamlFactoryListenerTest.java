@@ -1,55 +1,31 @@
 package guru.mikelue.jdut.testng;
 
 import java.sql.SQLException;
-import javax.sql.DataSource;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testng.ITestContext;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-import guru.mikelue.jdut.testng.test.DataSourceContext;
 import guru.mikelue.jdut.assertion.ResultSetAssert;
 import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
 import guru.mikelue.jdut.jdbc.function.DbResultSet;
 import guru.mikelue.jdut.testng.test.AbstractDataSourceTestBase;
 
-@Test(testName="ITestContextYamlFactoryListenerTest")
-@Listeners(ITestContextYamlFactoryListenerTest.DedicatedListener.class)
+@Test(suiteName="ContextScopeListenerSuite", testName="ITestContextYamlFactoryListenerTest")
+@Listeners({ITestContextYamlFactoryListenerTest.TestedListener.class})
 public class ITestContextYamlFactoryListenerTest extends AbstractDataSourceTestBase {
-	public static class DedicatedListener extends ITestContextYamlFactoryListener {
-		private AnnotationConfigApplicationContext ctx;
-
+	public static class TestedListener extends ITestContextYamlFactoryListener {
 		@Override
-		public void onStart(ITestContext context)
+		public void onStart(ITestContext testContext)
 		{
-			if (ctx != null) {
-				return;
-			}
-
-			ctx = new AnnotationConfigApplicationContext();
-			ctx.register(DataSourceContext.class);
-			ctx.refresh();
-
-			YamlFactoryListenerBase.setDataSource(context, ctx.getBean(DataSource.class));
-
-			super.onStart(context);
+			setDataSource(testContext, AbstractDataSourceTestBase.getDataSource(testContext));
+			super.onStart(testContext);
 		}
 		@Override
-		public void onFinish(ITestContext context)
+		public void onFinish(ITestContext testContext)
 		{
-			super.onFinish(context);
-
-			YamlFactoryListenerBase.removeDataSource(context);
-
-			ctx.close();
-			ctx = null;
-		}
-
-		@Override
-		protected boolean needConductData(ITestContext context)
-		{
-			return "ITestContextYamlFactoryListenerTest".equals(context.getName());
+			super.onFinish(testContext);
+			removeDataSource(testContext);
 		}
 	}
 
@@ -59,10 +35,10 @@ public class ITestContextYamlFactoryListenerTest extends AbstractDataSourceTestB
 	 * Tests the listener for {@link ITestContext} of building/cleaning data.
 	 */
 	@Test
-	public void buildAndClean() throws SQLException
+	public void buildAndClean(ITestContext testContext) throws SQLException
 	{
 		JdbcTemplateFactory.buildRunnable(
-			() -> getDataSource().getConnection(),
+			() -> getDataSource(testContext).getConnection(),
 			conn -> DbResultSet.buildRunnable(
 				conn, "SELECT COUNT(*) FROM tcontext_t1",
 				rs -> new ResultSetAssert(rs)

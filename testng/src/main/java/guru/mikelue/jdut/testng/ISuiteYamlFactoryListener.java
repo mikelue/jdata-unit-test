@@ -10,12 +10,40 @@ import org.testng.ISuiteListener;
 import guru.mikelue.jdut.DuetConductor;
 
 /**
- * This listener uses file name(<code style="color:blue">{@literal <suite_name>.yaml}</code> for resource({@link ClassLoader} of current thread)
+ * This listener uses file name(<code style="color:blue">{@literal classpath:<suite_name>.yaml}</code> for resource({@link ClassLoader} of current thread)
  * of conducting data.
  *
  * <p>By default, the {@link DataSource} would be retrieved from {@link ISuite} object(which type of {@link IAttributes}).</p>
  *
- * <p>It is recommended that client implements {@link #needConductData} to trigger data conduction.</p>
+ * <p>Example by defulat conventions:</p>
+ * <pre><code class="java">
+ * package guru.mikelue.jdut.testng.example;
+ *
+ * // File: &gt;BullSharkSuite.yaml
+ * &#64;Test(suiteName="BullSharkSuite")
+ * &#64;Listeners(BullSharkTest.BullSharkSuiteListener.class)
+ * public class BullSharkTest {
+ *     public static BullSharkSuiteListener extends ISuiteYamlFactoryListener {
+ *         &#64;Override
+ *         public void onStart(ISuite suite)
+ *         {
+ *             YamlFactoryListenerBase.setDataSource(suite, SuiteListenerForAppContext.getDataSource(suite));
+ *             super.onStart(suite);
+ *         }
+ *         &#64;Override
+ *         public void onFinish(ISuite suite)
+ *         {
+ *             super.onFinish(suite);
+ *             YamlFactoryListenerBase.removeDataSource(suite);
+ *         }
+ *     }
+ *
+ *     &#64;Test
+ *     public void bite()
+ *     {
+ *     }
+ * }
+ * </code></pre>
  */
 public class ISuiteYamlFactoryListener extends YamlFactoryListenerBase implements ISuiteListener {
 	public ISuiteYamlFactoryListener() {}
