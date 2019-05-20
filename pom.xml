@@ -174,8 +174,10 @@
 		<adoc.attr.junit4.src>${project.basedir}/junit4/src</adoc.attr.junit4.src>
 		<adoc.attr.junit5.src>${project.basedir}/junit5/src</adoc.attr.junit5.src>
 		<adoc.attr.github.tree>https://github.com/mikelue/jdata-unit-test/tree/master</adoc.attr.github.tree>
-		<adoc.attr.github.tree.junit5>${adoc.attr.github.tree}/junit5/src</adoc.attr.github.tree.junit5>
+		<adoc.attr.github.tree.core>${adoc.attr.github.tree}/core/src</adoc.attr.github.tree.core>
+		<adoc.attr.github.tree.testng>${adoc.attr.github.tree}/testng/src</adoc.attr.github.tree.testng>
 		<adoc.attr.github.tree.junit4>${adoc.attr.github.tree}/junit4/src</adoc.attr.github.tree.junit4>
+		<adoc.attr.github.tree.junit5>${adoc.attr.github.tree}/junit5/src</adoc.attr.github.tree.junit5>
 		<!-- :~) -->
 	</properties>
 
@@ -489,10 +491,22 @@
 								<!--
 								  - Attributes for AsciiDoctor
 								  -->
+								<src-testng>${adoc.attr.testng.src}</src-testng>
+								<src-testng-github>${adoc.attr.github.tree.testng}</src-testng-github>
+								<src-testng-java>${adoc.attr.testng.src}/test/java/guru/mikelue/jdut/testng/example</src-testng-java>
+								<src-testng-resources>${adoc.attr.testng.src}/test/resources/guru/mikelue/jdut/testng/example</src-testng-resources>
+								<src-testng-github-java>${adoc.attr.github.tree.testng}/test/java/guru/mikelue/jdut/testng/example</src-testng-github-java>
+								<src-testng-github-resources>${adoc.attr.github.tree.testng}/test/resources/guru/mikelue/jdut/testng/example</src-testng-github-resources>
+
+								<src-junit4>${adoc.attr.junit4.src}</src-junit4>
+								<src-junit4-github>${adoc.attr.github.tree.junit4}</src-junit4-github>
 								<src-junit4-java>${adoc.attr.junit4.src}/test/java/guru/mikelue/jdut/junit4/example</src-junit4-java>
 								<src-junit4-resources>${adoc.attr.junit4.src}/test/resources/guru/mikelue/jdut/junit4/example</src-junit4-resources>
 								<src-junit4-github-java>${adoc.attr.github.tree.junit4}/test/java/guru/mikelue/jdut/junit4/example</src-junit4-github-java>
 								<src-junit4-github-resources>${adoc.attr.github.tree.junit4}/test/resources/guru/mikelue/jdut/junit4/example</src-junit4-github-resources>
+
+								<src-junit5>${adoc.attr.junit5.src}</src-junit5>
+								<src-junit5-github>${adoc.attr.github.tree.junit5}</src-junit5-github>
 								<src-junit5-java>${adoc.attr.junit5.src}/test/java/guru/mikelue/jdut/junit5/example</src-junit5-java>
 								<src-junit5-resources>${adoc.attr.junit5.src}/test/resources/guru/mikelue/jdut/junit5/example</src-junit5-resources>
 								<src-junit5-github-java>${adoc.attr.github.tree.junit5}/test/java/guru/mikelue/jdut/junit5/example</src-junit5-github-java>

@@ -13,7 +13,7 @@
 :JUnit5: https://junit.org/junit5/[JUnit5]
 :TestNG: https://testng.org/[TestNG]
 
-This article contains the integration for various test frameworks.
+This article demonstrates the way to integrate various test frameworks with JDUT.
 
 For quick example, see link:examples.html[Examples].
 
@@ -24,72 +24,120 @@ For quick example, see link:examples.html[Examples].
 You should add dependency of `guru.mikelue.jdut:testng` before using this module.
 
 === Listeners
-There are three main listeners to be used with
 
-{IInvokedMethodYamlFactoryListener}:: Default listener for building/cleaning data per-method
+There are three listeners could be used:
 
-{ISuiteYamlFactoryListener}:: Default listener for building/cleaning data per-suite
+[cols="2*"]
+|===
+|{IInvokedMethodYamlFactoryListener}
+|Default listener for building/cleaning data per-method
 
-{ITestContextYamlFactoryListener}:: Default listeners for building/clean data per-test
+|{ISuiteYamlFactoryListener}
+|Default listener for building/cleaning data per-suite
+
+|{ITestContextYamlFactoryListener}
+|Default listeners for building/clean data per-test
+|===
 
 You may extend the listeners to customize usage of YAML API
 
-=== Multiple listeners
+[NOTE]
+====
+Because the {TestNG} engine **applies all of the listeners on a suite**, you can override `needConductData` if you want to use multiple listeners for different test classes.
 
-If you would use multiple listeners for different tests, the {TestNG} engine **would
-executes all of the listeners even if you don't annotate the class**.
+[quote, Offical TestNG Doc]
+_____
+Note that the @Listeners annotation will apply to your entire suite file, just as if you had specified it in a testng.xml file. +
+If you want to restrict its scope (for example, only running on the current class), +
+the code in your listener could first check the test method that's about to run and decide what to do then
+_____
+====
 
-Every listener provided by JDUT has `needConductData` method to let you write your own logic that is
-whether or not to use the listener in certain context.
+==== Use IInvokedMethodYamlFactoryListener
 
+:!example-number:
 
-=== Example
-Following example demonstrates the integration with {TestNG}.
-
-link:apidocs/guru/mikelue/jdut/annotation/JdutResource.html[@JdutResource]:: you may build your own processor to process the content of JDUT resources.
-
-link:apidocs/guru/mikelue/jdut/testng/TestNGConfig.html[@TestNGConfig]:: defines behaviour of TestNG.
-
+.Single invocation of test method
+====
 [source,java]
 ----
-import guru.mikelue.jdut.annotation.JdutResource;
-import guru.mikelue.jdut.testng.IInvokedMethodYamlFactoryListener;
-import guru.mikelue.jdut.testng.TestNGConfig;
-
-@Listeners(IInvokedMethodYamlFactoryListener.class)
-public class YourTest {
-	/**
-	 * This method would look for YourTest-do1-yaml in folder idv/you/sample of classpath
-	 */
-	@Test @JdutResource
-	public void do1() {}
-
-	/**
-	 * 1. This method would look for YourTest-do2-yaml in folder idv/you/sample of classpath.
-	 * 2. The building and cleaning of data would be at first and last testing on the method with data provider, correspondingly.
-	 */
-	@Test(dataProvider="Do2")
-	@JdutResource @TestNGConfig(oneTimeOnly=true)
-	public void do2(int value) {}
-	private Object[][] getDo2()
-	{
-		return new Object[][] {
-			{ 1 },
-			{ 2 },
-		};
-	}
-
-	/**
-	 * Nothing would be built
-	 */
-	@Test
-	public void do3() {}
-}
+include::{src-testng-java}/TurtleTest.java[tags=test_class;package;!multi_times]
 ----
+
+<1> Put the listener into `@Listeners` https://javadoc.jitpack.io/com/github/cbeust/testng/master/javadoc/org/testng/annotations/Listeners.html[^link^].
+<2> Setup https://docs.oracle.com/javase/10/docs/api/javax/sql/DataSource.html[DataSource] to https://javadoc.jitpack.io/com/github/cbeust/testng/master/javadoc/org/testng/ITestContext.html[ITestContext]
+<3> Release data source from `ITestContext`
+<4> Loading the file: `classpath:guru/mikelue/jdut/testng/example/TurtleTest-crawl.yaml` link:{src-testng-github-resources}/TurtleTest-crawl.yaml[^src^].
+====
+
+.With @DataProvider
+====
+[source,java]
+----
+include::{src-testng-java}/TurtleTest.java[tags=multi_times]
+----
+
+<1> Loading the file: `classpath:guru/mikelue/jdut/testng/example/TurtleTest-sleep.yaml` link:{src-testng-github-resources}/TurtleTest-sleep.yaml[^src^]
+<2> With `@TestNGConfig(oneTimeOnly=true)`, the data is built before the first test and is clean after the last test.
+====
+
+==== Use ISuiteYamlFactoryListener
+
+:!example-number:
+
+.Extending ISuiteYamlFactoryListener link:{src-testng-github-java}/LizardTest.java[^src^]
+====
+.Usage of listeners
+[source,java]
+----
+include::{src-testng-java}/LizardTest.java[tags=test_class;package;!listener]
+----
+
+<1> The suite name `LizardSuite` would be file name of YAML: `classpath:LizardSuite.yaml` {src-testng-github}/test/resources/LizardSuite.yaml[^src^]
+<2> Put the listener into `@Listeners` https://javadoc.jitpack.io/com/github/cbeust/testng/master/javadoc/org/testng/annotations/Listeners.html[^link^].
+
+.Extending of ISuiteYamlFactoryListener
+[source,java]
+----
+include::{src-testng-java}/LizardTest.java[tags=listener]
+----
+
+<1> In `onStart` method, put the data source into suite
+<2> *Don't forget* to call parent's `onStart`
+<3> In `onFinish` method, remove the data source from suite
+<4> *Don't forget* to call parent's `onFinish`.
+====
+
+==== Use ITestContextYamlFactoryListener
+
+.Extending ITestContextYamlFactoryListener link:{src-testng-github-java}/CrocodileTest.java[^src^]
+====
+.Usage of listeners
+[source,java]
+----
+include::{src-testng-java}/CrocodileTest.java[tags=test_class;package;!listener]
+----
+
+<1> The test name `CrocodileTest` would be file name of YAML: `classpath:CrocodileTest.yaml` {src-testng-github}/test/resources/CrocodileTest.yaml[^src^]
+<2> Put the listener into `@Listeners` https://javadoc.jitpack.io/com/github/cbeust/testng/master/javadoc/org/testng/annotations/Listeners.html[^link^].
+
+.Extending of ITestContextYamlFactoryListener
+[source,java]
+----
+include::{src-testng-java}/CrocodileTest.java[tags=listener]
+----
+
+<1> In `onStart` method, put the data source into test context
+<2> *Don't forget* to call parent's `onStart`
+<3> In `onFinish` method, remove the data source from test context
+<4> *Don't forget* to call parent's `onFinish`.
+====
 
 :!example-number:
 
 == JUnit 5
+
+:!example-number:
 
 You should add dependency of `guru.mikelue.jdut:junit5` before using this module.
 
@@ -106,8 +154,7 @@ include::{src-junit5-java}/SproutTest.java[tags=test_class;package]
 
 <1> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/SproutTest.yaml` link:{src-junit5-github-resources}/SproutTest.yaml[^src^]
 <2> register factory by data source
-<3> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/SproutTest-grow.yaml` link:{src-junit5-github-resources}/SproutTest-grow.yaml[^src^]
-
+<3> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/SproutTest-grow.yaml` link:{src-junit5-github-resources}/SproutTest-grow.yaml[^src^].
 ====
 
 .By customized YamlConductorFactory link:{src-junit5-github-java}/ChokosTest.java[^src^]
@@ -121,13 +168,11 @@ include::{src-junit5-java}/ChokosTest.java[tags=test_class;package]
 
 <1> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/ChokosTest.yaml` link:{src-junit5-github-resources}/ChokosTest.yaml[^src^]
 <2> register factory by data source
-<3> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/ChokosTest-grow.yaml` link:{src-junit5-github-resources}/ChokosTest-grow.yaml[^src^]
-
+<3> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/ChokosTest-grow.yaml` link:{src-junit5-github-resources}/ChokosTest-grow.yaml[^src^].
 ====
 
 .By inheritance and @ExtendWith link:{src-junit5-github-java}/BroccoliTest.java[^src^]
 ====
-
 You should extend link:apidocs/guru/mikelue/jdut/junit5/JdutYamlFactory.html[JdutYamlFactory] and implement link:apidocs/guru/mikelue/jdut/junit5/JdutYamlFactory#getYamlConductorFactory.html[getYamlConductorFactory()] method.
 
 [source,java]
@@ -145,13 +190,12 @@ include::{src-junit5-java}/BroccoliTest.java[tags=test_class;package]
 ----
 
 <1> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/BroccoliTest.yaml` link:{src-junit5-github-resources}/BroccoliTest.yaml[^src^]
-<2> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/BroccoliTest-grow.yaml` link:{src-junit5-github-resources}/BroccoliTest-grow.yaml[^src^]
-
+<2> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit5/example/BroccoliTest-grow.yaml` link:{src-junit5-github-resources}/BroccoliTest-grow.yaml[^src^].
 ====
 
-:!example-number:
-
 == JUnit 4
+
+:!example-number:
 
 You should add dependency of `guru.mikelue.jdut:junit4` before using this module.
 
@@ -161,20 +205,17 @@ This module supports JUnit4 since version of **4.9**.
 
 .By @ClassRule link:{src-junit4-github-java}/PuhaTest.java[^src^]
 ====
-
 [source,java]
 ----
 include::{src-junit4-java}/PuhaTest.java[tags=test_class;package]
 ----
 
-<1> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit4/example/Test-grow.yaml` link:{src-junit4-github-resources}/PuhaTest.yaml[^src^]
-<2> put https://junit.org/junit4/javadoc/latest/org/junit/ClassRule.html[@ClassRule] on the {JdutYamlFactory4} object
-
+<1> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit4/example/TestPuha-grow.yaml` link:{src-junit4-github-resources}/PuhaTest.yaml[^src^]
+<2> put https://junit.org/junit4/javadoc/latest/org/junit/ClassRule.html[@ClassRule] on the {JdutYamlFactory4} object.
 ====
 
 .By rule of method link:{src-junit4-github-java}/EggplantTest.java[^src^]
 ====
-
 The only rule provided by this module is {JdutYamlFactory4}.
 
 You may override `buildDuetConductor` method to load your own YAML file.
@@ -185,6 +226,5 @@ include::{src-junit4-java}/EggplantTest.java[tags=test_class;package]
 ----
 
 <1> put https://junit.org/junit4/javadoc/latest/org/junit/Rule.html[@Rule] on the {JdutYamlFactory4} object
-<2> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit4/example/EggplantTest-grow.yaml` link:{src-junit4-github-resources}/EggplantTest-grow.yaml[^src^]
-
+<2> loading the data from yaml file: `classpath:guru/mikelue/jdut/junit4/example/EggplantTest-grow.yaml` link:{src-junit4-github-resources}/EggplantTest-grow.yaml[^src^].
 ====

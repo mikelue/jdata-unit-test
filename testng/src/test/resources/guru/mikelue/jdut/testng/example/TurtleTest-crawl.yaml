@@ -1,0 +1,14 @@
+%TAG !jdut! tag:jdut.mikelue.guru:1.0/
+%TAG !dbtype! tag:jdut.mikelue.guru:jdbcType:1.8/
+%TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
+
+---
+- !sql!code
+  build_operation: !sql!statement
+    CREATE TABLE ex_hive(
+        hv_id INT PRIMARY KEY,
+        hv_name VARCHAR(64) NOT NULL,
+        hv_size INT
+    );
+  clean_operation: !sql!statement
+    DROP TABLE ex_hive
