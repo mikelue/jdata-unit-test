@@ -2,6 +2,8 @@ package guru.mikelue.jdut.testng;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
+import java.util.function.Supplier;
+
 import javax.sql.DataSource;
 
 import org.testng.IAttributes;

@@ -19,7 +19,7 @@ import guru.mikelue.jdut.DuetConductor;
  * <pre><code class="java">
  * package guru.mikelue.jdut.testng.example;
  *
- * // File: &gt;BullSharkSuite.yaml
+ * // File: classpath:BullSharkSuite.yaml
  * &#64;Test(suiteName="BullSharkSuite")
  * &#64;Listeners(BullSharkTest.BullSharkSuiteListener.class)
  * public class BullSharkTest {
