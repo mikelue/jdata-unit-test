@@ -74,6 +74,7 @@ public class IInvokedMethodYamlFactoryListenerTest extends AbstractDataSourceTes
 
 		switch (method.getName()) {
 			case "loadAndClean":
+			case "withoutAnnotation":
 				tableId = 22;
 				break;
 			case "loadAndCleanForOneTimeOnly":
@@ -99,7 +100,7 @@ public class IInvokedMethodYamlFactoryListenerTest extends AbstractDataSourceTes
 	}
 
 	/**
-	 * Tests the listener for building/clean data from YAML file.
+	 * Tests building/clean on method level.
 	 */
 	@Test @JdutResource
 	void loadAndClean() throws SQLException
@@ -127,6 +128,38 @@ public class IInvokedMethodYamlFactoryListenerTest extends AbstractDataSourceTes
 		// :~)
 	}
 
+	/**
+	 * Tests the build/clean on method without @JdutResource(nothing happened).
+	 */
+	@Test
+	void withoutAnnotation() throws SQLException
+	{
+		Object[] callbackArgs = TestMethodInfoKeeper.getCallbackArgs(getClass(), "withoutAnnotation");
+		ITestContext testContext = ((ITestResult)callbackArgs[1]).getTestContext();
+
+		YamlFactoryListenerBase.setDataSource(testContext, getDataSource());
+		invokeCallback(testedListener::beforeInvocation, callbackArgs);
+
+		/**
+		 * Asserts the building of data
+		 */
+		String checkData = "SELECT COUNT(*) FROM tab_22 WHERE t22_id = 33";
+		assertData(checkData, 0);
+		// :~)
+
+		invokeCallback(testedListener::afterInvocation, callbackArgs);
+		YamlFactoryListenerBase.removeDataSource(testContext);
+
+		/**
+		 * Asserts the clean of data
+		 */
+		assertData(checkData, 0);
+		// :~)
+	}
+
+	/**
+	 * Tests one time only(as true) for multi-time calling of a testing method by @DataProvider.
+	 */
 	@Test(dataProvider="multiTimes")
 	@JdutResource @TestNGConfig(oneTimeOnly=true)
 	void loadAndCleanForOneTimeOnly(int v) throws SQLException
@@ -158,6 +191,9 @@ public class IInvokedMethodYamlFactoryListenerTest extends AbstractDataSourceTes
 		// :~)
 	}
 
+	/**
+	 * Tests one time only(as false) for multi-time calling of a testing method by @DataProvider.
+	 */
 	@Test(dataProvider="multiTimes")
 	@JdutResource @TestNGConfig(oneTimeOnly=false)
 	void loadAndCleanForMultipleTimes(int v) throws SQLException

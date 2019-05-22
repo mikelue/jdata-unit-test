@@ -133,10 +133,12 @@ public class JdutYamlFactory implements TestRule {
 			public void evaluate() throws Throwable
 			{
 				try {
+					logger.debug("Buliding data");
 					duetConductor.build();
 
 					base.evaluate();
 				} finally {
+					logger.debug("Cleaning data");
 					duetConductor.clean();
 					duetConductor = null;
 				}

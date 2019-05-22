@@ -3,36 +3,9 @@
 %TAG !sql! tag:jdut.mikelue.guru:sql:1.0/
 
 ---
-- !sql!table ex_artist : [
-    { at_id: &artist_id 38997, at_name: "Charlie Parker" }
-]
-
-- !sql!table ex_album : {
-    config: {
-        build_operation: "insert_and_log",
-        decorator: "decorator_album"
-    },
-
-    data: [
-        {
-            ab_id: 4051, ab_name: "No. 1",
-            ab_duration_seconds: !jdut!supplier "random_duration", ab_release_date: !jdut!supplier "random_date",
-            ab_type: 1, ab_at_id: *artist_id
-        },
-        {
-            ab_id: 4052, ab_name: "No. 2",
-            ab_duration_seconds: !jdut!supplier "random_duration", ab_release_date: !jdut!supplier "random_date",
-            ab_type: 1, ab_at_id: *artist_id
-        },
-        {
-            ab_id: 4053, ab_name: "No. 3",
-            ab_duration_seconds: !jdut!supplier "random_duration", ab_release_date: !jdut!supplier "random_date",
-            ab_type: 2, ab_at_id: *artist_id
-        },
-        {
-            ab_id: 4054, ab_name: "No. 4",
-            ab_duration_seconds: !jdut!supplier "random_duration", ab_release_date: !jdut!supplier "random_date",
-            ab_type: 3, ab_at_id: *artist_id
-        }
-    ]
-}
+- !sql!code
+  build_operation: !sql!statement
+      INSERT INTO method_t1 VALUES(52);
+      INSERT INTO method_t1 VALUES(52);
+  clean_operation: !sql!statement
+      DELETE FROM method_t1;

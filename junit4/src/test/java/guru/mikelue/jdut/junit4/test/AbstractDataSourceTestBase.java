@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import guru.mikelue.jdut.vendor.DatabaseVendor;
-
 public abstract class AbstractDataSourceTestBase {
 	private Logger logger = LoggerFactory.getLogger(AbstractDataSourceTestBase.class);
 
@@ -21,7 +19,7 @@ public abstract class AbstractDataSourceTestBase {
 	@ClassRule
 	public final static ExternalResource dataSourceResource = new ExternalResource() {
 		@Override
-		protected void before() throws Throwable
+		protected void before()
 		{
 			getApplicationContext();
 		}
@@ -37,11 +35,6 @@ public abstract class AbstractDataSourceTestBase {
 	protected Logger getLogger()
 	{
 		return logger;
-	}
-
-	protected static DatabaseVendor getCurrentVendor()
-	{
-		return getApplicationContext().getBean(DatabaseVendor.class);
 	}
 
 	protected static ApplicationContext getApplicationContext()

@@ -22,26 +22,25 @@ public class AppContextExtension implements BeforeAllCallback, AfterAllCallback 
 	{
 		Store store = getStore(junitContext);
 
-		AnnotationConfigApplicationContext ctx = newAppContext();
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.register(DataSourceContext.class);
+		ctx.refresh();
 		store.put(NAME_APP_CONTEXT, ctx);
+
+		AbstractDataSourceTestBase testBase = (AbstractDataSourceTestBase)junitContext.getRequiredTestInstance();
+		testBase.setAppContext(ctx);
 	}
 
 	@Override
 	public void afterAll(ExtensionContext junitContext) throws Exception
 	{
+		AbstractDataSourceTestBase testBase = (AbstractDataSourceTestBase)junitContext.getRequiredTestInstance();
+		testBase.setAppContext(null);
+
 		Store store = getStore(junitContext);
 		AnnotationConfigApplicationContext appContext = store.remove(NAME_APP_CONTEXT, AnnotationConfigApplicationContext.class);
 		appContext.close();
 		appContext = null;
-	}
-
-	public static AnnotationConfigApplicationContext newAppContext()
-	{
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(DataSourceContext.class);
-		ctx.refresh();
-
-		return ctx;
 	}
 
 	private static Store getStore(ExtensionContext junitContext)
