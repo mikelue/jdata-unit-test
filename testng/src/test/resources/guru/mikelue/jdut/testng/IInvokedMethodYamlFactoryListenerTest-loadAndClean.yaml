@@ -5,6 +5,7 @@
 ---
 - !sql!code
   build_operation: !sql!statement
-      CREATE TABLE tab_22(t22_id INTEGER)
+      INSERT INTO tab_22 VALUES(33);
+      INSERT INTO tab_22 VALUES(33);
   clean_operation: !sql!statement
-      DROP TABLE tab_22
+      DELETE FROM tab_22 WHERE t22_id = 33;

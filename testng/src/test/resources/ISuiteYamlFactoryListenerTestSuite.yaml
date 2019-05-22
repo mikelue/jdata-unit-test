@@ -5,6 +5,6 @@
 ---
 - !sql!code
   build_operation: !sql!statement
-    CREATE TABLE suite_t1(t1_id INTEGER)
+    INSERT INTO suite_t1 VALUES(27);
   clean_operation: !sql!statement
-    DROP TABLE suite_t1
+    INSERT INTO suite_t1 VALUES(27);

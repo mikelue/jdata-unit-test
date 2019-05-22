@@ -5,6 +5,6 @@
 ---
 - !sql!code
   build_operation: !sql!statement
-    INSERT INTO tcontext_t1 VALUES(20);
+      INSERT INTO tab_45 VALUES(77);
   clean_operation: !sql!statement
-    INSERT INTO tcontext_t1 VALUES(20);
+      INSERT INTO tab_45 VALUES(77);
