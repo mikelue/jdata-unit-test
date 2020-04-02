@@ -11,7 +11,7 @@ public class MissedColumnException extends DataRowException {
 
 	public MissedColumnException(SchemaTable tableSchema, SchemaColumn newMissedColumn)
 	{
-		super(String.format("Miss column: \"%s.%s\"", tableSchema.getName(), newMissedColumn.getName()));
+		super(String.format("Miss column: Table:\"%s\" Column:\"%s\"", tableSchema.getName(), newMissedColumn.getName()));
 		missedColumn = newMissedColumn;
 	}
 
