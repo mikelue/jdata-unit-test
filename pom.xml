@@ -138,7 +138,7 @@
 		  - Default setting of database for testing
 		  -->
 		<db.server.name>localhost</db.server.name>
-		<db.schema.name>jdut</db.schema.name>
+		<db.name>jdut</db.name>
 
 		<db.username>jdut</db.username>
 		<db.password>jdut@0627</db.password>
@@ -148,7 +148,7 @@
 		  - Default using H2 as tested database
 		  -->
 		<db.driverClassName>org.h2.Driver</db.driverClassName>
-		<db.url>jdbc:h2:./target/h2/${db.schema.name}</db.url>
+		<db.url>jdbc:h2:./target/h2/${db.name}</db.url>
 		<!-- :~) -->
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -729,7 +729,7 @@
 			<id>postgresql</id>
 			<properties>
 				<db.driverClassName>org.postgresql.Driver</db.driverClassName>
-				<db.url>jdbc:postgresql://${db.server.name}/${db.schema.name}</db.url>
+				<db.url>jdbc:postgresql://${db.server.name}/${db.name}</db.url>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -743,7 +743,7 @@
 			<id>mssql</id>
 			<properties>
 				<db.driverClassName>com.microsoft.sqlserver.jdbc.SQLServerDriver</db.driverClassName>
-				<db.url>jdbc:sqlserver://${db.server.name}:1433;databaseName=${db.schema.name}</db.url>
+				<db.url>jdbc:sqlserver://${db.server.name}:1433;databaseName=${db.name}</db.url>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -757,7 +757,7 @@
 			<id>mysql</id>
 			<properties>
 				<db.driverClassName>com.mysql.jdbc.Driver</db.driverClassName>
-				<db.url>jdbc:mysql://${db.server.name}:3306/${db.schema.name}</db.url>
+				<db.url>jdbc:mysql://${db.server.name}:3306/${db.name}</db.url>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -785,7 +785,7 @@
 			<id>hsqldb</id>
 			<properties>
 				<db.driverClassName>org.hsqldb.jdbcDriver</db.driverClassName>
-				<db.url>jdbc:hsqldb:file:target/hsqldb/${db.schema.name};hsqldb.sqllog=2</db.url>
+				<db.url>jdbc:hsqldb:file:target/hsqldb/${db.name};hsqldb.sqllog=2</db.url>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -799,7 +799,7 @@
 			<id>derby</id>
 			<properties>
 				<db.driverClassName>org.apache.derby.jdbc.EmbeddedDriver</db.driverClassName>
-				<db.url>jdbc:derby:target/derby/${db.schema.name};create=true;logDevice=target/derby</db.url>
+				<db.url>jdbc:derby:target/derby/${db.name};create=true;logDevice=target/derby</db.url>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -833,7 +833,7 @@
 			<id>sqlite</id>
 			<properties>
 				<db.driverClassName>org.sqlite.JDBC</db.driverClassName>
-				<db.url>jdbc:sqlite:target/sqlite-${db.schema.name}.db</db.url>
+				<db.url>jdbc:sqlite:target/sqlite-${db.name}.db</db.url>
 			</properties>
 			<dependencies>
 				<dependency>
