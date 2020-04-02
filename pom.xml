@@ -435,6 +435,9 @@
 				<plugin>
 					<artifactId>maven-gpg-plugin</artifactId>
 					<version>1.6</version>
+					<configuration>
+						<executable>gpg2</executable>
+					</configuration>
 					<executions>
 						<execution>
 							<id>sign-artifacts</id>
@@ -551,7 +554,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.2.0</version>
 					<configuration>
 						<javaApiLinks>
 							<property>
@@ -568,7 +571,6 @@
 							<link>https://jitpack.io/com/github/cbeust/testng/master/javadoc/</link>
 							<link>https://jdut.gh.mikelue.guru/apidocs/</link>
 							<link>https://junit.org/junit4/javadoc/latest/</link>
-							<link>https://junit.org/junit5/docs/current/api/</link>
 						</links>
 						<additionalOptions>--allow-script-in-comments</additionalOptions>
 					</configuration>
