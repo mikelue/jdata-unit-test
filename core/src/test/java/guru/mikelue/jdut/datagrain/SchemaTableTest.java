@@ -1,5 +1,7 @@
 package guru.mikelue.jdut.datagrain;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -18,12 +20,45 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SchemaTableTest {
 	public SchemaTableTest() {}
 
+	@Mocked
+	private DatabaseMetaData mockMetaData;
+
+	/**
+	 * Tests the support of schema in name of table
+	 */
+	@Test
+	void buildWithSchema() throws SQLException
+	{
+		/**
+		 * Mocks the value from meta data
+		 */
+		new Expectations() {{
+			mockMetaData.supportsSchemasInTableDefinitions();
+			result = true;
+		}};
+		// :~)
+
+		SchemaTable testedTableSchema = SchemaTable.build(
+			builder -> builder
+				.metaData(mockMetaData)
+				.name("red.carrot")
+				.keys("cr_id")
+		);
+
+		assertThat(testedTableSchema.getSchema())
+			.hasValue("red");
+		assertThat(testedTableSchema.getName())
+			.isEqualTo("carrot");
+		assertThat(testedTableSchema.getKeys())
+			.containsOnly("cr_id");
+	}
+
 	/**
 	 * Tests the building of object.
 	 */
 	@ParameterizedTest
 	@MethodSource
-	public void build(
+	void build(
 		String sampleTableName, String expectedTableName,
 		String[] sampleKeys, List<String> expectedKeys
 	) {
@@ -69,15 +104,12 @@ public class SchemaTableTest {
 		};
 	}
 
-	@Mocked
-	DatabaseMetaData mockMetaData;
-
 	/**
 	 * Tests the case for column's name.
 	 */
 	@ParameterizedTest
 	@MethodSource
-	public void hasColumn(
+	void hasColumn(
 		boolean storesUpperCaseIdentifiers,
 		boolean storesLowerCaseIdentifiers,
 		boolean storesMixedCaseIdentifiers,
@@ -97,6 +129,8 @@ public class SchemaTableTest {
 			result = storesMixedCaseIdentifiers;
 			mockMetaData.supportsMixedCaseIdentifiers();
 			result = supportsMixedCaseIdentifiers;
+			mockMetaData.supportsSchemasInTableDefinitions();
+			result = true;
 		}};
 		// :~)
 

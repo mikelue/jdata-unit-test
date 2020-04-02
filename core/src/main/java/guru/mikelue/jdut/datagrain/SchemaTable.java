@@ -41,6 +41,7 @@ public class SchemaTable {
 	private Optional<Boolean> storesMixedCaseIdentifiers = Optional.empty();
 	private Optional<Boolean> supportsMixedCaseIdentifiers = Optional.empty();
 	private Optional<String> identifierQuoteString = Optional.empty();
+	private Optional<Boolean> supportsSchemasInTableDefinitions = Optional.empty();
 
     private List<String> keys = Collections.emptyList();
     private Map<String, SchemaColumn> columns;
@@ -63,6 +64,9 @@ public class SchemaTable {
 		public Builder metaData(DatabaseMetaData metaData)
 		{
 			try {
+				/**
+				 * Identifier configurations of database
+				 */
 				storesUpperCaseIdentifiers = Optional.of(metaData.storesUpperCaseIdentifiers());
 				storesLowerCaseIdentifiers = Optional.of(metaData.storesLowerCaseIdentifiers());
 				storesMixedCaseIdentifiers = Optional.of(metaData.storesMixedCaseIdentifiers());
@@ -71,6 +75,13 @@ public class SchemaTable {
 					" ".equals(metaData.getIdentifierQuoteString()) ? null :
 						metaData.getIdentifierQuoteString()
 				);
+				// :~)
+
+				/**
+				 * Schema configuration of database
+				 */
+				supportsSchemasInTableDefinitions = Optional.of(metaData.supportsSchemasInTableDefinitions());
+				// :~)
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}
@@ -89,7 +100,8 @@ public class SchemaTable {
 		 */
 		public Builder catalog(String newCatalog)
 		{
-			catalog = Optional.ofNullable(StringUtils.trimToNull(newCatalog));
+			catalog = Optional.ofNullable(StringUtils.trimToNull(newCatalog))
+				.map(SchemaTable.this::treatIdentifier);
 			return this;
 		}
 
@@ -104,7 +116,9 @@ public class SchemaTable {
 		 */
 		public Builder schema(String newSchema)
 		{
-			schema = Optional.ofNullable(StringUtils.trimToNull(newSchema));
+			schema = Optional.ofNullable(StringUtils.trimToNull(newSchema))
+				.map(SchemaTable.this::treatIdentifier);
+
 			return this;
 		}
 
@@ -120,6 +134,7 @@ public class SchemaTable {
 			name = StringUtils.trimToNull(newName);
 			Validate.notNull(name, "Need table name");
 
+			processSchemaAndTableName();
 			name = SchemaTable.this.treatIdentifier(name);
 
             return this;
@@ -190,6 +205,27 @@ public class SchemaTable {
 		public String getName()
 		{
 			return name;
+		}
+
+		private void processSchemaAndTableName()
+		{
+			if (name == null || !supportsSchemasInTableDefinitions.orElse(false)) {
+				return;
+			}
+
+			if (!name.contains(".")) {
+				return;
+			}
+
+			String[] schemaAndTableName = name.split("\\.");
+			if (schemaAndTableName.length > 2) {
+				throw new SchemaProcessException(
+					String.format("Cannot recgonize schema and table name: \"%s\"", name)
+				);
+			}
+
+			schema(schemaAndTableName[0]);
+			name = schemaAndTableName[1];
 		}
     }
 

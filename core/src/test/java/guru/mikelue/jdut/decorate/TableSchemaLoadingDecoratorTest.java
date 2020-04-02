@@ -1,25 +1,56 @@
 package guru.mikelue.jdut.decorate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static guru.mikelue.jdut.vendor.DatabaseVendor.H2;
+
 import java.sql.JDBCType;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.api.Test;
 
+import guru.mikelue.jdut.annotation.IfDatabaseVendor;
 import guru.mikelue.jdut.datagrain.DataRow;
 import guru.mikelue.jdut.datagrain.SchemaColumn;
 import guru.mikelue.jdut.datagrain.SchemaTable;
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.test.DoLiquibase;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.params.provider.Arguments.*;
-
 public class TableSchemaLoadingDecoratorTest extends AbstractDataSourceTestBase {
 	public TableSchemaLoadingDecoratorTest() {}
+
+	@Test @DoLiquibase @IfDatabaseVendor(match=H2)
+	public void decorateWithSchemaInformation()
+	{
+		final DataGrainDecorator testedDecorator = new TableSchemaLoadingDecorator(
+			getDataSource()
+		);
+
+		DataRow testedRow = DataRow.build(
+			builder -> {
+				builder.tableSchema(
+					SchemaTable.build(tableBuilder -> tableBuilder.name("green.broccoli"))
+				);
+
+				testedDecorator.decorate(builder);
+			}
+		);
+
+		SchemaTable tableSchema = testedRow.getTable();
+		assertEquals(2, tableSchema.getNumberOfColumns());
+		assertColumn(
+			tableSchema, "size",
+			JDBCType.INTEGER, true, false
+		);
+		assertColumn(
+			tableSchema, "width",
+			JDBCType.INTEGER, true, false
+		);
+	}
 
 	/**
 	 * Tests the decoration of schema loading.

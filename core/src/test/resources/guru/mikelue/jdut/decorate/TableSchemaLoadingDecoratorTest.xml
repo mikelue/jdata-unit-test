@@ -86,4 +86,23 @@
 			<dropTable tableName="tab_has_nothing" />
 		</rollback>
 	</changeSet>
+
+	<changeSet id="decorateWithSchemaInformation" labels="decorateWithSchemaInformation" author="${testClassName}" dbms="h2">
+		<sql>
+		CREATE SCHEMA green
+		</sql>
+
+		<createTable schemaName="green" tableName="broccoli">
+			<column name="size" type="INT" />
+			<column name="width" type="INT" />
+		</createTable>
+
+		<rollback>
+			<dropTable schemaName="green" tableName="broccoli" />
+
+			<sql>
+			DROP SCHEMA green
+			</sql>
+		</rollback>
+	</changeSet>
 </databaseChangeLog>
