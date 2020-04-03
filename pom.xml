@@ -464,6 +464,7 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>${version.plugin.surefire}</version>
 					<configuration>
+						<trimStackTrace>false</trimStackTrace>
 						<argLine>
 							-javaagent:${settings.localRepository}/org/jmockit/jmockit/${version.jmockit}/jmockit-${version.jmockit}.jar
 						</argLine>
