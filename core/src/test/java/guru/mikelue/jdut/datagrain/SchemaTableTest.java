@@ -1,9 +1,9 @@
 package guru.mikelue.jdut.datagrain;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,45 +12,69 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import mockit.Mocked;
-import mockit.Expectations;
+import guru.mikelue.jdut.jdbc.util.MetaDataWorker;
 
-import static org.junit.jupiter.api.Assertions.*;
+import mockit.Delegate;
+import mockit.Expectations;
+import mockit.Mocked;
 
 public class SchemaTableTest {
 	public SchemaTableTest() {}
 
-	@Mocked
-	private DatabaseMetaData mockMetaData;
-
 	/**
-	 * Tests the support of schema in name of table
+	 * Tests the process for quoted full name
 	 */
-	@Test
-	void buildWithSchema() throws SQLException
-	{
-		/**
-		 * Mocks the value from meta data
-		 */
-		new Expectations() {{
-			mockMetaData.supportsSchemasInTableDefinitions();
-			result = true;
-		}};
-		// :~)
+	@ParameterizedTest
+	@MethodSource
+	void buildForQuotedFullName(
+		boolean metaDataWorker,
+		String sampleSchema, String sampleTable,
+		String expectedResult,
+		@Mocked MetaDataWorker mockMetaDataWorker
+	) {
+		if (metaDataWorker) {
+			new Expectations() {{
+				mockMetaDataWorker.processIdentifier(anyString);
+				result = new Delegate<Object>() {
+					@SuppressWarnings("unused")
+					String processIdentifier(String source)
+					{
+						return source;
+					}
+				};
+
+				mockMetaDataWorker.quoteIdentifier(anyString);
+				result = new Delegate<Object>() {
+					@SuppressWarnings("unused")
+					String quoteIdentifier(String source)
+					{
+						return String.format("\"%s\"", source);
+					}
+				};
+
+				mockMetaDataWorker.supportsSchemasInDataManipulation();
+				result = true;
+			}};
+		}
 
 		SchemaTable testedTableSchema = SchemaTable.build(
 			builder -> builder
-				.metaData(mockMetaData)
-				.name("red.carrot")
-				.keys("cr_id")
+				.metaDataWorker(metaDataWorker ? mockMetaDataWorker : null)
+				.schema(sampleSchema)
+				.name(sampleTable)
 		);
 
-		assertThat(testedTableSchema.getSchema())
-			.hasValue("red");
-		assertThat(testedTableSchema.getName())
-			.isEqualTo("carrot");
-		assertThat(testedTableSchema.getKeys())
-			.containsOnly("cr_id");
+		assertThat(testedTableSchema.getQuotedFullName())
+			.isEqualTo(expectedResult);
+	}
+	static Arguments[] buildForQuotedFullName()
+	{
+		return new Arguments[] {
+			arguments(true, "", "hammer", "\"hammer\""),
+			arguments(true, "black", "mallet", "\"black\".\"mallet\""),
+			arguments(false, "", "hammer", "hammer"),
+			arguments(false, "black", "mallet", "mallet"),
+		};
 	}
 
 	/**
@@ -73,31 +97,17 @@ public class SchemaTableTest {
 		);
 
 		assertEquals(testedTableSchema.getName(), expectedTableName);
+		assertEquals(testedTableSchema.getQuotedFullName(), expectedTableName);
 		assertEquals(testedTableSchema.getKeys(), expectedKeys);
-
-		/**
-		 * Asserts the index of column
-		 */
-		assertEquals(testedTableSchema.getColumn(0).getName(), "dc_1");
-		assertEquals(testedTableSchema.getColumn(1).getName(), "DC_2");
-		assertEquals(testedTableSchema.getColumn(2).getName(), "Dc_3");
-		// :~)
-		/**
-		 * Asserts the case of column name(insensitive)
-		 */
-		assertEquals(testedTableSchema.getColumn("DC_1").getName(), "dc_1");
-		assertEquals(testedTableSchema.getColumn("dc_2").getName(), "DC_2");
-		assertEquals(testedTableSchema.getColumn("dc_3").getName(), "Dc_3");
-		// :~)
 	}
 	static Arguments[] build()
 	{
 		return new Arguments[] {
-			a("gt_car", "gt_car",
+			arguments("gt_car", "gt_car",
 				new String[] { "col_1", "col_2" },
 				Arrays.asList("col_1", "col_2")
 			),
-			a("  gt_car  ", "gt_car",
+			arguments("  gt_car  ", "gt_car",
 				new String[] { " col_4 ", null, "", " col_3 " },
 				Arrays.asList("col_4", "col_3")
 			)
@@ -105,95 +115,39 @@ public class SchemaTableTest {
 	}
 
 	/**
-	 * Tests the case for column's name.
+	 * Tests the building of columns
 	 */
-	@ParameterizedTest
-	@MethodSource
-	void hasColumn(
-		boolean storesUpperCaseIdentifiers,
-		boolean storesLowerCaseIdentifiers,
-		boolean storesMixedCaseIdentifiers,
-		boolean supportsMixedCaseIdentifiers,
-		String sampleColumnName, String checkingColumnName,
-		boolean expectedResult
-	) throws SQLException {
-		/**
-		 * Mocks the value from meta data
-		 */
-		new Expectations() {{
-			mockMetaData.storesUpperCaseIdentifiers();
-			result = storesUpperCaseIdentifiers;
-			mockMetaData.storesLowerCaseIdentifiers();
-			result = storesLowerCaseIdentifiers;
-			mockMetaData.storesMixedCaseIdentifiers();
-			result = storesMixedCaseIdentifiers;
-			mockMetaData.supportsMixedCaseIdentifiers();
-			result = supportsMixedCaseIdentifiers;
-			mockMetaData.supportsSchemasInTableDefinitions();
-			result = true;
-		}};
-		// :~)
-
+	@Test
+	void buildForColumns()
+	{
 		SchemaTable testedTableSchema = SchemaTable.build(
 			builder -> builder
-				.name("tab_99")
-				.metaData(mockMetaData)
-				.column(SchemaColumn.build(columnBuilder -> columnBuilder.name(sampleColumnName)))
+				.name("ladder")
+				.column(SchemaColumn.build(columnBuilder -> columnBuilder.name("cell_number")))
+				.column(SchemaColumn.build(columnBuilder -> columnBuilder.name("color")))
+				.column(SchemaColumn.build(columnBuilder -> columnBuilder.name("min_height")))
 		);
 
-		assertEquals(testedTableSchema.hasColumn(checkingColumnName), expectedResult);
-	}
-	static Arguments[] hasColumn()
-	{
-		return new Arguments[] {
-			/**
-			 * Case insensitive
-			 */
-			a(false, false, true, false,
-				"gc_1", "gc_1", true
-			),
-			a(false, false, true, false,
-				"gc_1", "GC_1", true
-			),
-			// :~)
-			/**
-			 * Case insensitive(stores lower case)
-			 */
-			a(false, true, false, false,
-				"GC_1", "gc_1", true
-			),
-			a(false, true, false, false,
-				"GC_1", "gc_1", true
-			),
-			// :~)
-			/**
-			 * Case insensitive(stores upper case)
-			 */
-			a(true, false, false, false,
-				"GC_1", "gc_1", true
-			),
-			a(true, false, false, false,
-				"gc_1", "GC_1", true
-			),
-			// :~)
-			/**
-			 * Case sensitive
-			 */
-			a(false, false, false, true,
-				"gc_1", "gc_1", true
-			),
-			a(false, false, false, true,
-				"GC_1", "GC_1", true
-			),
-			a(false, false, false, true,
-				"gc_1", "GC_1", false
-			),
-			// :~)
-		};
-	}
+		/**
+		 * Asserts the columns by name
+		 */
+		assertThat(testedTableSchema.getColumn("cell_number"))
+			.isNotNull();
+		assertThat(testedTableSchema.getColumn("color").getName())
+			.isNotNull();
+		assertThat(testedTableSchema.getColumn("min_height").getName())
+			.isNotNull();
+		// :~)
 
-	private static Arguments a(Object... args)
-	{
-		return Arguments.arguments(args);
+		/**
+		 * Asserts the columns by index
+		 */
+		assertThat(testedTableSchema.getColumn(0).getName())
+			.isEqualTo("cell_number");
+		assertThat(testedTableSchema.getColumn(1).getName())
+			.isEqualTo("color");
+		assertThat(testedTableSchema.getColumn(2).getName())
+			.isEqualTo("min_height");
+		// :~)
 	}
 }

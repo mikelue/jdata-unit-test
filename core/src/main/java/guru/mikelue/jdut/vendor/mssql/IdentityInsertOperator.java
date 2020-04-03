@@ -93,7 +93,7 @@ public class IdentityInsertOperator implements DataRowOperator {
 				() -> connection.createStatement(),
 				stat -> stat.executeUpdate(String.format(
 					"SET IDENTITY_INSERT %s ON",
-					table.quoteIdentifier(table.getName())
+					table.getQuotedFullName()
 				))
 			).runJdbc();
 		}
@@ -110,7 +110,7 @@ public class IdentityInsertOperator implements DataRowOperator {
 				() -> connection.createStatement(),
 				stat -> stat.executeUpdate(String.format(
 					"SET IDENTITY_INSERT %s OFF",
-					table.quoteIdentifier(table.getName())
+					table.getQuotedFullName()
 				))
 			).runJdbc();
 		}

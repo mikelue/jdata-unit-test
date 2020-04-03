@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
@@ -21,11 +22,11 @@ import guru.mikelue.jdut.datagrain.DataRow;
 import guru.mikelue.jdut.datagrain.DataRowException;
 import guru.mikelue.jdut.datagrain.SchemaColumn;
 import guru.mikelue.jdut.datagrain.SchemaTable;
-import guru.mikelue.jdut.jdbc.JdbcVoidFunction;
-import guru.mikelue.jdut.jdbc.JdbcRunnable;
 import guru.mikelue.jdut.jdbc.JdbcSupplier;
 import guru.mikelue.jdut.jdbc.JdbcTemplateFactory;
+import guru.mikelue.jdut.jdbc.JdbcVoidFunction;
 import guru.mikelue.jdut.jdbc.SQLExceptionConvert;
+import guru.mikelue.jdut.jdbc.util.MetaDataWorker;
 
 /**
  * Loads database schema and validating rows.<br>
@@ -34,7 +35,7 @@ import guru.mikelue.jdut.jdbc.SQLExceptionConvert;
  * but this class is thread-safe for the caching mechanism.
  */
 public class TableSchemaLoadingDecorator implements DataGrainDecorator {
-	private Logger logger = LoggerFactory.getLogger(TableSchemaLoadingDecorator.class);
+	private final static Logger logger = LoggerFactory.getLogger(TableSchemaLoadingDecorator.class);
 
 	private final DataSource dataSource;
 	private Map<String, SchemaTable> cachedTables = new ConcurrentHashMap<>(32);
@@ -54,24 +55,33 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 			return;
 		}
 
+		/**
+		 * Loads scehma from cache or JDBC meta-data
+		 */
 		SchemaTable table = rowBuilder.getTable();
 		String tableIdentifier = table.getFullTableName();
-		logger.debug("Current table: [{}]", tableIdentifier);
+		logger.debug("Decorate table for loading schema: [{}]", tableIdentifier);
 
 		if (!cachedTables.containsKey(tableIdentifier)) {
+			logger.debug("First time of loading schema");
 			SchemaTable newTableSchema = loadSchema(table);
 
 			cachedTables.put(tableIdentifier, newTableSchema);
 		}
+		// :~)
 
 		rowBuilder.tableSchema(cachedTables.get(tableIdentifier));
 
+		/**
+		 * Validates the row data if it follow the definitions of schema.
+		 */
 		try {
 			rowBuilder.validate();
 		} catch (DataRowException e) {
 			logger.error("Validation of row[{}] has error", rowBuilder.getTable());
 			throw new RuntimeException(e);
 		}
+		// :~)
 	}
 
 	private SchemaTable loadSchema(SchemaTable source)
@@ -93,57 +103,104 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 		throws SQLException
 	{
 		DatabaseMetaData metaData = conn.getMetaData();
+		MetaDataWorker metaDataWorker = new MetaDataWorker(metaData);
+		SchemaAndTableName cananicalName = processSchemaAndTableName(metaDataWorker, sourceTable);
 
-		logger.debug("Loading schema of table: \"{}\"", sourceTable.getName());
+		logger.debug("Load schema for: {}", cananicalName);
 
 		/**
 		 * In order to respect the case-sensitive of identifiers,
 		 * this new table doesn't clone from old table schema
 		 */
 		return SchemaTable.build(tableBuilder -> {
-			tableBuilder.metaData(metaData);
-			tableBuilder.name(sourceTable.getName());
+			tableBuilder.metaDataWorker(metaDataWorker);
+			tableBuilder.schema(cananicalName.schema);
+			tableBuilder.name(cananicalName.table);
 			tableBuilder.keys(sourceTable.getKeys().toArray(new String[0]));
 
-			loadColumns(tableBuilder, sourceTable, metaData);
+			Map<String, SchemaColumn> loadedColumns = loadColumns(cananicalName, metaData);
+			for (SchemaColumn column: loadedColumns.values()) {
+				tableBuilder.column(column);
+			}
 
 			/**
 			 * Loads keys if there is no set one
 			 */
 			if (sourceTable.getKeys().isEmpty()) {
 				logger.debug("Fetch keys for table: \"{}\"", sourceTable.getName());
-				loadKeys(tableBuilder, metaData, sourceTable);
+
+				String[] keys = loadKeys(loadedColumns, metaData, cananicalName);
+				tableBuilder.keys(keys);
 			}
 			// :~)
 		});
 		// :~)
 	}
 
-	private void loadColumns(
-		SchemaTable.Builder tableBuilder, SchemaTable sourceTable,
+	private SchemaAndTableName processSchemaAndTableName(MetaDataWorker metaDataWorker, SchemaTable sourceTable)
+		throws SQLException
+	{
+		String catalog = sourceTable.getCatalog()
+			.map(metaDataWorker::processIdentifier)
+			.orElse(null);
+		String sourceTableName = metaDataWorker.processIdentifier(
+			sourceTable.getName()
+		);
+
+		if (
+			!metaDataWorker.supportsSchemasInTableDefinitions() ||
+			!sourceTableName.contains(".") ||
+			sourceTable.getSchema().isPresent()
+		) {
+			return new SchemaAndTableName(
+				catalog,
+				metaDataWorker.processIdentifier(sourceTable.getSchema().orElse(null)),
+				sourceTableName
+			);
+		}
+
+		String[] schemaAndTableName = sourceTableName.split("\\.");
+		if (schemaAndTableName.length > 2) {
+			throw new RuntimeException(
+				String.format("Cannot recgonize schema and table name: \"%s\"", sourceTableName)
+			);
+		}
+
+		return new SchemaAndTableName(
+			catalog,
+			metaDataWorker.processIdentifier(schemaAndTableName[0]),
+			metaDataWorker.processIdentifier(schemaAndTableName[1])
+		);
+	}
+
+	private Map<String, SchemaColumn> loadColumns(
+		SchemaAndTableName cananicalName,
 		DatabaseMetaData metaData
 	) {
-		JdbcRunnable loadColumns = JdbcTemplateFactory.buildRunnable(
+		logger.debug("Load columns for: {}", cananicalName);
+
+		JdbcSupplier<Map<String, SchemaColumn>> jdbcGetColumns = JdbcTemplateFactory.buildSupplier(
 			() -> metaData.getColumns(
-				sourceTable.getCatalog().orElse(null),
-				sourceTable.getSchema().orElse(null),
-				tableBuilder.getName(),
+				cananicalName.catalog,
+				cananicalName.schema, cananicalName.table,
 				null
 			),
 			/**
 			 * Builds information of columns
 			 */
 			(ResultSet rsColumns) -> {
+				Map<String, SchemaColumn> columns = new HashMap<>();
+
 				while (rsColumns.next()) {
 					String columnName = rsColumns.getString("COLUMN_NAME");
 					JDBCType jdbcType = JDBCType.valueOf(rsColumns.getInt("DATA_TYPE"));
 
-					logger.debug("Loading schema of columns: \"{}\". Type: [{}]",
+					logger.debug("Loading meta-data of columns: \"{}\". Type: [{}]",
 						columnName, jdbcType
 					);
 
-					JdbcVoidFunction<SchemaColumn.Builder> jdbcFunction = columnBuilder -> {
-						columnBuilder
+					JdbcVoidFunction<SchemaColumn.Builder> columnBuilder = builder -> {
+						builder
 							.name(columnName)
 							.jdbcType(jdbcType)
 							.defaultValue(rsColumns.getString("COLUMN_DEF"));
@@ -151,7 +208,7 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 						try {
 							String autoIncremental = rsColumns.getString("IS_AUTOINCREMENT");
 							if (autoIncremental != null) {
-								columnBuilder.autoIncremental("YES".equals(autoIncremental) ? true : false);
+								builder.autoIncremental("YES".equals(autoIncremental) ? true : false);
 							}
 						} catch (SQLException e) {
 							logger.info("This database doesn't have \"IS_AUTOINCREMENT\" meta data of JDBC");
@@ -159,29 +216,34 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 
 						switch (rsColumns.getInt("NULLABLE")) {
 							case DatabaseMetaData.columnNullable:
-								columnBuilder.nullable(true);
+								builder.nullable(true);
 								break;
 							case DatabaseMetaData.columnNoNulls:
-								columnBuilder.nullable(false);
+								builder.nullable(false);
 								break;
 						}
 					};
 
-					tableBuilder.column(
-						SchemaColumn.build(jdbcFunction.asConsumer())
-					);
+					SchemaColumn loadedColumn =
+						SchemaColumn.build(columnBuilder.asConsumer());
+					columns.put(loadedColumn.getName(), loadedColumn);
 				}
 				// :~)
+
+				return columns;
 			}
 		);
 
-		loadColumns.asRunnable().run();
+		return jdbcGetColumns.asSupplier().get();
 	}
 
-	private void loadKeys(
-		SchemaTable.Builder tableBuilder, DatabaseMetaData metaData,
-		SchemaTable sourceTable
+	private String[] loadKeys(
+		Map<String, SchemaColumn> columnsInfo,
+		DatabaseMetaData metaData,
+		SchemaAndTableName cananicalName
 	) {
+		logger.debug("Load keys for: {}", cananicalName);
+
 		List<String> keys = null;
 
 		/**
@@ -189,9 +251,9 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 		 */
 		JdbcSupplier<List<String>> loadKeysByPk = JdbcTemplateFactory.buildSupplier(
 			() -> metaData.getPrimaryKeys(
-				sourceTable.getCatalog().orElse(null),
-				sourceTable.getSchema().orElse(null),
-				tableBuilder.getName()
+				cananicalName.catalog,
+				cananicalName.schema,
+				cananicalName.table
 			),
 			rs -> {
 				List<String> loadedKeys = new ArrayList<>(4);
@@ -208,26 +270,26 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 		);
 		keys = loadKeysByPk.asSupplier().get();
 		if (!keys.isEmpty()) {
-			tableBuilder.keys(keys.toArray(new String[0]));
-			return;
+			return keys.toArray(new String[0]);
 		}
 		// :~)
 
-		tableBuilder.keys(
-			fetchBestKeys(
-				tableBuilder,
-				() -> metaData.getIndexInfo(
-					sourceTable.getCatalog().orElse(null),
-					sourceTable.getSchema().orElse(null),
-					tableBuilder.getName(),
-					true, true
-				)
-			).toArray(new String[0])
-		);
+		logger.debug("Deduce keys for: {}", cananicalName);
+		String[] deducedKeys = deduceKeys(
+			columnsInfo,
+			() -> metaData.getIndexInfo(
+				cananicalName.catalog,
+				cananicalName.schema,
+				cananicalName.table,
+				true, true
+			)
+		).toArray(new String[0]);
+
+		return deducedKeys;
 	}
 
-	private List<String> fetchBestKeys(
-		SchemaTable.Builder tableBuilder,
+	private List<String> deduceKeys(
+		Map<String, SchemaColumn> columnsInfo,
 		JdbcSupplier<ResultSet> rsUniqueIndexSupplier
 	) {
 		JdbcSupplier<List<String>> supplier = JdbcTemplateFactory.buildSupplier(
@@ -243,7 +305,7 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 					}
 
 					String indexName = rs.getString("INDEX_NAME");
-					SchemaColumn schemaColumn = tableBuilder.getColumn(columnName);
+					SchemaColumn schemaColumn = columnsInfo.get(columnName);
 
 					logger.debug(
 						"Collected information of unique index: \"{}\" and column: \"{}\". Nullable: [{}]",
@@ -315,5 +377,29 @@ public class TableSchemaLoadingDecorator implements DataGrainDecorator {
 		);
 
 		return supplier.asSupplier().get();
+	}
+}
+
+class SchemaAndTableName {
+	String catalog;
+	String schema;
+	String table;
+
+	SchemaAndTableName(String newCatalog, String newSchema, String newTable)
+	{
+		catalog = newCatalog;
+		schema = newSchema;
+		table = newTable;
+	}
+
+	@Override
+	public String toString()
+	{
+		return String.format(
+			"Cananical name(<catalog>.<schema>.<table>): [%s.%s.%s]",
+			catalog == null ? "<null>" : catalog,
+			schema == null ? "<null>" : schema,
+			table
+		);
 	}
 }

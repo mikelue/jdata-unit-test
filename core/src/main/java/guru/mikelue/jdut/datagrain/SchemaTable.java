@@ -1,7 +1,6 @@
 package guru.mikelue.jdut.datagrain;
 
 import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import guru.mikelue.jdut.jdbc.util.MetaDataWorker;
 
 /**
  * The schema of table.<br>
@@ -34,14 +35,11 @@ public class SchemaTable {
 
 	private Optional<String> catalog = Optional.empty();
 	private Optional<String> schema = Optional.empty();
-    private String name;
 
-	private Optional<Boolean> storesUpperCaseIdentifiers = Optional.empty();
-	private Optional<Boolean> storesLowerCaseIdentifiers = Optional.empty();
-	private Optional<Boolean> storesMixedCaseIdentifiers = Optional.empty();
-	private Optional<Boolean> supportsMixedCaseIdentifiers = Optional.empty();
-	private Optional<String> identifierQuoteString = Optional.empty();
-	private Optional<Boolean> supportsSchemasInTableDefinitions = Optional.empty();
+    private String name;
+	private String quotedTableName;
+
+	private MetaDataWorker metaDataWorker;
 
     private List<String> keys = Collections.emptyList();
     private Map<String, SchemaColumn> columns;
@@ -55,37 +53,15 @@ public class SchemaTable {
         private Builder() {}
 
 		/**
-		 * Loads meta data from database.
+		 * Sets meta-data work.
 		 *
-		 * @param metaData The meta data of database
+		 * @param metaDataWorker The worker of meta data
 		 *
 		 * @return cascading self
 		 */
-		public Builder metaData(DatabaseMetaData metaData)
+		public Builder metaDataWorker(MetaDataWorker newWorker)
 		{
-			try {
-				/**
-				 * Identifier configurations of database
-				 */
-				storesUpperCaseIdentifiers = Optional.of(metaData.storesUpperCaseIdentifiers());
-				storesLowerCaseIdentifiers = Optional.of(metaData.storesLowerCaseIdentifiers());
-				storesMixedCaseIdentifiers = Optional.of(metaData.storesMixedCaseIdentifiers());
-				supportsMixedCaseIdentifiers = Optional.of(metaData.supportsMixedCaseIdentifiers());
-				identifierQuoteString = Optional.ofNullable(
-					" ".equals(metaData.getIdentifierQuoteString()) ? null :
-						metaData.getIdentifierQuoteString()
-				);
-				// :~)
-
-				/**
-				 * Schema configuration of database
-				 */
-				supportsSchemasInTableDefinitions = Optional.of(metaData.supportsSchemasInTableDefinitions());
-				// :~)
-			} catch (SQLException e) {
-				throw new RuntimeException(e);
-			}
-
+			metaDataWorker = newWorker;
 			return this;
 		}
 
@@ -134,7 +110,6 @@ public class SchemaTable {
 			name = StringUtils.trimToNull(newName);
 			Validate.notNull(name, "Need table name");
 
-			processSchemaAndTableName();
 			name = SchemaTable.this.treatIdentifier(name);
 
             return this;
@@ -185,47 +160,21 @@ public class SchemaTable {
 			return this;
 		}
 
-		/**
-		 * Gets information of column.
-		 *
-		 * @param name The name of column
-		 *
-		 * @return The column matched
-		 */
-		public SchemaColumn getColumn(String name)
+		private void initQuotedName()
 		{
-			return SchemaTable.this.getColumn(name);
-		}
-
-		/**
-		 * Gets name of table.
-		 *
-		 * @return The name of table
-		 */
-		public String getName()
-		{
-			return name;
-		}
-
-		private void processSchemaAndTableName()
-		{
-			if (name == null || !supportsSchemasInTableDefinitions.orElse(false)) {
+			if (metaDataWorker == null) {
+				quotedTableName = name;
 				return;
 			}
 
-			if (!name.contains(".")) {
-				return;
+			if (metaDataWorker.supportsSchemasInDataManipulation()) {
+				quotedTableName = schema
+					.map(s -> metaDataWorker.quoteIdentifier(s) + ".")
+					.orElse("") +
+					metaDataWorker.quoteIdentifier(name);
+			} else {
+				quotedTableName = metaDataWorker.quoteIdentifier(name);
 			}
-
-			String[] schemaAndTableName = name.split("\\.");
-			if (schemaAndTableName.length > 2) {
-				throw new SchemaProcessException(
-					String.format("Cannot recgonize schema and table name: \"%s\"", name)
-				);
-			}
-
-			schema(schemaAndTableName[0]);
-			name = schemaAndTableName[1];
 		}
     }
 
@@ -247,33 +196,20 @@ public class SchemaTable {
 		tableSchema.nameToIndex = new HashMap<>(CollectionUsage.HASH_SPACE_OF_COLUMNS);
 
         builderConsumer.accept(tableBuilder);
+		tableBuilder.initQuotedName();
 
-        return tableSchema.clone();
-    }
-
-    /**
-     * Clones a table schema and edit it by {@link Consumer}.
-     *
-     * @param sourceTable The source of table to be edited
-     * @param builderConsumer The building code for table schema
-     *
-     * @return The modified schema of table
-     *
-     * @see #build(Consumer)
-     */
-    public static SchemaTable build(Consumer<Builder> builderConsumer, SchemaTable sourceTable)
-    {
-		Validate.notNull(builderConsumer, "Need consumer for builder");
-		Validate.notNull(sourceTable, "Need viable source schema of table");
-
-        SchemaTable tableSchema = sourceTable.modifiableClone();
-
-        builderConsumer.accept(tableSchema.new Builder());
-
-        return tableSchema.clone();
+		return tableSchema.clone();
     }
 
     private SchemaTable() {}
+
+	/**
+	 * Gets the worker of meta-data.
+	 */
+	public MetaDataWorker getMetaDataWorker()
+	{
+		return metaDataWorker;
+	}
 
     /**
      * Gets name of table.
@@ -284,6 +220,19 @@ public class SchemaTable {
     {
         return name;
     }
+
+	/**
+	 * Gets quoted string of full name(may be include schema) of table.
+	 *
+	 * If the {@link Builder#metaDataWorker(MetaDataWorker)} is not set,
+	 * the value returned by this method would be as same as {@link #getName}.
+	 *
+	 * @return The quoted name of table
+	 */
+	public String getQuotedFullName()
+	{
+		return quotedTableName;
+	}
 
 	/**
 	 * Gets optional value of schema.
@@ -392,6 +341,27 @@ public class SchemaTable {
     }
 
 	/**
+	 * Converts the case of <em>identifier</em> by meta-data of database.
+	 *
+	 * @param identifier The identifier to be processed
+	 *
+	 * @return The processed identifier
+	 */
+	public String treatIdentifier(String identifier)
+	{
+		identifier = StringUtils.trimToEmpty(identifier);
+		if (StringUtils.isEmpty(identifier)) {
+			return identifier;
+		}
+
+		if (metaDataWorker == null) {
+			return identifier.toLowerCase();
+		}
+
+		return metaDataWorker.processIdentifier(identifier);
+	}
+
+	/**
 	 * Use {@link DatabaseMetaData#getIdentifierQuoteString} to quote <em>identifier</em>.
 	 *
 	 * @param identifier The identifier to be quoted
@@ -400,9 +370,11 @@ public class SchemaTable {
 	 */
 	public String quoteIdentifier(String identifier)
 	{
-		String quote = identifierQuoteString.orElse("");
+		if (metaDataWorker == null) {
+			return identifier;
+		}
 
-		return String.format("%s%s%s", quote, identifier, quote);
+		return metaDataWorker.quoteIdentifier(identifier);
 	}
 
 	/**
@@ -442,60 +414,15 @@ public class SchemaTable {
         return clonedObject;
     }
 
-    private SchemaTable modifiableClone()
-    {
-        SchemaTable clonedObject = safeClone();
-
-        clonedObject.keys = new ArrayList<>(this.keys);
-        clonedObject.columns = new HashMap<>(this.columns);
-        clonedObject.nameToIndex = new HashMap<>(this.nameToIndex);
-        clonedObject.indexToName = new HashMap<>(this.indexToName);
-
-        return clonedObject;
-    }
-
 	private SchemaTable safeClone()
 	{
         SchemaTable clonedObject = new SchemaTable();
+		clonedObject.quotedTableName = this.quotedTableName;
         clonedObject.name = this.name;
 		clonedObject.schema = this.schema;
 		clonedObject.catalog = this.catalog;
-		clonedObject.storesLowerCaseIdentifiers = this.storesLowerCaseIdentifiers;
-		clonedObject.storesUpperCaseIdentifiers = this.storesUpperCaseIdentifiers;
-		clonedObject.storesMixedCaseIdentifiers = this.storesMixedCaseIdentifiers;
-		clonedObject.supportsMixedCaseIdentifiers = this.supportsMixedCaseIdentifiers;
-		clonedObject.identifierQuoteString = this.identifierQuoteString;
+		clonedObject.metaDataWorker = this.metaDataWorker;
 		return clonedObject;
-	}
-
-	public String treatIdentifier(String identifier)
-	{
-		identifier = StringUtils.trimToEmpty(identifier);
-
-		/**
-		 * Converts the identifier to lower case by default(case insensitive)
-		 */
-		if (!supportsMixedCaseIdentifiers.isPresent()) {
-			return identifier.toLowerCase();
-		}
-		// :~)
-
-		/**
-		 * Changes the identifier to upper or lower case if the database is case insensitive
-		 */
-		if (storesLowerCaseIdentifiers.get() || storesMixedCaseIdentifiers.get()) {
-			return identifier.toLowerCase();
-		} else if (storesUpperCaseIdentifiers.get()) {
-			return identifier.toUpperCase();
-		}
-		// :~)
-
-		if (!supportsMixedCaseIdentifiers.get()) {
-			identifier.toLowerCase();
-		}
-
-		// Case sensitive
-		return identifier;
 	}
 
 	/**

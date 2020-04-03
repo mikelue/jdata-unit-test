@@ -1,12 +1,10 @@
 package guru.mikelue.jdut.decorate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static guru.mikelue.jdut.vendor.DatabaseVendor.H2;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.sql.JDBCType;
-import java.util.List;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,6 +15,7 @@ import guru.mikelue.jdut.annotation.IfDatabaseVendor;
 import guru.mikelue.jdut.datagrain.DataRow;
 import guru.mikelue.jdut.datagrain.SchemaColumn;
 import guru.mikelue.jdut.datagrain.SchemaTable;
+import guru.mikelue.jdut.jdbc.util.MetaDataWorker;
 import guru.mikelue.jdut.test.AbstractDataSourceTestBase;
 import guru.mikelue.jdut.test.DoLiquibase;
 
@@ -41,15 +40,13 @@ public class TableSchemaLoadingDecoratorTest extends AbstractDataSourceTestBase 
 		);
 
 		SchemaTable tableSchema = testedRow.getTable();
-		assertEquals(2, tableSchema.getNumberOfColumns());
-		assertColumn(
-			tableSchema, "size",
-			JDBCType.INTEGER, true, false
-		);
-		assertColumn(
-			tableSchema, "width",
-			JDBCType.INTEGER, true, false
-		);
+
+		assertThat(tableSchema.getQuotedFullName())
+			.isEqualTo("\"GREEN\".\"BROCCOLI\"");
+		assertThat(tableSchema.getNumberOfColumns())
+			.isEqualTo(2);
+		assertColumn(tableSchema, "size", JDBCType.INTEGER, true, false);
+		assertColumn(tableSchema, "width", JDBCType.INTEGER, true, false);
 	}
 
 	/**
@@ -73,25 +70,24 @@ public class TableSchemaLoadingDecoratorTest extends AbstractDataSourceTestBase 
 		);
 
 		SchemaTable tableSchema = testedRow.getTable();
-		assertEquals(2, tableSchema.getNumberOfColumns());
-		assertColumn(
-			tableSchema, "col_varchar_1",
-			JDBCType.VARCHAR, true, false
-		);
-		assertColumn(
-			tableSchema, "col_varchar_2",
-			JDBCType.VARCHAR, false, true
-		);
+		assertThat(tableSchema.getNumberOfColumns())
+			.isEqualTo(2);
+		assertColumn(tableSchema, "col_varchar_1", JDBCType.VARCHAR, true, false);
+		assertColumn(tableSchema, "col_varchar_2", JDBCType.VARCHAR, false, true);
 	}
+
 	private void assertColumn(
 		SchemaTable tableSchema, String columnName, JDBCType expectedType,
 		Boolean isNullable, boolean hasDefaultValue
 	) {
 		SchemaColumn column = tableSchema.getColumn(columnName);
 
-		assertEquals(expectedType, column.getJdbcType().get());
-		assertEquals(isNullable, column.getNullable().get());
-		assertEquals(hasDefaultValue, column.getHasDefaultValue());
+		assertThat(column.getJdbcType().get())
+			.isEqualTo(expectedType);
+		assertThat(column.getNullable().get())
+			.isEqualTo(isNullable);
+		assertThat(column.getHasDefaultValue())
+			.isEqualTo(hasDefaultValue);
 	}
 
 	/**
@@ -117,21 +113,13 @@ public class TableSchemaLoadingDecoratorTest extends AbstractDataSourceTestBase 
 			}
 		);
 
-		List<String> testedKeys = testedRow.getTable().getKeys();
+		MetaDataWorker metaDataWorker = testedRow.getTable().getMetaDataWorker();
+		for (int i = 0; i < expectedKeys.length; i++) {
+			expectedKeys[i] = metaDataWorker.processIdentifier(expectedKeys[i]);
+		}
 
-		getLogger().warn("TK: {}, EK: {}", testedKeys, expectedKeys);
-
-		/**
-		 * Asserts every key
-		 */
-		IntStream.range(0, expectedKeys.length)
-			.forEach(
-				i -> assertEquals(
-					expectedKeys[i].toLowerCase(),
-					testedKeys.get(i).toLowerCase()
-				)
-			);
-		// :~)
+		assertThat(testedRow.getTable().getKeys())
+			.containsExactly(expectedKeys);
 	}
 	static Arguments[] decorateForKeys()
 	{

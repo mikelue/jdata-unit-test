@@ -239,7 +239,7 @@ public final class DefaultOperators {
 
 		String sql = String.format(
 			"INSERT INTO %s(%s) VALUES(%s)",
-			table.quoteIdentifier(table.getName()),
+			table.getQuotedFullName(),
 			join(
 				nameOfColumns,
 				columnName -> table.quoteIdentifier(columnName),
@@ -293,7 +293,7 @@ public final class DefaultOperators {
 
 		String sql = String.format(
 			"UPDATE %s SET %s WHERE %s",
-			table.quoteIdentifier(table.getName()),
+			table.getQuotedFullName(),
 			join(
 				nameOfColumns,
 				columnName -> String.format(
@@ -343,7 +343,7 @@ public final class DefaultOperators {
 
 		String queryData = String.format(
 			"SELECT COUNT(*) FROM %s WHERE %s",
-			table.quoteIdentifier(table.getName()),
+			table.getQuotedFullName(),
 			join(
 				keys,
 				key -> String.format("%s = ?", table.quoteIdentifier(key)),
@@ -393,7 +393,7 @@ public final class DefaultOperators {
 
 		String queryData = String.format(
 			"DELETE FROM %s WHERE %s",
-			table.quoteIdentifier(table.getName()),
+			table.getQuotedFullName(),
 			keys.stream().map(
 				key -> String.format("%s = ?", table.quoteIdentifier(key))
 			)
@@ -433,7 +433,7 @@ public final class DefaultOperators {
 
 		String queryData = String.format(
 			"DELETE FROM %s",
-			table.quoteIdentifier(table.getName())
+			table.getQuotedFullName()
 		);
 
 		logger.debug("Builds SQL: [{}]", queryData);
@@ -468,7 +468,7 @@ public final class DefaultOperators {
 
 		String queryData = String.format(
 			"TRUNCATE TABLE %s",
-			table.quoteIdentifier(table.getName())
+			table.getQuotedFullName()
 		);
 
 		logger.debug("Builds SQL: [{}]", queryData);

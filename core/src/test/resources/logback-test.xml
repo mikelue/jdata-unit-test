@@ -5,7 +5,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="liquibase" level="info" />
+	<logger name="liquibase" level="warn" />
 
 	<logger name="guru.mikelue.jdut" level="debug" />
 	<logger name="guru.mikelue.jdut.yaml" level="trace" />
