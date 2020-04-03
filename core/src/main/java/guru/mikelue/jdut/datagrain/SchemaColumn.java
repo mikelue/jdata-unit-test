@@ -123,25 +123,6 @@ public class SchemaColumn {
     }
 
     /**
-     * Clones and edit the column.
-     *
-     * @param sourceSchemaColumn The source to be cloned
-     * @param builderConsumer The editor for column
-     *
-     * @return The modified definition of column
-     *
-     * @see #build(Consumer)
-     */
-    public static SchemaColumn build(Consumer<Builder> builderConsumer, SchemaColumn sourceSchemaColumn)
-    {
-        SchemaColumn newColumn = sourceSchemaColumn.modifiableClone();
-
-        builderConsumer.accept(newColumn.new Builder());
-
-        return newColumn.clone();
-    }
-
-    /**
      * Gets name of column
      *
      * @return The name of column
@@ -220,11 +201,6 @@ public class SchemaColumn {
 		clonedObject.autoIncremental = this.autoIncremental;
 
         return clonedObject;
-    }
-
-    private SchemaColumn modifiableClone()
-    {
-        return clone();
     }
 
 	/**
