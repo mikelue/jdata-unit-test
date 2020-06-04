@@ -93,25 +93,25 @@
 		<!--
 		  - Versions of plugins
 		  -->
-		<version.plugin.surefire>3.0.0-M3</version.plugin.surefire>
+		<version.plugin.surefire>3.0.0-M4</version.plugin.surefire>
 		<!-- :~) -->
 
 		<!--
 		  - Versions of dependencies
 		  -->
-		<version.apache.commons.langs>3.8.1</version.apache.commons.langs>
+		<version.apache.commons.langs>3.10</version.apache.commons.langs>
 		<version.dbpool>7.0.1-jdk7</version.dbpool>
-		<version.jmockit>1.46</version.jmockit>
-		<version.junit>4.12</version.junit>
-		<version.junit.jupiter>5.4.2</version.junit.jupiter>
+		<version.jmockit>1.49</version.jmockit>
+		<version.junit>4.13</version.junit>
+		<version.junit.jupiter>5.6.2</version.junit.jupiter>
 		<version.liquibase.slf4j>2.0.0</version.liquibase.slf4j>
-		<version.liquibase>3.6.2</version.liquibase>
+		<version.liquibase>3.9.0</version.liquibase>
 		<version.logback>1.2.3</version.logback>
-		<version.slf4j>1.7.25</version.slf4j>
-		<version.snakeyaml>1.23</version.snakeyaml>
-		<version.springframework>5.1.7.RELEASE</version.springframework>
-		<version.testng>6.14.3</version.testng>
-		<version.assertj>3.12.2</version.assertj>
+		<version.slf4j>1.7.30</version.slf4j>
+		<version.snakeyaml>1.26</version.snakeyaml>
+		<version.springframework>5.1.15.RELEASE</version.springframework>
+		<version.testng>7.1.0</version.testng>
+		<version.assertj>3.16.1</version.assertj>
 		<!-- :~) -->
 
 		<!--
@@ -124,14 +124,14 @@
 		<!--
 		  - Versions of database
 		  -->
-		<version.derby>10.14.2.0</version.derby>
-		<version.h2>1.4.197</version.h2>
-		<version.hsqldb>2.4.1</version.hsqldb>
-		<version.mssql>7.0.0.jre8</version.mssql>
-		<version.mysql>8.0.12</version.mysql>
-		<version.oracle>18.3</version.oracle>
-		<version.postgresql>42.2.5.jre7</version.postgresql>
-		<version.sqlite>3.25.2</version.sqlite>
+		<version.derby>10.15.2.0</version.derby>
+		<version.h2>1.4.200</version.h2>
+		<version.hsqldb>2.5.0</version.hsqldb>
+		<version.mssql>8.2.2.jre8</version.mssql>
+		<version.mysql>8.0.20</version.mysql>
+		<version.oracle>19.6.0.0</version.oracle>
+		<version.postgresql>42.2.12.jre7</version.postgresql>
+		<version.sqlite>3.31.1</version.sqlite>
 		<!-- :~) -->
 
 		<!--
@@ -352,12 +352,9 @@
 			    <artifactId>mssql-jdbc</artifactId>
 				<version>${version.mssql}</version>
 			</dependency>
-			<!--
-			 - mvn install:install-file -Dfile=ojdbc8.jar -DgroupId=com.oracle -DartifactId=ojdbc8 -Dversion=18.3 -Dpackaging=jar
-			 -->
 			<dependency>
-				<groupId>com.oracle</groupId>
-				<artifactId>ojdbc8</artifactId>
+				<groupId>com.oracle.database.jdbc</groupId>
+				<artifactId>ojdbc10</artifactId>
 				<version>${version.oracle}</version>
 			</dependency>
 			<!-- :~) -->
@@ -391,16 +388,28 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>3.0.0</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.3.0</version>
+				</plugin>
+				<plugin>
 					<artifactId>maven-install-plugin</artifactId>
-					<version>2.5.2</version>
+					<version>3.0.0-M1</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>3.1.2</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-deploy-plugin</artifactId>
-					<version>2.8.2</version>
+					<version>3.0.0-M1</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.2.0</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
@@ -411,8 +420,12 @@
 					<version>3.1.0</version>
 				</plugin>
 				<plugin>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>3.0.0-M1</version>
+				</plugin>
+				<plugin>
 					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>3.0.0-M2</version>
+					<version>3.0.0-M3</version>
 					<executions>
 						<execution>
 							<id>enforce-versions</id>
@@ -450,7 +463,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.0</version>
+					<version>3.8.1</version>
 					<configuration>
 						<compilerArgs>
 							<arg>-Werror</arg>
@@ -470,6 +483,13 @@
 						</argLine>
 						<disableXmlReport>true</disableXmlReport>
 					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.jmockit</groupId>
+							<artifactId>jmockit</artifactId>
+							<version>${version.jmockit}</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 				<plugin>
 					<artifactId>maven-jxr-plugin</artifactId>
@@ -477,7 +497,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.7.1</version>
+					<version>3.9.0</version>
                     <configuration>
 						<generateSitemap>false</generateSitemap>
 						<asciidoc>
@@ -538,11 +558,11 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-project-info-reports-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.2.1</version>
 					<executions>
 						<execution>
 							<id>attach-sources</id>
