@@ -1,26 +1,3 @@
-<!--
-  - For deployment of reporting:
-  -
-  - Local development:
-  -   ** Quick for writing AsciiDoctor **
-  -   mvn -P site-author -pl ':parent' site
-  -   ** With aggregation for javadoc/jxr **
-  -   mvn -P site-author -pl ':parent,junit5' -Dskip.aggregate=false site
-  -
-  - Local build:
-  -   ** Executes site:stage after building every modules **
-  -   mvn -P gh-pages clean site site:stage
-  -
-  - Deploy to Github "gh-pages":
-  -   mvn -P gh-pages -pl ":parent" scm-publish:publish-scm
-  -
-  - Properties:
-  - 	-Dscmpublish.dryRun=true (Make the job dry run)
-  -
-  - For deployment of artifacts(to OSSRH):
-  -
-  -   mvn -P oss-deploy -DskipTests=true deploy
-  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
