@@ -12,7 +12,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 
 import guru.mikelue.jdut.vendor.DatabaseVendor;
-import snaq.db.DBPoolDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @PropertySource("classpath:/test-context.properties")
@@ -24,16 +24,14 @@ public class DataSourceContext {
 	@Autowired
 	private Environment env;
 
-	@Bean(destroyMethod="release")
+	@Bean
 	DataSource buildDataSource()
 	{
-		DBPoolDataSource dbPool = new DBPoolDataSource();
+		HikariDataSource dbPool = new HikariDataSource();
 
-		dbPool.setMaxPool(1);
-		dbPool.setMaxSize(8);
 		dbPool.setDriverClassName(env.getProperty("db.driverClassName"));
-		dbPool.setUrl(env.getProperty("db.url"));
-		dbPool.setUser(env.getProperty("db.username"));
+		dbPool.setJdbcUrl(env.getProperty("db.url"));
+		dbPool.setUsername(env.getProperty("db.username"));
 		dbPool.setPassword(env.getProperty("db.password"));
 
 		logger.info(

@@ -2,7 +2,6 @@ package guru.mikelue.jdut.example;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.lang.reflect.Method;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;

@@ -2,17 +2,15 @@ package guru.mikelue.jdut.testng.example;
 
 import javax.sql.DataSource;
 
-import snaq.db.DBPoolDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 
 public class DataSourceGetter {
-	private final static DBPoolDataSource dbPool;
+	private final static HikariDataSource dbPool;
 	static {
-		dbPool = new DBPoolDataSource();
+		dbPool = new HikariDataSource();
 
-		dbPool.setMaxPool(1);
-		dbPool.setMaxSize(8);
 		dbPool.setDriverClassName("org.h2.Driver");
-		dbPool.setUrl("jdbc:h2:./target/h2/example");
+		dbPool.setJdbcUrl("jdbc:h2:./target/h2/example");
 	}
 
 	public static DataSource get()

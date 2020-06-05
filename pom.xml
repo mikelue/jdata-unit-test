@@ -77,7 +77,7 @@
 		  - Versions of dependencies
 		  -->
 		<version.apache.commons.langs>3.10</version.apache.commons.langs>
-		<version.dbpool>7.0.1-jdk7</version.dbpool>
+		<version.hikaricp>3.4.5</version.hikaricp>
 		<version.jmockit>1.49</version.jmockit>
 		<version.junit>4.13</version.junit>
 		<version.junit.jupiter>5.6.2</version.junit.jupiter>
@@ -177,9 +177,9 @@
 		  - Database connection pooling(Testing)
 		  -->
 		<dependency>
-			<groupId>net.snaq</groupId>
-			<artifactId>dbpool</artifactId>
-			<version>${version.dbpool}</version>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>${version.hikaricp}</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- :~) -->
@@ -435,6 +435,10 @@
 					<version>1.6</version>
 					<configuration>
 						<executable>gpg2</executable>
+						<gpgArguments>
+							<arg>--pinentry-mode</arg>
+							<arg>loopback</arg>
+						</gpgArguments>
 					</configuration>
 					<executions>
 						<execution>
