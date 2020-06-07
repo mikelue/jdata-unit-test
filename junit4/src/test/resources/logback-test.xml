@@ -5,8 +5,11 @@
 		</encoder>
 	</appender>
 
-	<logger name="guru.mikelue.jdut" level="warn" />
-	<logger name="guru.mikelue.jdut.junit4" level="trace" />
+	<property name="logging.level.jdut" value="${logging.level.jdut:-warn}" />
+	<property name="logging.level.jdut.junit4" value="${logging.level.jdut.junit4:-${logging.level.jdut}}" />
+
+	<logger name="guru.mikelue.jdut" level="${logging.level.jdut}" />
+	<logger name="guru.mikelue.jdut.junit4" level="${logging.level.jdut.junit4}" />
 
 	<root level="warn">
 		<appender-ref ref="STDOUT" />

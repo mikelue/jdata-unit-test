@@ -7,8 +7,7 @@
 
 	<logger name="liquibase" level="warn" />
 
-	<logger name="guru.mikelue.jdut" level="debug" />
-	<logger name="guru.mikelue.jdut.yaml" level="trace" />
+	<logger name="guru.mikelue.jdut" level="${logging.level.jdut:-warn}" />
 
 	<root level="warn">
 		<appender-ref ref="STDOUT" />

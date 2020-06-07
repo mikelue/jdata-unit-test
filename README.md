@@ -64,3 +64,12 @@ The [version-ruleset.xml](src/main/resources/guru/mikelue/jdut/version-ruleset.x
 * Skips `-beta` versions
 * Skips `-RC` versions
 * Skips `-jre9/10/11/12/13/14/15` versions
+
+# Testing
+
+You can use `logging.level.jdut`(default: `warn`) to assign logging level for all of the logging level under<br/>
+package `guru.mikelue.jdut`.
+
+```bash
+mvn test -Dlogging.level.jdut=debug
+```
