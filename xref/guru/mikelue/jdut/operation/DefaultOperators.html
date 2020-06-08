@@ -247,7 +247,7 @@
 <a class="jxr_linenumber" name="L239" href="#L239">239</a> 
 <a class="jxr_linenumber" name="L240" href="#L240">240</a> 		String sql = String.format(
 <a class="jxr_linenumber" name="L241" href="#L241">241</a> 			<span class="jxr_string">"INSERT INTO %s(%s) VALUES(%s)"</span>,
-<a class="jxr_linenumber" name="L242" href="#L242">242</a> 			table.quoteIdentifier(table.getName()),
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> 			table.getQuotedFullName(),
 <a class="jxr_linenumber" name="L243" href="#L243">243</a> 			join(
 <a class="jxr_linenumber" name="L244" href="#L244">244</a> 				nameOfColumns,
 <a class="jxr_linenumber" name="L245" href="#L245">245</a> 				columnName -&gt; table.quoteIdentifier(columnName),
@@ -301,7 +301,7 @@
 <a class="jxr_linenumber" name="L293" href="#L293">293</a> 
 <a class="jxr_linenumber" name="L294" href="#L294">294</a> 		String sql = String.format(
 <a class="jxr_linenumber" name="L295" href="#L295">295</a> 			<span class="jxr_string">"UPDATE %s SET %s WHERE %s"</span>,
-<a class="jxr_linenumber" name="L296" href="#L296">296</a> 			table.quoteIdentifier(table.getName()),
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> 			table.getQuotedFullName(),
 <a class="jxr_linenumber" name="L297" href="#L297">297</a> 			join(
 <a class="jxr_linenumber" name="L298" href="#L298">298</a> 				nameOfColumns,
 <a class="jxr_linenumber" name="L299" href="#L299">299</a> 				columnName -&gt; String.format(
@@ -351,7 +351,7 @@
 <a class="jxr_linenumber" name="L343" href="#L343">343</a> 
 <a class="jxr_linenumber" name="L344" href="#L344">344</a> 		String queryData = String.format(
 <a class="jxr_linenumber" name="L345" href="#L345">345</a> 			<span class="jxr_string">"SELECT COUNT(*) FROM %s WHERE %s"</span>,
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> 			table.quoteIdentifier(table.getName()),
+<a class="jxr_linenumber" name="L346" href="#L346">346</a> 			table.getQuotedFullName(),
 <a class="jxr_linenumber" name="L347" href="#L347">347</a> 			join(
 <a class="jxr_linenumber" name="L348" href="#L348">348</a> 				keys,
 <a class="jxr_linenumber" name="L349" href="#L349">349</a> 				key -&gt; String.format(<span class="jxr_string">"%s = ?"</span>, table.quoteIdentifier(key)),
@@ -401,7 +401,7 @@
 <a class="jxr_linenumber" name="L393" href="#L393">393</a> 
 <a class="jxr_linenumber" name="L394" href="#L394">394</a> 		String queryData = String.format(
 <a class="jxr_linenumber" name="L395" href="#L395">395</a> 			<span class="jxr_string">"DELETE FROM %s WHERE %s"</span>,
-<a class="jxr_linenumber" name="L396" href="#L396">396</a> 			table.quoteIdentifier(table.getName()),
+<a class="jxr_linenumber" name="L396" href="#L396">396</a> 			table.getQuotedFullName(),
 <a class="jxr_linenumber" name="L397" href="#L397">397</a> 			keys.stream().map(
 <a class="jxr_linenumber" name="L398" href="#L398">398</a> 				key -&gt; String.format(<span class="jxr_string">"%s = ?"</span>, table.quoteIdentifier(key))
 <a class="jxr_linenumber" name="L399" href="#L399">399</a> 			)
@@ -441,7 +441,7 @@
 <a class="jxr_linenumber" name="L433" href="#L433">433</a> 
 <a class="jxr_linenumber" name="L434" href="#L434">434</a> 		String queryData = String.format(
 <a class="jxr_linenumber" name="L435" href="#L435">435</a> 			<span class="jxr_string">"DELETE FROM %s"</span>,
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> 			table.quoteIdentifier(table.getName())
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> 			table.getQuotedFullName()
 <a class="jxr_linenumber" name="L437" href="#L437">437</a> 		);
 <a class="jxr_linenumber" name="L438" href="#L438">438</a> 
 <a class="jxr_linenumber" name="L439" href="#L439">439</a> 		logger.debug(<span class="jxr_string">"Builds SQL: [{}]"</span>, queryData);
@@ -476,7 +476,7 @@
 <a class="jxr_linenumber" name="L468" href="#L468">468</a> 
 <a class="jxr_linenumber" name="L469" href="#L469">469</a> 		String queryData = String.format(
 <a class="jxr_linenumber" name="L470" href="#L470">470</a> 			<span class="jxr_string">"TRUNCATE TABLE %s"</span>,
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> 			table.quoteIdentifier(table.getName())
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> 			table.getQuotedFullName()
 <a class="jxr_linenumber" name="L472" href="#L472">472</a> 		);
 <a class="jxr_linenumber" name="L473" href="#L473">473</a> 
 <a class="jxr_linenumber" name="L474" href="#L474">474</a> 		logger.debug(<span class="jxr_string">"Builds SQL: [{}]"</span>, queryData);
@@ -503,6 +503,6 @@
 <a class="jxr_linenumber" name="L495" href="#L495">495</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2019. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2020. All rights reserved.</div>
 </body>
 </html>
