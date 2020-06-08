@@ -108,8 +108,6 @@ public class SchemaColumn {
      * @param builderConsumer The editor for column
      *
      * @return The new definition of column
-     *
-     * @see #build(Consumer, SchemaColumn)
      */
     public static SchemaColumn build(Consumer<Builder> builderConsumer)
     {

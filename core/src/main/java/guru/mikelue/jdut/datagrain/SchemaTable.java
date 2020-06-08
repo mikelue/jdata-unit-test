@@ -55,7 +55,7 @@ public class SchemaTable {
 		/**
 		 * Sets meta-data work.
 		 *
-		 * @param metaDataWorker The worker of meta data
+		 * @param newWorker The worker of meta data
 		 *
 		 * @return cascading self
 		 */
@@ -184,8 +184,6 @@ public class SchemaTable {
      * @param builderConsumer The building code for table schema
      *
      * @return The result schema of table
-     *
-     * @see #build(Consumer, SchemaTable)
      */
     public static SchemaTable build(Consumer<Builder> builderConsumer)
     {
@@ -398,8 +396,6 @@ public class SchemaTable {
 
     /**
      * Safe clone for the fields of this object.
-     *
-     * @see #build(Consumer, SchemaTable)
      */
     @Override
     protected SchemaTable clone()

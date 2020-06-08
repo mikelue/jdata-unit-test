@@ -22,16 +22,10 @@ public class DataConductException extends RuntimeException {
 
 	private final static long serialVersionUID = 1L;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public DataConductException(String message)
 	{
 		super(message);
 	}
-	/**
-	 * {@inheritDoc}
-	 */
 	public DataConductException(Throwable throwable)
 	{
 		super(throwable);

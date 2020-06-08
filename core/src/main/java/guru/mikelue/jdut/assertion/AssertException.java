@@ -6,16 +6,10 @@ package guru.mikelue.jdut.assertion;
 public class AssertException extends RuntimeException {
 	private final static long serialVersionUID = 1L;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public AssertException(Throwable throwable)
 	{
 		super(throwable);
 	}
-	/**
-	 * {@inheritDoc}
-	 */
 	public AssertException(String message)
 	{
 		super(message);
